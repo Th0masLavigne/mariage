@@ -119,55 +119,52 @@
   /* ---------------- Cachet de cire ----------------
      Couronne, lauriers, cercle perlé et monogramme entrelacé, embossés dans la cire. */
   let sealN = 0;
+  /* Cachet de cire façon sceau réel : bord irrégulier, rebord en relief, champ creusé,
+     lettres en relief éclairées par la gauche (filtres d'éclairage SVG). */
   const TONES = {
-    rose: { o: ['#dc7f9c', '#b4476a', '#7a2440'], i: ['#c25579', '#8f3054'], ring: '#6e1f3b', hi: '#f3b6c8', dark: '#4a0f25', light: '#ffe6ee', motif: '#f6c9d6' },
-    or:   { o: ['#fbe9a8', '#d4ab52', '#8a6424'], i: ['#e2c06a', '#a27a2c'], ring: '#6b4b14', hi: '#fff3c4', dark: '#4d3608', light: '#fff8dc', motif: '#fdeeb8' }
+    or:   { wax: ['#f0d68e', '#c9a24f', '#8d6726'], rim: '#d6b25e', f: ['#b08a40', '#c7a152'], mot: '#dcbd6c', spec: '#fff3cf', sh: '#4d3608' },
+    rose: { wax: ['#dc7f9c', '#b4476a', '#7a2440'], rim: '#bb5276', f: ['#8f3054', '#a8456a'], mot: '#c9698a', spec: '#ffe1ea', sh: '#3d0a1d' }
   };
-  /* img (facultatif) : image des lettres (PNG transparent) embossée dans la cire à la place du texte */
+  const relief = (id, blur, scale, spec, sc) => `<filter id="${id}" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="${blur}" result="h"/>
+      <feDiffuseLighting in="h" surfaceScale="${scale}" diffuseConstant="1.15" lighting-color="#fff" result="d"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting>
+      <feComposite in="d" in2="SourceAlpha" operator="in" result="dl"/>
+      <feBlend in="SourceGraphic" in2="dl" mode="multiply" result="m"/>
+      <feSpecularLighting in="h" surfaceScale="${scale}" specularConstant="${sc}" specularExponent="16" lighting-color="${spec}" result="s"><feDistantLight azimuth="225" elevation="52"/></feSpecularLighting>
+      <feComposite in="s" in2="SourceAlpha" operator="in" result="sl"/>
+      <feComposite in="m" in2="sl" operator="arithmetic" k2="1" k3="1"/>
+    </filter>`;
+  /* img (facultatif) : lettres (PNG transparent) frappées dans la cire à la place du texte */
   function seal(mono, tone, img) {
-    const k = 's' + (sealN++), T = TONES[tone] || TONES.rose;
+    const k = 's' + (sealN++), T = TONES[tone] || TONES.or;
+    const hex = c => [1, 3, 5].map(i => (parseInt(c.slice(i, i + 2), 16) / 255).toFixed(3));
+    const [mr, mg, mb] = hex(T.mot);
     const g = String(mono || 'TL').replace(/\s/g, '').split('');
-    const glyphs = g.map((c, i) => {
-      const amp = c === '&';
-      const x = 60 + (i - (g.length - 1) / 2) * (g.length > 2 ? 16 : 13);
-      return `<text x="${x}" y="${amp ? 72 : 77}" font-size="${amp ? 20 : 40}">${c === '&' ? '&amp;' : c}</text>`;
-    }).join('');
-    /* couronne végétale fine : deux branches qui montent de part et d'autre, feuilles en amande alternées */
-    const R0 = 34; let leaves = '', stems = '';
-    const branch = (from, to, dir) => {
-      const n = 11, pt = a => [60 + R0 * Math.cos(a * Math.PI / 180), 60 + R0 * Math.sin(a * Math.PI / 180)];
-      const [x0, y0] = pt(from), [x1, y1] = pt(to);
-      stems += `<path d="M${x0.toFixed(2)} ${y0.toFixed(2)} A${R0} ${R0} 0 0 ${dir > 0 ? 1 : 0} ${x1.toFixed(2)} ${y1.toFixed(2)}" fill="none" stroke="${T.motif}" stroke-width=".55" stroke-linecap="round"/>`;
-      for (let i = 0; i < n; i++) {
-        const t = i / (n - 1), a = from + (to - from) * (0.04 + t * 0.92), [x, y] = pt(a), rad = a * Math.PI / 180;
-        const tx = -Math.sin(rad) * dir, ty = Math.cos(rad) * dir, phi = Math.atan2(ty, tx) * 180 / Math.PI;
-        const L = 6.2 - t * 2.4, w = 1.25 - t * 0.35;
-        [-1, 1].forEach(side => {
-          if (i === n - 1 && side === 1) return;
-          const rot = phi + side * 40 * dir;
-          leaves += `<path d="M0 0 Q${(L / 2).toFixed(2)} ${-w} ${L.toFixed(2)} 0 Q${(L / 2).toFixed(2)} ${w} 0 0 Z" transform="translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${rot.toFixed(1)})"/>`;
-        });
-      }
-    };
-    branch(102, 248, 1); branch(78, -68, -1);
+    const glyphs = g.map((c, i) => `<text x="${60 + (i - (g.length - 1) / 2) * (g.length > 2 ? 16 : 13)}" y="${c === '&' ? 70 : 74}" font-size="${c === '&' ? 20 : 38}">${c === '&' ? '&amp;' : c}</text>`).join('');
     return `<svg class="wax" viewBox="0 0 120 120" aria-hidden="true">
       <defs>
-        <radialGradient id="${k}g" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="${T.o[0]}"/><stop offset=".55" stop-color="${T.o[1]}"/><stop offset="1" stop-color="${T.o[2]}"/></radialGradient>
-        <radialGradient id="${k}i" cx="45%" cy="40%" r="70%"><stop offset="0" stop-color="${T.i[0]}"/><stop offset="1" stop-color="${T.i[1]}"/></radialGradient>
+        <radialGradient id="${k}g" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="${T.wax[0]}"/><stop offset=".55" stop-color="${T.wax[1]}"/><stop offset="1" stop-color="${T.wax[2]}"/></radialGradient>
+        <linearGradient id="${k}f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${T.f[0]}"/><stop offset="1" stop-color="${T.f[1]}"/></linearGradient>
         <filter id="${k}b" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="9"/></filter>
-        <filter id="${k}e" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx=".5" dy=".6" stdDeviation=".25" flood-color="${T.dark}" flood-opacity=".7"/><feDropShadow dx="-.35" dy="-.4" stdDeviation=".2" flood-color="${T.light}" flood-opacity=".5"/></filter>
-        <filter id="${k}s"><feGaussianBlur stdDeviation="2.5"/></filter>
-        <filter id="${k}t" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 ${parseInt(T.motif.slice(1,3),16)/255}  0 0 0 0 ${parseInt(T.motif.slice(3,5),16)/255}  0 0 0 0 ${parseInt(T.motif.slice(5,7),16)/255}  0 0 0 1 0"/></filter>
+        ${relief(k + 'r', 2, 2.2, T.spec, .45)}
+        ${relief(k + 'm', .3, .9, T.spec, 1.1)}
+        <filter id="${k}t" color-interpolation-filters="sRGB"><feMorphology operator="dilate" radius=".28"/><feColorMatrix type="matrix" values="0 0 0 0 ${mr}  0 0 0 0 ${mg}  0 0 0 0 ${mb}  0 0 0 1 0" result="c"/></filter>
+        <filter id="${k}i" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="1.6"/></filter>
+        <filter id="${k}n" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+        <clipPath id="${k}c"><circle cx="60" cy="60" r="41"/></clipPath>
       </defs>
-      <circle cx="60" cy="60" r="53" fill="url(#${k}g)" filter="url(#${k}b)"/>
-      <circle cx="60" cy="60" r="41" fill="url(#${k}i)" stroke="${T.ring}" stroke-opacity=".45" stroke-width="1.4"/>
-      <circle cx="60" cy="60" r="41" fill="none" stroke="${T.hi}" stroke-opacity=".35" stroke-width=".8" transform="translate(-.8 -.8)"/>
-      <g filter="url(#${k}e)" fill="${T.motif}" stroke="none">
-        <circle cx="60" cy="60" r="39" fill="none" stroke="${T.motif}" stroke-width=".45" stroke-opacity=".8"/>
-        ${stems}${leaves}
-        ${img ? `<image class="seal-img" href="${img}" x="33" y="32" width="54" height="56" preserveAspectRatio="xMidYMid meet" filter="url(#${k}t)"/>` : `<g font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" text-anchor="middle">${glyphs}</g>`}
+      <circle cx="60" cy="60" r="54" fill="url(#${k}g)" filter="url(#${k}b)"/>
+      <path d="M60 10a50 50 0 1 0 .01 0Z M60 19a41 41 0 1 1 -.01 0Z" fill-rule="evenodd" fill="${T.rim}" filter="url(#${k}r)"/>
+      <circle cx="60" cy="60" r="41" fill="url(#${k}f)"/>
+      <g clip-path="url(#${k}c)">
+        <circle cx="60" cy="60" r="43" fill="none" stroke="${T.sh}" stroke-opacity=".3" stroke-width="4" transform="translate(1.6 1.8)" filter="url(#${k}i)"/>
+        <circle cx="60" cy="60" r="43" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="4" transform="translate(-1.4 -1.6)" filter="url(#${k}i)"/>
       </g>
-      <ellipse cx="40" cy="30" rx="15" ry="7" fill="#fff" opacity=".22" transform="rotate(-32 40 30)" filter="url(#${k}s)"/>
+      <g style="filter:drop-shadow(.7px .9px .5px ${T.sh}99)">
+        ${img ? `<g filter="url(#${k}m)"><image class="seal-img" href="${img}" x="31" y="31" width="58" height="58" preserveAspectRatio="xMidYMid meet" filter="url(#${k}t)"/></g>`
+          : `<g filter="url(#${k}m)" fill="${T.mot}" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" text-anchor="middle">${glyphs}</g>`}
+      </g>
+      <circle cx="60" cy="60" r="54" fill="#000" filter="url(#${k}n)"/>
     </svg>`;
   }
 
