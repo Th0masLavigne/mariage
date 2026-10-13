@@ -37,7 +37,7 @@ window.CONFIG = {
      URL de l’Apps Script RSVP (se termine par /exec). Voir README.
      Laissée vide → mode aperçu : rien n’est envoyé, un sélecteur de
      formule/style apparaît en bas de l’écran.                            */
-  rsvpUrl: 'https://script.google.com/macros/s/AKfycbyZUQbz_8mVrS9t4Ye72gvJ293jGjiQFPfdR9NfgEMMAApppThEPa96rHG0CH8RU44/exec',
+  rsvpUrl: 'https://script.google.com/macros/s/AKfycbx0n-6zZ-MLpGHxPkGXloh82KhFDaxcrr_bgaoJwSqJK6deOg_ndVYU6vKvfLVyqi4/exec',
 
   /* Date limite de réponse (texte libre). Vide → la ligne est masquée. */
   repondreAvant: '',
