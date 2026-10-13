@@ -63,3 +63,10 @@ Le bouton « iPhone, Mac, Outlook » ouvre `agenda/<code>.ics` (journées entiè
 ## Les réponses
 Onglet **RSVP** : une ligne par foyer et par appareil ; si quelqu’un modifie sa réponse, la ligne est mise à jour (`modifs` compte les changements). Colonnes : présence, adultes/enfants, moments choisis, couchage (nuits, nb de personnes, chambre partagée, estimation à 60 €/pers./nuit), régime, chanson, message, e-mail.
 Idées pour plus tard : reporter `presence` vers l’onglet Invites de l’appli (statut Confirmé/Décliné) et `chanson` vers l’onglet Playlist.
+
+## Déploiement automatique (anti-cache)
+Le fichier `.github/workflows/deploy.yml` publie le site à chaque `git push` sur `main`.
+Avant publication, il ajoute `?v=<numéro du commit>` à `config.js`, `sketches.js` et aux images de `config.js` :
+chaque visiteur recharge automatiquement les fichiers modifiés. Rien à faire à la main.
+Réglage à faire une seule fois : *Settings → Pages → Build and deployment → Source : **GitHub Actions***.
+Suivi des publications : onglet **Actions** (coche verte = en ligne).

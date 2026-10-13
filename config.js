@@ -138,7 +138,6 @@ window.CONFIG = {
       { nom: 'Framboise',   hex: '#b4476a' },
       { nom: 'Pêche',       hex: '#e39a6f' },
       { nom: 'Lilas',       hex: '#e9d5f5' },
-      { nom: 'Ivoire',      hex: '#fdf5f6' }
     ]
   },
 

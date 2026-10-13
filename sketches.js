@@ -161,89 +161,115 @@
     </svg>`;
   }
 
+  /* filtres communs aux tenues : bords légèrement irréguliers, grain de papier, ombre douce */
+  const outfitDefs = k => `
+        <linearGradient id="${k}hg" x1="0" x2="1"><stop offset="0" stop-color="#a98035"/><stop offset=".5" stop-color="#f1d9a0"/><stop offset="1" stop-color="#a98035"/></linearGradient>
+        <filter id="${k}wc" x="-15%" y="-10%" width="130%" height="125%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="3" result="w"/>
+          <feDisplacementMap in="SourceGraphic" in2="w" scale="1.1" result="d"/>
+          <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="8" result="n"/>
+          <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+          <feComponentTransfer in="g" result="gr"><feFuncR type="linear" slope=".45" intercept=".7"/><feFuncG type="linear" slope=".45" intercept=".7"/><feFuncB type="linear" slope=".45" intercept=".7"/></feComponentTransfer>
+          <feBlend in="d" in2="gr" mode="multiply" result="m"/>
+          <feComposite in="m" in2="d" operator="in" result="p"/>
+          <feGaussianBlur in="d" stdDeviation="3.5" result="b"/>
+          <feOffset in="b" dy="4" result="o"/>
+          <feColorMatrix in="o" type="matrix" values="0 0 0 0 .35  0 0 0 0 .12  0 0 0 0 .22  0 0 0 .22 0" result="sh"/>
+          <feMerge><feMergeNode in="sh"/><feMergeNode in="p"/></feMerge>
+        </filter>`;
+
   window.SKETCH = {
     chateau: wrap('0 0 420 236', chateauW, chateau, 'Aquarelle du Château de la Fontaine et de son grand cèdre'),
     eglise: wrap('0 0 420 236', egliseW, eglise, 'Aquarelle de l’église et de la halle d’Égreville'),
     mairie: wrap('0 0 420 236', mairieW, mairie, 'Aquarelle de l’hôtel de ville de Suresnes'),
     doodle: (k) => `<svg class="sk doodle" viewBox="0 0 64 64" aria-hidden="true"><g class="ink">${doodles[k] || doodles.heart}</g></svg>`,
     seal,
-    /* Tenues illustrées (dress code). La couleur « c » remplit les éléments .fab ;
-       ombres et reflets sont des calques translucides, donc ils suivent toute couleur. */
+    /* Tenues illustrées (dress code), façon aquarelle réaliste.
+       La couleur « c » remplit les éléments .fab ; ombres, satin et grain de papier
+       sont des calques translucides : ils suivent n'importe quelle couleur. */
     suit: (c) => { const k = 'o' + (sealN++); return `<svg class="outfit" viewBox="0 0 120 170" aria-hidden="true">
-      <defs>
-        <linearGradient id="${k}L" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".26"/><stop offset=".35" stop-color="#000" stop-opacity=".02"/><stop offset=".8" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".08"/></linearGradient>
-        <linearGradient id="${k}R" x1="1" x2="0"><stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".35" stop-color="#000" stop-opacity=".04"/><stop offset=".85" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
-        <linearGradient id="${k}T" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".22" stop-color="#fff" stop-opacity="0"/><stop offset=".85" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
-        <linearGradient id="${k}S" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".32"/><stop offset=".5" stop-color="#000" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
-        <linearGradient id="${k}hg" x1="0" x2="1"><stop offset="0" stop-color="#a98035"/><stop offset=".5" stop-color="#f1d9a0"/><stop offset="1" stop-color="#a98035"/></linearGradient>
-        <filter id="${k}ds" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#5a1e37" flood-opacity=".2"/></filter>
+      <defs>${outfitDefs(k)}
+        <linearGradient id="${k}L" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".34"/><stop offset=".45" stop-color="#000" stop-opacity=".02"/><stop offset=".75" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#000" stop-opacity=".1"/></linearGradient>
+        <linearGradient id="${k}R" x1="1" x2="0"><stop offset="0" stop-color="#000" stop-opacity=".4"/><stop offset=".5" stop-color="#000" stop-opacity=".06"/><stop offset="1" stop-color="#000" stop-opacity=".16"/></linearGradient>
+        <linearGradient id="${k}V" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity=".1"/><stop offset=".62" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>
+        <linearGradient id="${k}S" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".42"/><stop offset=".55" stop-color="#000" stop-opacity=".08"/><stop offset=".8" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient>
+        <linearGradient id="${k}S2" x1="1" x2="0"><stop offset="0" stop-color="#000" stop-opacity=".46"/><stop offset=".55" stop-color="#000" stop-opacity=".1"/><stop offset=".8" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient>
+        <linearGradient id="${k}sat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".42" stop-color="#fff" stop-opacity=".05"/><stop offset=".5" stop-color="#fff" stop-opacity=".42"/><stop offset=".6" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
       </defs>
-      <!-- cintre fil doré : seul le crochet sort du col, le reste est caché dans la veste -->
-      <path d="M60 33 V15 a6 6 0 1 1 6 -6" fill="none" stroke="url(#${k}hg)" stroke-width="2.2" stroke-linecap="round"/>
-      <g filter="url(#${k}ds)">
-        <!-- col arrière (doublure) -->
-        <path class="fab" fill="${c}" d="M49 31 Q60 26.5 71 31 L69 36 Q60 32.5 51 36 Z"/>
-        <path fill="#000" fill-opacity=".38" d="M49 31 Q60 26.5 71 31 L69 36 Q60 32.5 51 36 Z"/>
-        <ellipse cx="60" cy="29.4" rx="3.2" ry="1.2" fill="#000" fill-opacity=".35"/>
-        <!-- chemise + cravate -->
-        <path fill="#fbf8f5" d="M50 31 Q60 28.5 70 31 L60 101 Z"/>
-        <path fill="#000" fill-opacity=".06" d="M60 34 L60 101 L56 70 Z"/>
-        <path fill="#fff" d="M50.5 31.5 L60 37 L56 42 Z M69.5 31.5 L60 37 L64 42 Z"/>
-        <path fill="#3a2530" d="M57.6 37.5 H62.4 L63.4 42.5 H56.6 Z"/>
-        <path fill="#3a2530" d="M56.8 42.5 H63.2 L65.5 80 L60 87 L54.5 80 Z"/>
-        <path fill="#fff" fill-opacity=".14" d="M60 42.5 H63.2 L65.5 80 L60 87 Z"/>
-        <!-- manches (derrière le buste) -->
-        <path class="fab" fill="${c}" d="M25 45 Q16.5 47 15.5 58 L12.5 128 Q18 131.5 24.5 129 L28.5 74 Z"/>
-        <path fill="url(#${k}S)" d="M25 45 Q16.5 47 15.5 58 L12.5 128 Q18 131.5 24.5 129 L28.5 74 Z"/>
-        <path class="fab" fill="${c}" d="M95 45 Q103.5 47 104.5 58 L107.5 128 Q102 131.5 95.5 129 L91.5 74 Z"/>
-        <path fill="url(#${k}S)" d="M95 45 Q103.5 47 104.5 58 L107.5 128 Q102 131.5 95.5 129 L91.5 74 Z"/>
-        <path fill="#fbf8f5" d="M13 126 Q18.5 129 24.6 127 L24.4 131 Q18 133.5 12.8 130.5 Z M107 126 Q101.5 129 95.4 127 L95.6 131 Q102 133.5 107.2 130.5 Z"/>
-        <!-- pan gauche / pan droit -->
-        <path class="fab" fill="${c}" d="M50 31 L60 101 Q58.5 133 50.5 156 Q36 159 23.5 153 Q21.5 127 23.5 101 Q26.5 88 25 74 L20.5 56 Q20 47.5 24.5 45 Z"/>
-        <path fill="url(#${k}L)" d="M50 31 L60 101 Q58.5 133 50.5 156 Q36 159 23.5 153 Q21.5 127 23.5 101 Q26.5 88 25 74 L20.5 56 Q20 47.5 24.5 45 Z"/>
-        <path class="fab" fill="${c}" d="M70 31 L60 101 Q61.5 133 69.5 156 Q84 159 96.5 153 Q98.5 127 96.5 101 Q93.5 88 95 74 L99.5 56 Q100 47.5 95.5 45 Z"/>
-        <path fill="url(#${k}R)" d="M70 31 L60 101 Q61.5 133 69.5 156 Q84 159 96.5 153 Q98.5 127 96.5 101 Q93.5 88 95 74 L99.5 56 Q100 47.5 95.5 45 Z"/>
-        <path fill="url(#${k}T)" d="M24.5 45 L50 31 L60 101 L70 31 L95.5 45 Q100 47.5 99.5 56 L96.5 101 Q98.5 127 96.5 153 Q84 159 69.5 156 Q61.5 133 60 101 Q58.5 133 50.5 156 Q36 159 23.5 153 Q21.5 127 23.5 101 L20.5 56 Q20 47.5 24.5 45 Z"/>
-        <!-- revers à cran aigu -->
-        <path class="fab" fill="${c}" d="M50 31 L44.5 34.5 L35.5 50.5 L45.5 52.5 L60 101 Z"/>
-        <path fill="#000" fill-opacity=".2" d="M50 31 L44.5 34.5 L35.5 50.5 L45.5 52.5 L60 101 Z"/>
-        <path fill="#fff" fill-opacity=".14" d="M44.5 34.5 L35.5 50.5 L40 51.4 Z"/>
-        <path class="fab" fill="${c}" d="M70 31 L75.5 34.5 L84.5 50.5 L74.5 52.5 L60 101 Z"/>
-        <path fill="#000" fill-opacity=".1" d="M70 31 L75.5 34.5 L84.5 50.5 L74.5 52.5 L60 101 Z"/>
-        <path fill="none" stroke="#000" stroke-opacity=".28" stroke-width=".8" stroke-linejoin="round" d="M44.5 34.5 L35.5 50.5 L45.5 52.5 L60 101 M75.5 34.5 L84.5 50.5 L74.5 52.5 L60 101 M42 46 L46 47.5 M78 46 L74 47.5"/>
-        <!-- coutures, pinces, poches -->
-        <path fill="none" stroke="#000" stroke-opacity=".16" stroke-width=".8" d="M34 64 Q35 92 36.5 118 M86 64 Q85 92 83.5 118 M25 74 Q24 60 21 56 M95 74 Q96 60 99 56"/>
-        <path fill="none" stroke="#fff" stroke-opacity=".25" stroke-width=".7" d="M60.6 101 Q62 133 70 155.4"/>
-        <path class="fab" fill="${c}" d="M27 117 H45 L44.6 123.5 Q36 124.6 27.2 123.5 Z M75 117 H93 L92.8 123.5 Q84 124.6 75.4 123.5 Z"/>
-        <path fill="#000" fill-opacity=".14" d="M27 117 H45 L44.6 123.5 Q36 124.6 27.2 123.5 Z M75 117 H93 L92.8 123.5 Q84 124.6 75.4 123.5 Z"/>
-        <path fill="none" stroke="#000" stroke-opacity=".3" stroke-width=".8" d="M27 117 H45 M75 117 H93"/>
-        <path fill="none" stroke="#000" stroke-opacity=".3" stroke-width=".8" d="M74 64.5 L89 63"/>
-        <path fill="#fbf8f5" d="M76 64.3 L79 58.5 L81.5 61.5 L84 57.5 L87 63.2 Z"/>
-        <path fill="#000" fill-opacity=".08" d="M81.5 61.5 L84 57.5 L87 63.2 Z"/>
-        <circle cx="59.3" cy="104" r="1.9" fill="#2a1820" fill-opacity=".8"/><circle cx="59.6" cy="117" r="1.9" fill="#2a1820" fill-opacity=".8"/>
-        <circle cx="58.8" cy="103.4" r=".6" fill="#fff" fill-opacity=".5"/><circle cx="59.1" cy="116.4" r=".6" fill="#fff" fill-opacity=".5"/>
-        <path fill="none" stroke="#000" stroke-opacity=".22" stroke-width=".7" d="M22 122 L24.5 122 M98 122 L95.5 122"/>
+      <path d="M60 31 V15 a6 6 0 1 1 6 -6" fill="none" stroke="url(#${k}hg)" stroke-width="2" stroke-linecap="round"/>
+      <g filter="url(#${k}wc)">
+        <path class="fab" fill="${c}" d="M52 30 Q60 26.5 68 30 L67 34 Q60 31.5 53 34 Z"/>
+        <path fill="#000" fill-opacity=".45" d="M52 30 Q60 26.5 68 30 L67 34 Q60 31.5 53 34 Z"/>
+        <ellipse cx="60" cy="28.6" rx="2.6" ry="1" fill="#000" fill-opacity=".4"/>
+        <!-- plastron de chemise -->
+        <path fill="#fbf8f4" d="M52 30 Q60 28 68 30 L60 104 Z"/>
+        <path fill="none" stroke="#000" stroke-opacity=".07" stroke-width=".6" d="M57.5 42 L59.2 98 M62.5 42 L60.8 98 M55.5 42 L58.6 90 M64.5 42 L61.4 90"/>
+        <circle cx="60" cy="50" r=".9" fill="#2a1820" fill-opacity=".7"/><circle cx="60" cy="60" r=".9" fill="#2a1820" fill-opacity=".7"/><circle cx="60" cy="70" r=".9" fill="#2a1820" fill-opacity=".7"/>
+        <!-- nœud papillon -->
+        <path fill="#2b1c24" d="M60 36.2 L51.6 32.6 Q50.6 36.2 51.6 39.8 Z M60 36.2 L68.4 32.6 Q69.4 36.2 68.4 39.8 Z"/>
+        <path fill="#fff" fill-opacity=".18" d="M60 36.2 L51.6 32.6 Q51 34 51.3 35 Z M60 36.2 L68.4 32.6 Q69 34 68.7 35 Z"/>
+        <rect x="58.2" y="34.2" width="3.6" height="4" rx="1" fill="#1d1218"/>
+        <!-- manches -->
+        <path class="fab" fill="${c}" d="M30 39 Q24 42 23.5 52 Q22 75 23.5 98 Q24.5 116 26 133 L36 133.5 Q35.4 112 37 92 Q38.5 70 34 54 Z"/>
+        <path fill="url(#${k}S)" d="M30 39 Q24 42 23.5 52 Q22 75 23.5 98 Q24.5 116 26 133 L36 133.5 Q35.4 112 37 92 Q38.5 70 34 54 Z"/>
+        <path class="fab" fill="${c}" d="M90 39 Q96 42 96.5 52 Q98 75 96.5 98 Q95.5 116 94 133 L84 133.5 Q84.6 112 83 92 Q81.5 70 86 54 Z"/>
+        <path fill="url(#${k}S2)" d="M90 39 Q96 42 96.5 52 Q98 75 96.5 98 Q95.5 116 94 133 L84 133.5 Q84.6 112 83 92 Q81.5 70 86 54 Z"/>
+        <path fill="#000" fill-opacity=".22" d="M84 133.5 Q84.6 112 83 92 Q82 78 85 62 L88 64 Q86 80 87 96 Q87.4 116 86 133.5 Z"/>
+        <path fill="#fbf8f4" d="M26 131 L36 131.5 L36.2 134.6 L26.2 134.2 Z M94 131 L84 131.5 L83.8 134.6 L93.8 134.2 Z"/>
+        <path fill="#000" fill-opacity=".25" d="M26 131 L36 131.5 L36 132.4 L26 132 Z M94 131 L84 131.5 L84 132.4 L94 132 Z"/>
+        <!-- pans de la veste (taille cintrée) -->
+        <path class="fab" fill="${c}" d="M52 30 L59.6 104 Q58.6 134 52 155 Q42 157.5 34 153 Q32.5 138 33.5 126 Q35.5 112 36.5 100 Q37 84 34 66 Q31.5 54 29 46 Q28.5 40 32 37.5 Q42 32 52 30 Z"/>
+        <path fill="url(#${k}L)" d="M52 30 L59.6 104 Q58.6 134 52 155 Q42 157.5 34 153 Q32.5 138 33.5 126 Q35.5 112 36.5 100 Q37 84 34 66 Q31.5 54 29 46 Q28.5 40 32 37.5 Q42 32 52 30 Z"/>
+        <path class="fab" fill="${c}" d="M68 30 L59.6 104 Q61.4 134 68 155 Q78 157.5 86 153 Q87.5 138 86.5 126 Q84.5 112 83.5 100 Q83 84 86 66 Q88.5 54 91 46 Q91.5 40 88 37.5 Q78 32 68 30 Z"/>
+        <path fill="url(#${k}R)" d="M68 30 L59.6 104 Q61.4 134 68 155 Q78 157.5 86 153 Q87.5 138 86.5 126 Q84.5 112 83.5 100 Q83 84 86 66 Q88.5 54 91 46 Q91.5 40 88 37.5 Q78 32 68 30 Z"/>
+        <path fill="url(#${k}V)" d="M32 37.5 Q42 32 52 30 L59.6 104 L68 30 Q78 32 88 37.5 Q91.5 40 91 46 Q88.5 54 86 66 Q83 84 83.5 100 Q84.5 112 86.5 126 Q87.5 138 86 153 Q78 157.5 68 155 Q61.4 134 59.6 104 Q58.6 134 52 155 Q42 157.5 34 153 Q32.5 138 33.5 126 Q35.5 112 36.5 100 Q37 84 34 66 Q31.5 54 29 46 Q28.5 40 32 37.5 Z"/>
+        <!-- revers en satin à pointe -->
+        <path class="fab" fill="${c}" d="M52 30 L47 33.2 L36.5 46.5 L44.5 49.6 Q51 76 59.6 104 Z"/>
+        <path fill="#000" fill-opacity=".32" d="M52 30 L47 33.2 L36.5 46.5 L44.5 49.6 Q51 76 59.6 104 Z"/>
+        <path fill="url(#${k}sat)" d="M52 30 L47 33.2 L36.5 46.5 L44.5 49.6 Q51 76 59.6 104 Z"/>
+        <path class="fab" fill="${c}" d="M68 30 L73 33.2 L83.5 46.5 L75.5 49.6 Q69 76 60.4 104 Z"/>
+        <path fill="#000" fill-opacity=".38" d="M68 30 L73 33.2 L83.5 46.5 L75.5 49.6 Q69 76 60.4 104 Z"/>
+        <path fill="url(#${k}sat)" fill-opacity=".6" d="M68 30 L73 33.2 L83.5 46.5 L75.5 49.6 Q69 76 60.4 104 Z"/>
+        <path fill="none" stroke="#000" stroke-opacity=".3" stroke-width=".6" stroke-linejoin="round" d="M47 33.2 L36.5 46.5 L44.5 49.6 Q51 76 59.6 104 M73 33.2 L83.5 46.5 L75.5 49.6 Q69 76 60.4 104 M41.5 44 L45.6 45.6 M78.5 44 L74.4 45.6"/>
+        <!-- poches, bouton, pochette -->
+        <path fill="#000" fill-opacity=".3" d="M38.5 121.5 Q45 120.6 51.5 121.5 L51.4 123 Q45 122.2 38.6 123 Z M81.5 121.5 Q75 120.6 68.5 121.5 L68.6 123 Q75 122.2 81.4 123 Z"/>
+        <path fill="none" stroke="#fff" stroke-opacity=".2" stroke-width=".5" d="M38.6 124 Q45 123.2 51.4 124 M68.6 124 Q75 123.2 81.4 124"/>
+        <path fill="#000" fill-opacity=".3" d="M70.5 60 L80.5 58.6 L80.6 60 L70.6 61.4 Z"/>
+        <path fill="#fbf8f4" d="M72 60 L74.5 55.2 L76.6 57.6 L78.6 54.4 L80.2 58.8 Z"/>
+        <circle cx="59.7" cy="106" r="2" fill="#1d1218"/><circle cx="59.2" cy="105.4" r=".7" fill="#fff" fill-opacity=".45"/>
+        <path fill="none" stroke="#000" stroke-opacity=".18" stroke-width=".6" d="M43 62 Q44.5 90 45 118 M77 62 Q75.5 90 75 118"/>
+        <path fill="none" stroke="#fff" stroke-opacity=".3" stroke-width=".6" d="M60.4 106 Q61.6 134 67.6 154.4"/>
       </g></svg>`; },
     dress: (c) => { const k = 'o' + (sealN++); return `<svg class="outfit" viewBox="0 0 120 170" aria-hidden="true">
-      <defs>
-        <linearGradient id="${k}sh" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".2"/><stop offset=".22" stop-color="#000" stop-opacity="0"/><stop offset=".45" stop-color="#fff" stop-opacity=".25"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>
-        <linearGradient id="${k}fold" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity=".13"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
-        <linearGradient id="${k}hg" x1="0" x2="1"><stop offset="0" stop-color="#a98035"/><stop offset=".5" stop-color="#f1d9a0"/><stop offset="1" stop-color="#a98035"/></linearGradient>
-        <filter id="${k}ds" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#5a1e37" flood-opacity=".18"/></filter>
+      <defs>${outfitDefs(k)}
+        <linearGradient id="${k}sk" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".2" stop-color="#000" stop-opacity=".04"/><stop offset=".38" stop-color="#fff" stop-opacity=".3"/><stop offset=".5" stop-color="#fff" stop-opacity=".02"/><stop offset=".7" stop-color="#000" stop-opacity=".08"/><stop offset=".82" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".32"/></linearGradient>
+        <linearGradient id="${k}fd" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity=".2"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+        <linearGradient id="${k}fl" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".32"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        <linearGradient id="${k}bd" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset=".4" stop-color="#fff" stop-opacity=".22"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient>
       </defs>
-      <path d="M60 22 V15 a6 6 0 1 1 6 -6" fill="none" stroke="url(#${k}hg)" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M60 22 L22 38 Q20 40 23 40 H97 Q100 40 98 38 Z" fill="none" stroke="url(#${k}hg)" stroke-width="2.2" stroke-linejoin="round"/>
-      <path d="M44.6 41.5 Q45.5 37 47.6 39.6 L47 56 M75.4 41.5 Q74.5 37 72.4 39.6 L73 56" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" class="fab-s"/>
-      <g filter="url(#${k}ds)">
-        <path class="fab" fill="${c}" d="M46 56 Q53 52 60 58 Q67 52 74 56 L72 80 Q88 118 102 162 Q60 170 18 162 Q32 118 48 80 Z"/>
-        <path fill="url(#${k}sh)" d="M46 56 Q53 52 60 58 Q67 52 74 56 L72 80 Q88 118 102 162 Q60 170 18 162 Q32 118 48 80 Z"/>
-        <path fill="url(#${k}fold)" d="M52 82 Q43 122 32 164 L45 165 Q52 122 56 82 Z"/>
-        <path fill="url(#${k}fold)" d="M64 82 Q75 122 84 165 L97 163 Q81 120 68 82 Z"/>
-        <path fill="url(#${k}fold)" d="M58 82 Q60 124 58 167 L64 167 Q64 124 62 82 Z"/>
-        <path fill="#000" fill-opacity=".16" d="M48 78 Q60 83 72 78 L72 82 Q60 87 48 82 Z"/>
-        <path fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1" d="M49 60 Q54 57 59 61"/>
-        <path fill="none" stroke="#000" stroke-opacity=".12" stroke-width=".8" d="M60 58 V80"/>
-        <path fill="#fff" fill-opacity=".9" d="M72 79 l6 -3 l1 3 l-1 3 l-6 -2 z"/>
+      <path d="M60 22 V15 a6 6 0 1 1 6 -6" fill="none" stroke="url(#${k}hg)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M60 22 L30 37 Q28.5 39 31 39 H89 Q91.5 39 90 37 Z" fill="none" stroke="url(#${k}hg)" stroke-width="2" stroke-linejoin="round"/>
+      <g filter="url(#${k}wc)">
+        <!-- bretelles -->
+        <path class="fab-s" fill="none" stroke="${c}" stroke-width="1.5" stroke-linecap="round" d="M45.6 40.5 Q46.6 36.2 48.4 38.8 L49.6 57 M74.4 40.5 Q73.4 36.2 71.6 38.8 L70.4 57"/>
+        <!-- dos de la robe visible dans le décolleté -->
+        <path class="fab" fill="${c}" d="M49.6 56 Q60 60 70.4 56 L60 74 Z"/>
+        <path fill="#000" fill-opacity=".38" d="M49.6 56 Q60 60 70.4 56 L60 74 Z"/>
+        <!-- jupe longue fluide -->
+        <path class="fab" fill="${c}" d="M52.5 84 Q47 110 38 136 Q32 150 25 160 q7 5 14 1 q7 6 14 1.5 q7 5.5 14 1 q7 6 14 1 q7 5 15 -0.5 Q90 146 82 128 Q74 108 67.5 84 Z"/>
+        <path fill="url(#${k}sk)" d="M52.5 84 Q47 110 38 136 Q32 150 25 160 q7 5 14 1 q7 6 14 1.5 q7 5.5 14 1 q7 6 14 1 q7 5 15 -0.5 Q90 146 82 128 Q74 108 67.5 84 Z"/>
+        <path fill="url(#${k}fd)" d="M55 86 Q48 125 36 161 L45 162.5 Q53 125 57.5 86 Z"/>
+        <path fill="url(#${k}fl)" d="M57 86 Q55 125 49 163 L57 163.5 Q59 125 59.4 86 Z"/>
+        <path fill="url(#${k}fd)" d="M61 86 Q64 125 66 164 L74 163 Q68 124 63 86 Z"/>
+        <path fill="url(#${k}fl)" d="M64 86 Q72 122 80 162 L87 161 Q76 120 66 86 Z"/>
+        <path fill="url(#${k}fd)" d="M66 86 Q78 118 92 159 L97 158.6 Q82 116 67.5 86 Z"/>
+        <path fill="#000" fill-opacity=".16" d="M25 160 q7 5 14 1 q7 6 14 1.5 q7 5.5 14 1 q7 6 14 1 q7 5 15 -0.5 l0 1.6 q-8 5 -15 1 q-7 6 -14 0.6 q-7 5.6 -14 0.4 q-7 6 -14 0.2 q-7 4.6 -14 -1.4 Z"/>
+        <!-- buste drapé en V -->
+        <path class="fab" fill="${c}" d="M49.6 56 L60 74 L70.4 56 Q71 68 68.8 76 Q68 81 67.5 85 Q60 87.5 52.5 85 Q52 81 51.2 76 Q49 68 49.6 56 Z"/>
+        <path fill="url(#${k}bd)" d="M49.6 56 L60 74 L70.4 56 Q71 68 68.8 76 Q68 81 67.5 85 Q60 87.5 52.5 85 Q52 81 51.2 76 Q49 68 49.6 56 Z"/>
+        <path fill="none" stroke="#000" stroke-opacity=".2" stroke-width=".7" d="M51 64 Q57 70 66 82 M51.5 70 Q56 75 62 84 M69 62 Q64 70 59.6 76"/>
+        <path fill="none" stroke="#fff" stroke-opacity=".45" stroke-width=".8" d="M50.4 59 Q53 66 58.5 72"/>
+        <path fill="#000" fill-opacity=".2" d="M52.5 83.4 Q60 86 67.5 83.4 L67.6 85.4 Q60 88 52.4 85.4 Z"/>
       </g></svg>`; },
     /* filtres partagés : trait tremblé + lavis aquarelle */
     defs: `<svg width="0" height="0" style="position:absolute" aria-hidden="true">
