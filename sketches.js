@@ -123,7 +123,8 @@
     rose: { o: ['#dc7f9c', '#b4476a', '#7a2440'], i: ['#c25579', '#8f3054'], ring: '#6e1f3b', hi: '#f3b6c8', dark: '#4a0f25', light: '#ffe6ee', motif: '#f6c9d6' },
     or:   { o: ['#fbe9a8', '#d4ab52', '#8a6424'], i: ['#e2c06a', '#a27a2c'], ring: '#6b4b14', hi: '#fff3c4', dark: '#4d3608', light: '#fff8dc', motif: '#fdeeb8' }
   };
-  function seal(mono, tone) {
+  /* img (facultatif) : image des lettres (PNG transparent) embossée dans la cire à la place du texte */
+  function seal(mono, tone, img) {
     const k = 's' + (sealN++), T = TONES[tone] || TONES.rose;
     const g = String(mono || 'TL').replace(/\s/g, '').split('');
     const glyphs = g.map((c, i) => {
@@ -131,31 +132,40 @@
       const x = 60 + (i - (g.length - 1) / 2) * (g.length > 2 ? 16 : 13);
       return `<text x="${x}" y="${amp ? 72 : 77}" font-size="${amp ? 20 : 40}">${c === '&' ? '&amp;' : c}</text>`;
     }).join('');
-    let leaves = '';
-    const leaf = (a, side) => {
-      const r = 31, rad = a * Math.PI / 180, x = 60 + r * Math.cos(rad), y = 60 + r * Math.sin(rad);
-      return [-1, 1].map(s => `<ellipse cx="${(x + s * 2.6 * Math.cos(rad)).toFixed(1)}" cy="${(y + s * 2.6 * Math.sin(rad)).toFixed(1)}" rx="4.4" ry="1.7" transform="rotate(${(a + 90 + s * side * 28).toFixed(0)} ${(x + s * 2.6 * Math.cos(rad)).toFixed(1)} ${(y + s * 2.6 * Math.sin(rad)).toFixed(1)})"/>`).join('');
+    /* couronne végétale fine : deux branches qui montent de part et d'autre, feuilles en amande alternées */
+    const R0 = 34; let leaves = '', stems = '';
+    const branch = (from, to, dir) => {
+      const n = 11, pt = a => [60 + R0 * Math.cos(a * Math.PI / 180), 60 + R0 * Math.sin(a * Math.PI / 180)];
+      const [x0, y0] = pt(from), [x1, y1] = pt(to);
+      stems += `<path d="M${x0.toFixed(2)} ${y0.toFixed(2)} A${R0} ${R0} 0 0 ${dir > 0 ? 1 : 0} ${x1.toFixed(2)} ${y1.toFixed(2)}" fill="none" stroke="${T.motif}" stroke-width=".55" stroke-linecap="round"/>`;
+      for (let i = 0; i < n; i++) {
+        const t = i / (n - 1), a = from + (to - from) * (0.04 + t * 0.92), [x, y] = pt(a), rad = a * Math.PI / 180;
+        const tx = -Math.sin(rad) * dir, ty = Math.cos(rad) * dir, phi = Math.atan2(ty, tx) * 180 / Math.PI;
+        const L = 6.2 - t * 2.4, w = 1.25 - t * 0.35;
+        [-1, 1].forEach(side => {
+          if (i === n - 1 && side === 1) return;
+          const rot = phi + side * 40 * dir;
+          leaves += `<path d="M0 0 Q${(L / 2).toFixed(2)} ${-w} ${L.toFixed(2)} 0 Q${(L / 2).toFixed(2)} ${w} 0 0 Z" transform="translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${rot.toFixed(1)})"/>`;
+        });
+      }
     };
-    for (let a = 118; a <= 236; a += 13) leaves += leaf(a, 1);
-    for (let a = -56; a <= 62; a += 13) leaves += leaf(a, -1);
+    branch(102, 248, 1); branch(78, -68, -1);
     return `<svg class="wax" viewBox="0 0 120 120" aria-hidden="true">
       <defs>
         <radialGradient id="${k}g" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="${T.o[0]}"/><stop offset=".55" stop-color="${T.o[1]}"/><stop offset="1" stop-color="${T.o[2]}"/></radialGradient>
         <radialGradient id="${k}i" cx="45%" cy="40%" r="70%"><stop offset="0" stop-color="${T.i[0]}"/><stop offset="1" stop-color="${T.i[1]}"/></radialGradient>
         <filter id="${k}b" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="9"/></filter>
-        <filter id="${k}e" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx=".8" dy="1" stdDeviation=".35" flood-color="${T.dark}" flood-opacity=".75"/><feDropShadow dx="-.5" dy="-.6" stdDeviation=".3" flood-color="${T.light}" flood-opacity=".45"/></filter>
+        <filter id="${k}e" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx=".5" dy=".6" stdDeviation=".25" flood-color="${T.dark}" flood-opacity=".7"/><feDropShadow dx="-.35" dy="-.4" stdDeviation=".2" flood-color="${T.light}" flood-opacity=".5"/></filter>
         <filter id="${k}s"><feGaussianBlur stdDeviation="2.5"/></filter>
+        <filter id="${k}t" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 ${parseInt(T.motif.slice(1,3),16)/255}  0 0 0 0 ${parseInt(T.motif.slice(3,5),16)/255}  0 0 0 0 ${parseInt(T.motif.slice(5,7),16)/255}  0 0 0 1 0"/></filter>
       </defs>
       <circle cx="60" cy="60" r="53" fill="url(#${k}g)" filter="url(#${k}b)"/>
       <circle cx="60" cy="60" r="41" fill="url(#${k}i)" stroke="${T.ring}" stroke-opacity=".45" stroke-width="1.4"/>
       <circle cx="60" cy="60" r="41" fill="none" stroke="${T.hi}" stroke-opacity=".35" stroke-width=".8" transform="translate(-.8 -.8)"/>
       <g filter="url(#${k}e)" fill="${T.motif}" stroke="none">
-        <circle cx="60" cy="60" r="37" fill="none" stroke="${T.motif}" stroke-width="1.6" stroke-dasharray=".1 4.2" stroke-linecap="round"/>
-        ${leaves}
-        <path d="M49 37 L47.5 27 L53.5 31.5 L60 24 L66.5 31.5 L72.5 27 L71 37 Z"/>
-        <circle cx="47.5" cy="26" r="1.4"/><circle cx="60" cy="22.6" r="1.6"/><circle cx="72.5" cy="26" r="1.4"/>
-        <path d="M56 95 l4 -4 l4 4 l-4 4 z"/>
-        <g font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" text-anchor="middle">${glyphs}</g>
+        <circle cx="60" cy="60" r="39" fill="none" stroke="${T.motif}" stroke-width=".45" stroke-opacity=".8"/>
+        ${stems}${leaves}
+        ${img ? `<image class="seal-img" href="${img}" x="33" y="32" width="54" height="56" preserveAspectRatio="xMidYMid meet" filter="url(#${k}t)"/>` : `<g font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" text-anchor="middle">${glyphs}</g>`}
       </g>
       <ellipse cx="40" cy="30" rx="15" ry="7" fill="#fff" opacity=".22" transform="rotate(-32 40 30)" filter="url(#${k}s)"/>
     </svg>`;

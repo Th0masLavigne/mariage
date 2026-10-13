@@ -16,6 +16,10 @@ window.CONFIG = {
   monogramme: 'TL',
   /* Couleur des cachets : 'or' ou 'rose' (cire framboise) */
   cachet: 'or',
+  /* Monogramme illustré : couronne complète (haut de page, carte, signature)
+     et lettres seules (embossées dans les cachets). Vide → version dessinée. */
+  monogrammeImage: 'photos/monogramme.png',
+  monogrammeLettres: 'photos/monogramme-lettres.png',
 
   /* Dates utilisées pour le compte à rebours (format AAAA-MM-JJ) */
   dateCivil: '2027-08-06',

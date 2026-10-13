@@ -146,6 +146,10 @@ h2 { font: italic 500 clamp(34px, 6vw, 46px)/1.05 var(--f-display); margin: 8px 
 @keyframes foil { 50% { background-position: 100% 0; } }
 .hero-seal { width: 78px; margin: 0 auto 16px; transform: rotate(-8deg); }
 .foot-seal { width: 64px; margin: 0 auto 12px; transform: rotate(6deg); }
+.hero-mono { display: block; width: min(250px, 62vw); height: auto; margin: -8px auto 4px; }
+.foot-mono { display: block; width: 150px; height: auto; margin: 0 auto 8px; }
+.env .letter .l-mono { height: 40%; width: auto; margin-bottom: 2px; }
+.cal-seal .seal-img { opacity: 0; }
 .wax { width: 100%; height: auto; display: block; filter: drop-shadow(0 4px 6px rgba(110,80,20,.32)); }
 .hero-art { position: relative; margin: 34px auto 0; max-width: 560px; }
 .hero-art .note {
@@ -454,7 +458,7 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
     let cells = '';
     for (let i = 0; i < first; i++) cells += '<span></span>';
     for (let d = 1; d <= n; d++) {
-      cells += d === wed && days[d] ? `<span class="wed"><i class="cal-seal">${S.seal(C.monogramme, C.cachet || 'or')}</i><b>${d}</b></span>`
+      cells += d === wed && days[d] ? `<span class="wed"><i class="cal-seal">${S.seal(C.monogramme, C.cachet || 'or', C.monogrammeLettres)}</i><b>${d}</b></span>`
         : days[d] ? `<span class="mark">${d}</span>` : `<span>${d}</span>`;
     }
     const legend = Object.keys(days).sort((a, b) => a - b).map(k => `<li><b>${esc(days[k].jour)}</b> · ${esc(days[k].t.join(', '))}</li>`).join('');
@@ -538,7 +542,7 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 
     app.innerHTML = `
     <header class="hero">
-      <div class="hero-seal">${S.seal(C.monogramme, C.cachet || 'or')}</div>
+      ${C.monogrammeImage ? `<img class="hero-mono" src="${esc(C.monogrammeImage)}" alt="Monogramme ${esc(C.prenoms.join(' et '))}">` : `<div class="hero-seal">${S.seal(C.monogramme, C.cachet || 'or', C.monogrammeLettres)}</div>`}
       <div class="eyebrow">${esc(F.nom)}</div>
       <h1 class="names">${chars(a)}<span class="amp">&amp;</span>${chars(b)}</h1>
       <p class="dates gold">${esc(F.dates)}</p>
@@ -635,7 +639,7 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
     <section id="rsvp"><div class="rsvp" id="rsvpBox"></div></section>
 
     <footer>
-      <div class="foot-seal">${S.seal(C.monogramme, C.cachet || 'or')}</div>
+      ${C.monogrammeImage ? `<img class="foot-mono" src="${esc(C.monogrammeImage)}" alt="">` : `<div class="foot-seal">${S.seal(C.monogramme, C.cachet || 'or', C.monogrammeLettres)}</div>`}
       <div class="eyebrow">Avec toute notre impatience</div>
       <div class="sig">${esc(a)} &amp; ${esc(b)}</div>
     </footer>`;
@@ -952,8 +956,8 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
   /* ---------------- enveloppe ---------------- */
   function envelope() {
     const F = C.formules[state.code];
-    $('#envSeal').innerHTML = S.seal(C.monogramme, C.cachet || 'or');
-    $('#envLetter').innerHTML = `<span class="l-eye">Vous êtes invités</span><span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-date gold">${esc(F.dates)}</span>`;
+    $('#envSeal').innerHTML = S.seal(C.monogramme, C.cachet || 'or', C.monogrammeLettres);
+    $('#envLetter').innerHTML = `${C.monogrammeImage ? `<img class="l-mono" src="${esc(C.monogrammeImage)}" alt="">` : '<span class="l-eye">Vous êtes invités</span>'}<span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-date gold">${esc(F.dates)}</span>`;
     $('#envTo').textContent = state.nom ? 'Pour ' + state.nom : 'Une lettre pour vous';
     $('#petals').innerHTML = Array.from({ length: 16 }, () =>
       `<i class="petal" style="left:${Math.random() * 100}%;animation-duration:${7 + Math.random() * 7}s;animation-delay:${-Math.random() * 12}s;transform:scale(${.6 + Math.random() * .7})"></i>`).join('');
