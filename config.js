@@ -160,7 +160,7 @@ window.CONFIG = {
   /* Pétales de cerisier qui tombent en fond (true / false) */
   /* Pétales de cerisier : nombre de pétales à chaque endroit (0 = aucun).
      Écrire  petales: false  pour tout couper.                              */
-  petales: { fond: 12, enveloppe: 12, ouverture: 22 },
+  petales: { fond: 30, enveloppe: 20, ouverture: 50 },
 
   /* --- Nos escales (galerie photos) ---------------------------------- */
   photos: [
