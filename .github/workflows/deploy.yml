@@ -15,35 +15,39 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Versionner les fichiers (anti-cache)
         run: |
           V="${GITHUB_SHA::8}"
-          # scripts appelés par index.html : config.js?v=xxx, sketches.js?v=xxx
           sed -i -E "s/(config|sketches)\.js(\?v=[^\"]*)?\"/\1.js?v=$V\"/g" index.html
-          # images et masques référencés dans config.js : 'photos/xxx.png' → 'photos/xxx.png?v=…'
           sed -i -E "s#'(photos/[^'?]+)'#'\1?v=$V'#g" config.js
           grep -n "js?v=" index.html
 
       - name: Préparer le dossier publié
         run: |
-          mkdir _site
+          mkdir -p _site
           cp -r index.html liens.html config.js sketches.js photos agenda _site/
-          touch _site/.nojekyll
+          ls -R _site | head -40
 
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
