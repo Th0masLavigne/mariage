@@ -125,7 +125,8 @@ h2 { font: italic 500 clamp(34px, 6vw, 46px)/1.05 var(--f-display); margin: 8px 
   box-shadow: 0 0 0 0 rgba(180,71,106,.5); animation: pulse 2.2s infinite; transition: opacity .3s;
 }
 @keyframes pulse { 70% { box-shadow: 0 0 0 16px rgba(180,71,106,0); } 100% { box-shadow: 0 0 0 0 rgba(180,71,106,0); } }
-.petal { position: absolute; top: -20px; width: 14px; height: 11px; border-radius: 0 80% 0 80%; background: #f3a9bf; opacity: 0; pointer-events: none; animation: fall linear infinite; }
+:root { --petal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='.5' y1='1' x2='.5' y2='0'%3E%3Cstop offset='0' stop-color='%23fff6f8'/%3E%3Cstop offset='.55' stop-color='%23fbd3df'/%3E%3Cstop offset='1' stop-color='%23f2a3bb'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M20 39C13 34 9.5 25 10.2 15 10.8 8 14.6 4 18.4 5.6L20 7.4 21.6 5.6C25.4 4 29.2 8 29.8 15 30.5 25 27 34 20 39Z' fill='url(%23g)' fill-opacity='.92'/%3E%3Cpath d='M20 36C19.6 27 19.8 19 20 12' stroke='%23e58aa7' stroke-opacity='.45' stroke-width='.8' fill='none'/%3E%3Cpath d='M20 31C17.5 26 16.3 21 16.2 15M20 31C22.5 26 23.7 21 23.8 15' stroke='%23e58aa7' stroke-opacity='.22' stroke-width='.6' fill='none'/%3E%3C/svg%3E"); }
+.petal { position: absolute; top: -24px; width: 18px; height: 18px; background: var(--petal) center / contain no-repeat; opacity: 0; pointer-events: none; animation: fall linear infinite; }
 @keyframes fall { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 10% { opacity: .8; } 100% { transform: translate(80px, 105vh) rotate(320deg); opacity: 0; } }
 
 /* ---------- Hero ---------- */
@@ -192,10 +193,24 @@ h2 { font: italic 500 clamp(34px, 6vw, 46px)/1.05 var(--f-display); margin: 8px 
 .btn-cal.ghost { background: #fff; color: var(--accent); border: 1.5px solid var(--line); box-shadow: none; }
 /* pétales de cerisier */
 #sakura { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-#sakura i { position: absolute; top: -30px; display: block; animation: sk-fall var(--d) linear infinite; animation-delay: var(--dl); opacity: var(--o); }
-#sakura u { display: block; width: 100%; height: 100%; border-radius: 150% 0 150% 0; background: linear-gradient(135deg, #ffe3ec, #f6a9c0 70%, #ee8fae); animation: sk-sway var(--sw) ease-in-out infinite alternate; }
-@keyframes sk-fall { to { transform: translate(var(--x), 110vh) rotate(540deg); } }
-@keyframes sk-sway { from { transform: translateX(-12px) rotateY(0) rotate(-20deg); } to { transform: translateX(12px) rotateY(160deg) rotate(25deg); } }
+#sakura i { position: absolute; top: -40px; display: block; animation: sk-fall var(--d) linear infinite; animation-delay: var(--dl); opacity: var(--o); filter: var(--blur); }
+#sakura u { display: block; width: 100%; height: 100%; background: var(--petal) center / contain no-repeat; animation: sk-tumble var(--sw) linear infinite; animation-delay: var(--dl); }
+/* chute avec dérive au vent (le pétale ondule de gauche à droite en descendant) */
+@keyframes sk-fall {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(calc(var(--x) * .5), 22vh); }
+  40% { transform: translate(calc(var(--x) * -.25), 44vh); }
+  60% { transform: translate(calc(var(--x) * .8), 66vh); }
+  80% { transform: translate(calc(var(--x) * .2), 88vh); }
+  100% { transform: translate(var(--x), 112vh); }
+}
+/* le pétale pivote et se retourne sur lui-même comme une feuille */
+@keyframes sk-tumble {
+  0% { transform: rotateZ(var(--r0)) rotate3d(1, .35, .15, 0deg); }
+  50% { transform: rotateZ(calc(var(--r0) + 70deg)) rotate3d(1, .35, .15, 180deg); }
+  100% { transform: rotateZ(calc(var(--r0) + 140deg)) rotate3d(1, .35, .15, 360deg); }
+}
+.burst-petal { position: fixed; z-index: 55; width: 18px; height: 18px; background: var(--petal) center / contain no-repeat; pointer-events: none; will-change: transform, opacity; }
 .wrap { position: relative; z-index: 1; }
 .cd-lbl { font: 500 12px/1 var(--f-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
 .cd-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
@@ -491,12 +506,35 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
   /* ---------------- pétales de cerisier ---------------- */
   function sakura() {
     if (!C.petales || document.getElementById('sakura')) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const box = document.createElement('div'); box.id = 'sakura'; box.setAttribute('aria-hidden', 'true');
-    box.innerHTML = Array.from({ length: 22 }, () => {
-      const s = 8 + Math.random() * 10;
-      return `<i style="left:${Math.random() * 100}%;width:${s}px;height:${s * .8}px;--d:${11 + Math.random() * 12}s;--sw:${2.5 + Math.random() * 3}s;--dl:${-Math.random() * 20}s;--x:${(Math.random() - .5) * 160}px;--o:${.45 + Math.random() * .45}"><u></u></i>`;
+    /* 12 pétales sur 3 plans : loin (petits, nets, pâles), milieu, près (grands, flous) */
+    box.innerHTML = Array.from({ length: 12 }, (_, i) => {
+      const plan = i % 3, s = [9, 14, 24][plan] + Math.random() * [3, 4, 6][plan];
+      const d = [26, 20, 15][plan] + Math.random() * 8;
+      return `<i style="left:${Math.random() * 100}%;width:${s}px;height:${s}px;--d:${d}s;--sw:${3.5 + Math.random() * 3.5}s;--dl:${-Math.random() * d}s;--x:${(Math.random() < .5 ? -1 : 1) * (40 + Math.random() * 90)}px;--r0:${Math.round(Math.random() * 360)}deg;--o:${[.55, .75, .6][plan]};--blur:${plan === 2 ? 'blur(1.4px)' : 'none'}"><u></u></i>`;
     }).join('');
     document.body.prepend(box);
+  }
+
+  /* Bouffée de pétales qui s'échappe de l'enveloppe à l'ouverture */
+  function petalBurst(x, y) {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    for (let i = 0; i < 22; i++) {
+      const el = document.createElement('div'); el.className = 'burst-petal';
+      const s = 12 + Math.random() * 14; el.style.width = el.style.height = s + 'px';
+      el.style.left = (x - s / 2) + 'px'; el.style.top = (y - s / 2) + 'px';
+      document.body.appendChild(el);
+      const ang = -Math.PI / 2 + (Math.random() - .5) * 2.2, v = 120 + Math.random() * 200;
+      const dx = Math.cos(ang) * v, dy = Math.sin(ang) * v, fall = innerHeight * (.55 + Math.random() * .4);
+      const r = (Math.random() - .5) * 720, rx = 180 + Math.random() * 360;
+      el.animate([
+        { transform: 'translate(0,0) rotate(0) rotateX(0)', opacity: 0 },
+        { transform: `translate(${dx * .6}px,${dy * .6}px) rotate(${r * .3}deg) rotateX(${rx * .3}deg)`, opacity: 1, offset: .18 },
+        { transform: `translate(${dx}px,${dy}px) rotate(${r * .5}deg) rotateX(${rx * .5}deg)`, opacity: 1, offset: .35 },
+        { transform: `translate(${dx * 1.3 + (Math.random() - .5) * 120}px,${dy + fall}px) rotate(${r}deg) rotateX(${rx}deg)`, opacity: 0 }
+      ], { duration: 3200 + Math.random() * 1800, delay: Math.random() * 250, easing: 'cubic-bezier(.2,.6,.4,1)', fill: 'forwards' }).onfinish = () => el.remove();
+    }
   }
 
   /* Compte à rebours J H M S jusqu’au 1er moment de la formule (heure de Paris) */
@@ -959,8 +997,8 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
     $('#envSeal').innerHTML = S.seal(C.monogramme, C.cachet || 'or', C.monogrammeLettres);
     $('#envLetter').innerHTML = `${C.monogrammeImage ? `<img class="l-mono" src="${esc(C.monogrammeImage)}" alt="">` : '<span class="l-eye">Vous êtes invités</span>'}<span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-date gold">${esc(F.dates)}</span>`;
     $('#envTo').textContent = state.nom ? 'Pour ' + state.nom : 'Une lettre pour vous';
-    $('#petals').innerHTML = Array.from({ length: 16 }, () =>
-      `<i class="petal" style="left:${Math.random() * 100}%;animation-duration:${7 + Math.random() * 7}s;animation-delay:${-Math.random() * 12}s;transform:scale(${.6 + Math.random() * .7})"></i>`).join('');
+    $('#petals').innerHTML = Array.from({ length: 12 }, () =>
+      `<i class="petal" style="left:${Math.random() * 100}%;animation-duration:${10 + Math.random() * 8}s;animation-delay:${-Math.random() * 12}s;transform:scale(${.6 + Math.random() * .8}) rotate(${Math.round(Math.random() * 360)}deg)"></i>`).join('');
     let opened = false;
     const open = () => {
       if (opened) return; opened = true;
@@ -968,8 +1006,9 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
       env.classList.add('open');
       $('#openBtn').style.opacity = '0'; $('#envTo').style.opacity = '0';
       setTimeout(() => env.classList.add('flapped'), 480);
+      setTimeout(() => { const b = env.getBoundingClientRect(); petalBurst(b.left + b.width / 2, b.top + b.height * .25); }, 650);
       render();
-      setTimeout(() => { $('#envelope').classList.add('gone'); scrollTo(0, 0); sakura(); confetti(); }, 2600);
+      setTimeout(() => { $('#envelope').classList.add('gone'); scrollTo(0, 0); sakura(); }, 2600);
     };
     $('#env').addEventListener('click', open);
     $('#openBtn').addEventListener('click', open);
