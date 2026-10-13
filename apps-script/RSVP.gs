@@ -37,9 +37,12 @@ function doPost(e) {
     const ids = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues().map(r => String(r[0])) : [];
     const i = ids.indexOf(String(d.id));
     const prevModifs = i >= 0 ? Number(sh.getRange(i + 2, head.indexOf('modifs') + 1).getValue() || 0) : -1;
-    d.recu_le = new Date();
+    d.recu_le = Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd HH:mm');  // texte : lisible et triable
     d.modifs = prevModifs + 1;
-    const row = head.map(k => (d[k] === undefined || d[k] === null) ? '' : (k === 'recu_le' ? d[k] : clean_(d[k])));
+    /* colonnes non envoyées par le site (ex. « invites », « traite_modifs » remplies par l'appli
+       d'organisation) : on garde la valeur existante quand l'invité modifie sa réponse */
+    const prev = i >= 0 ? sh.getRange(i + 2, 1, 1, head.length).getValues()[0] : [];
+    const row = head.map((k, j) => (d[k] === undefined || d[k] === null) ? (i >= 0 ? prev[j] : '') : clean_(d[k]));
     if (i >= 0) sh.getRange(i + 2, 1, 1, row.length).setValues([row]);  // la même personne modifie sa réponse
     else sh.appendRow(row);
   } finally {
@@ -83,7 +86,8 @@ function sheet_() {
 /** Empêche qu'une réponse commençant par « = » soit lue comme une formule. */
 function clean_(v) {
   const s = String(v).slice(0, 2000);
-  return /^[=+\-@]/.test(s) ? "'" + s : s;
+  /* « = » (formule) ou zéro initial (téléphone, code postal) : forcé en texte */
+  return /^[=+\-@]/.test(s) || /^0\d/.test(s) ? "'" + s : s;
 }
 
 /** À lancer une fois depuis l'éditeur pour autoriser l'accès au Sheet et aux e-mails. */
