@@ -40,7 +40,7 @@ window.CONFIG = {
   rsvpUrl: 'https://script.google.com/macros/s/AKfycbyZUQbz_8mVrS9t4Ye72gvJ293jGjiQFPfdR9NfgEMMAApppThEPa96rHG0CH8RU44/exec',
 
   /* Date limite de réponse (texte libre). Vide → la ligne est masquée. */
-  repondreAvant: '01 mai 2027',
+  repondreAvant: '',
 
   /* Prix de la nuit sur place, par personne */
   prixNuit: 60,
@@ -119,11 +119,20 @@ window.CONFIG = {
      reveler: false → en grattant on découvre « Chut… pas encore ! »
      reveler: true  → en grattant on découvre les couleurs ci-dessous.   */
   codeCouleur: {
-    reveler: false,
-    texte: '',
+    reveler: true,
+    texte: 'Le blanc est réservé aux mariés. Le port du gilet est réservé au marié.',
     /* Dress code illustré (affiché une fois révélé) */
     eux: 'Costume clair',
     elles: 'Robe longue ou midi',
+    /* Illustrations réalistes (facultatif) : déposez deux PNG à fond transparent dans
+       photos/ et indiquez-les ici. Vide → dessins intégrés.
+       teinter: true  → l'image (de préférence claire : blanc / gris perle) prend la couleur
+                        de la pastille touchée, en gardant ses ombres et ses plis.
+       teinter: false → l'image s'affiche telle quelle.                                  */
+    images: { eux: 'photos/costume.png', elles: 'photos/robe.png' },
+    /* zones à colorer (le cintre doré en est exclu pour rester doré) */
+    masques: { eux: 'photos/costume-masque.png', elles: 'photos/robe-masque.png' },
+    teinter: true,
     couleurs: [
       { nom: 'Rose poudré', hex: '#f7c6d4' },
       { nom: 'Framboise',   hex: '#b4476a' },

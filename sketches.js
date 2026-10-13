@@ -167,9 +167,84 @@
     mairie: wrap('0 0 420 236', mairieW, mairie, 'Aquarelle de l’hôtel de ville de Suresnes'),
     doodle: (k) => `<svg class="sk doodle" viewBox="0 0 64 64" aria-hidden="true"><g class="ink">${doodles[k] || doodles.heart}</g></svg>`,
     seal,
-    /* tenues aquarelle pour le dress code (couleurs = celles du code couleur) */
-    suit: (c) => `<svg class="sk outfit" viewBox="0 0 100 140" aria-hidden="true"><g class="wash" filter="url(#wc)"><path d="M22 36 L50 30 L78 36 L90 112 H80 L76 70 L80 122 H20 L24 70 L20 112 H10 Z" fill="${c}" fill-opacity=".85"/><path d="M50 30 L41 70 L50 82 L59 70 Z" fill="#fff" fill-opacity=".8"/></g><g class="ink"><path d="M50 21 V15 q0 -6 6 -6 q5 0 5 5 M50 21 L18 34 H82 Z"/><path d="M22 36 L50 30 L78 36 L84 122 H16 Z M50 30 L41 70 L50 82 L59 70 Z M22 36 L10 112 H20 L26 64 M78 36 L90 112 H80 L74 64"/><path d="M47 76 l3 3 l3 -3 l-3 -3 z M50 92 v0.1 M50 102 v0.1"/></g></svg>`,
-    dress: (c) => `<svg class="sk outfit" viewBox="0 0 100 140" aria-hidden="true"><g class="wash" filter="url(#wc)"><path d="M40 40 Q50 52 60 40 L58 62 Q70 100 80 132 Q50 140 20 132 Q30 100 42 62 Z" fill="${c}" fill-opacity=".85"/></g><g class="ink"><path d="M50 21 V15 q0 -6 6 -6 q5 0 5 5 M50 21 L18 34 H82 Z"/><path d="M38 30 L40 40 M62 30 L60 40 M40 40 Q50 52 60 40 L58 62 H42 Z M42 62 Q30 100 20 132 Q50 140 80 132 Q70 100 58 62 M48 64 Q44 100 40 134 M54 64 Q60 100 64 134"/></g></svg>`,
+    /* Tenues illustrées (dress code). La couleur « c » remplit les éléments .fab ;
+       ombres et reflets sont des calques translucides, donc ils suivent toute couleur. */
+    suit: (c) => { const k = 'o' + (sealN++); return `<svg class="outfit" viewBox="0 0 120 170" aria-hidden="true">
+      <defs>
+        <linearGradient id="${k}L" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".26"/><stop offset=".35" stop-color="#000" stop-opacity=".02"/><stop offset=".8" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".08"/></linearGradient>
+        <linearGradient id="${k}R" x1="1" x2="0"><stop offset="0" stop-color="#000" stop-opacity=".3"/><stop offset=".35" stop-color="#000" stop-opacity=".04"/><stop offset=".85" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
+        <linearGradient id="${k}T" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".22" stop-color="#fff" stop-opacity="0"/><stop offset=".85" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>
+        <linearGradient id="${k}S" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".32"/><stop offset=".5" stop-color="#000" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+        <linearGradient id="${k}hg" x1="0" x2="1"><stop offset="0" stop-color="#a98035"/><stop offset=".5" stop-color="#f1d9a0"/><stop offset="1" stop-color="#a98035"/></linearGradient>
+        <filter id="${k}ds" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#5a1e37" flood-opacity=".2"/></filter>
+      </defs>
+      <!-- cintre fil doré : seul le crochet sort du col, le reste est caché dans la veste -->
+      <path d="M60 33 V15 a6 6 0 1 1 6 -6" fill="none" stroke="url(#${k}hg)" stroke-width="2.2" stroke-linecap="round"/>
+      <g filter="url(#${k}ds)">
+        <!-- col arrière (doublure) -->
+        <path class="fab" fill="${c}" d="M49 31 Q60 26.5 71 31 L69 36 Q60 32.5 51 36 Z"/>
+        <path fill="#000" fill-opacity=".38" d="M49 31 Q60 26.5 71 31 L69 36 Q60 32.5 51 36 Z"/>
+        <ellipse cx="60" cy="29.4" rx="3.2" ry="1.2" fill="#000" fill-opacity=".35"/>
+        <!-- chemise + cravate -->
+        <path fill="#fbf8f5" d="M50 31 Q60 28.5 70 31 L60 101 Z"/>
+        <path fill="#000" fill-opacity=".06" d="M60 34 L60 101 L56 70 Z"/>
+        <path fill="#fff" d="M50.5 31.5 L60 37 L56 42 Z M69.5 31.5 L60 37 L64 42 Z"/>
+        <path fill="#3a2530" d="M57.6 37.5 H62.4 L63.4 42.5 H56.6 Z"/>
+        <path fill="#3a2530" d="M56.8 42.5 H63.2 L65.5 80 L60 87 L54.5 80 Z"/>
+        <path fill="#fff" fill-opacity=".14" d="M60 42.5 H63.2 L65.5 80 L60 87 Z"/>
+        <!-- manches (derrière le buste) -->
+        <path class="fab" fill="${c}" d="M25 45 Q16.5 47 15.5 58 L12.5 128 Q18 131.5 24.5 129 L28.5 74 Z"/>
+        <path fill="url(#${k}S)" d="M25 45 Q16.5 47 15.5 58 L12.5 128 Q18 131.5 24.5 129 L28.5 74 Z"/>
+        <path class="fab" fill="${c}" d="M95 45 Q103.5 47 104.5 58 L107.5 128 Q102 131.5 95.5 129 L91.5 74 Z"/>
+        <path fill="url(#${k}S)" d="M95 45 Q103.5 47 104.5 58 L107.5 128 Q102 131.5 95.5 129 L91.5 74 Z"/>
+        <path fill="#fbf8f5" d="M13 126 Q18.5 129 24.6 127 L24.4 131 Q18 133.5 12.8 130.5 Z M107 126 Q101.5 129 95.4 127 L95.6 131 Q102 133.5 107.2 130.5 Z"/>
+        <!-- pan gauche / pan droit -->
+        <path class="fab" fill="${c}" d="M50 31 L60 101 Q58.5 133 50.5 156 Q36 159 23.5 153 Q21.5 127 23.5 101 Q26.5 88 25 74 L20.5 56 Q20 47.5 24.5 45 Z"/>
+        <path fill="url(#${k}L)" d="M50 31 L60 101 Q58.5 133 50.5 156 Q36 159 23.5 153 Q21.5 127 23.5 101 Q26.5 88 25 74 L20.5 56 Q20 47.5 24.5 45 Z"/>
+        <path class="fab" fill="${c}" d="M70 31 L60 101 Q61.5 133 69.5 156 Q84 159 96.5 153 Q98.5 127 96.5 101 Q93.5 88 95 74 L99.5 56 Q100 47.5 95.5 45 Z"/>
+        <path fill="url(#${k}R)" d="M70 31 L60 101 Q61.5 133 69.5 156 Q84 159 96.5 153 Q98.5 127 96.5 101 Q93.5 88 95 74 L99.5 56 Q100 47.5 95.5 45 Z"/>
+        <path fill="url(#${k}T)" d="M24.5 45 L50 31 L60 101 L70 31 L95.5 45 Q100 47.5 99.5 56 L96.5 101 Q98.5 127 96.5 153 Q84 159 69.5 156 Q61.5 133 60 101 Q58.5 133 50.5 156 Q36 159 23.5 153 Q21.5 127 23.5 101 L20.5 56 Q20 47.5 24.5 45 Z"/>
+        <!-- revers à cran aigu -->
+        <path class="fab" fill="${c}" d="M50 31 L44.5 34.5 L35.5 50.5 L45.5 52.5 L60 101 Z"/>
+        <path fill="#000" fill-opacity=".2" d="M50 31 L44.5 34.5 L35.5 50.5 L45.5 52.5 L60 101 Z"/>
+        <path fill="#fff" fill-opacity=".14" d="M44.5 34.5 L35.5 50.5 L40 51.4 Z"/>
+        <path class="fab" fill="${c}" d="M70 31 L75.5 34.5 L84.5 50.5 L74.5 52.5 L60 101 Z"/>
+        <path fill="#000" fill-opacity=".1" d="M70 31 L75.5 34.5 L84.5 50.5 L74.5 52.5 L60 101 Z"/>
+        <path fill="none" stroke="#000" stroke-opacity=".28" stroke-width=".8" stroke-linejoin="round" d="M44.5 34.5 L35.5 50.5 L45.5 52.5 L60 101 M75.5 34.5 L84.5 50.5 L74.5 52.5 L60 101 M42 46 L46 47.5 M78 46 L74 47.5"/>
+        <!-- coutures, pinces, poches -->
+        <path fill="none" stroke="#000" stroke-opacity=".16" stroke-width=".8" d="M34 64 Q35 92 36.5 118 M86 64 Q85 92 83.5 118 M25 74 Q24 60 21 56 M95 74 Q96 60 99 56"/>
+        <path fill="none" stroke="#fff" stroke-opacity=".25" stroke-width=".7" d="M60.6 101 Q62 133 70 155.4"/>
+        <path class="fab" fill="${c}" d="M27 117 H45 L44.6 123.5 Q36 124.6 27.2 123.5 Z M75 117 H93 L92.8 123.5 Q84 124.6 75.4 123.5 Z"/>
+        <path fill="#000" fill-opacity=".14" d="M27 117 H45 L44.6 123.5 Q36 124.6 27.2 123.5 Z M75 117 H93 L92.8 123.5 Q84 124.6 75.4 123.5 Z"/>
+        <path fill="none" stroke="#000" stroke-opacity=".3" stroke-width=".8" d="M27 117 H45 M75 117 H93"/>
+        <path fill="none" stroke="#000" stroke-opacity=".3" stroke-width=".8" d="M74 64.5 L89 63"/>
+        <path fill="#fbf8f5" d="M76 64.3 L79 58.5 L81.5 61.5 L84 57.5 L87 63.2 Z"/>
+        <path fill="#000" fill-opacity=".08" d="M81.5 61.5 L84 57.5 L87 63.2 Z"/>
+        <circle cx="59.3" cy="104" r="1.9" fill="#2a1820" fill-opacity=".8"/><circle cx="59.6" cy="117" r="1.9" fill="#2a1820" fill-opacity=".8"/>
+        <circle cx="58.8" cy="103.4" r=".6" fill="#fff" fill-opacity=".5"/><circle cx="59.1" cy="116.4" r=".6" fill="#fff" fill-opacity=".5"/>
+        <path fill="none" stroke="#000" stroke-opacity=".22" stroke-width=".7" d="M22 122 L24.5 122 M98 122 L95.5 122"/>
+      </g></svg>`; },
+    dress: (c) => { const k = 'o' + (sealN++); return `<svg class="outfit" viewBox="0 0 120 170" aria-hidden="true">
+      <defs>
+        <linearGradient id="${k}sh" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".2"/><stop offset=".22" stop-color="#000" stop-opacity="0"/><stop offset=".45" stop-color="#fff" stop-opacity=".25"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>
+        <linearGradient id="${k}fold" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity=".13"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+        <linearGradient id="${k}hg" x1="0" x2="1"><stop offset="0" stop-color="#a98035"/><stop offset=".5" stop-color="#f1d9a0"/><stop offset="1" stop-color="#a98035"/></linearGradient>
+        <filter id="${k}ds" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#5a1e37" flood-opacity=".18"/></filter>
+      </defs>
+      <path d="M60 22 V15 a6 6 0 1 1 6 -6" fill="none" stroke="url(#${k}hg)" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M60 22 L22 38 Q20 40 23 40 H97 Q100 40 98 38 Z" fill="none" stroke="url(#${k}hg)" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M44.6 41.5 Q45.5 37 47.6 39.6 L47 56 M75.4 41.5 Q74.5 37 72.4 39.6 L73 56" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" class="fab-s"/>
+      <g filter="url(#${k}ds)">
+        <path class="fab" fill="${c}" d="M46 56 Q53 52 60 58 Q67 52 74 56 L72 80 Q88 118 102 162 Q60 170 18 162 Q32 118 48 80 Z"/>
+        <path fill="url(#${k}sh)" d="M46 56 Q53 52 60 58 Q67 52 74 56 L72 80 Q88 118 102 162 Q60 170 18 162 Q32 118 48 80 Z"/>
+        <path fill="url(#${k}fold)" d="M52 82 Q43 122 32 164 L45 165 Q52 122 56 82 Z"/>
+        <path fill="url(#${k}fold)" d="M64 82 Q75 122 84 165 L97 163 Q81 120 68 82 Z"/>
+        <path fill="url(#${k}fold)" d="M58 82 Q60 124 58 167 L64 167 Q64 124 62 82 Z"/>
+        <path fill="#000" fill-opacity=".16" d="M48 78 Q60 83 72 78 L72 82 Q60 87 48 82 Z"/>
+        <path fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1" d="M49 60 Q54 57 59 61"/>
+        <path fill="none" stroke="#000" stroke-opacity=".12" stroke-width=".8" d="M60 58 V80"/>
+        <path fill="#fff" fill-opacity=".9" d="M72 79 l6 -3 l1 3 l-1 3 l-6 -2 z"/>
+      </g></svg>`; },
     /* filtres partagés : trait tremblé + lavis aquarelle */
     defs: `<svg width="0" height="0" style="position:absolute" aria-hidden="true">
       <filter id="wobble"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.6"/></filter>
