@@ -20,6 +20,12 @@ window.CONFIG = {
      et lettres seules (embossées dans les cachets). Vide → version dessinée. */
   monogrammeImage: 'photos/monogramme.png',
   monogrammeLettres: 'photos/monogramme-lettres.png',
+  /* Lettres de chaque sceau :
+       'image'            lettres calligraphiées (monogrammeLettres), sceau épuré
+       'image-couronne'   lettres calligraphiées + couronne et laurier
+       'dessin'           lettres tracées (« monogramme » ci-dessus) + couronne et laurier
+     carte (la carte qui sort de l'enveloppe) : 'image' ou 'aucun'.            */
+  sceaux: { enveloppe: 'image', carte: 'image', haut: 'dessin', bas: 'dessin' },
 
   /* Dates utilisées pour le compte à rebours (format AAAA-MM-JJ) */
   dateCivil: '2027-08-06',
@@ -152,7 +158,9 @@ window.CONFIG = {
   ],
 
   /* Pétales de cerisier qui tombent en fond (true / false) */
-  petales: true,
+  /* Pétales de cerisier : nombre de pétales à chaque endroit (0 = aucun).
+     Écrire  petales: false  pour tout couper.                              */
+  petales: { fond: 12, enveloppe: 12, ouverture: 22 },
 
   /* --- Nos escales (galerie photos) ---------------------------------- */
   photos: [

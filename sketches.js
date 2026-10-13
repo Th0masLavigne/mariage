@@ -135,12 +135,24 @@
       <feComposite in="m" in2="sl" operator="arithmetic" k2="1" k3="1"/>
     </filter>`;
   /* img (facultatif) : lettres (PNG transparent) frappées dans la cire à la place du texte */
-  function seal(mono, tone, img) {
+  /* deco : ajoute la couronne et le laurier (utilisé pour le jour J dans le calendrier) */
+  function seal(mono, tone, img, deco) {
     const k = 's' + (sealN++), T = TONES[tone] || TONES.or;
     const hex = c => [1, 3, 5].map(i => (parseInt(c.slice(i, i + 2), 16) / 255).toFixed(3));
     const [mr, mg, mb] = hex(T.mot);
     const g = String(mono || 'TL').replace(/\s/g, '').split('');
     const glyphs = g.map((c, i) => `<text x="${60 + (i - (g.length - 1) / 2) * (g.length > 2 ? 16 : 13)}" y="${c === '&' ? 70 : 74}" font-size="${c === '&' ? 20 : 38}">${c === '&' ? '&amp;' : c}</text>`).join('');
+    let orn = '';
+    if (deco) {
+      const leaf = (a, side) => {
+        const r = 31, rad = a * Math.PI / 180, x = 60 + r * Math.cos(rad), y = 60 + r * Math.sin(rad);
+        return [-1, 1].map(s => { const cx = (x + s * 2.6 * Math.cos(rad)).toFixed(1), cy = (y + s * 2.6 * Math.sin(rad)).toFixed(1); return `<ellipse cx="${cx}" cy="${cy}" rx="4.4" ry="1.7" transform="rotate(${(a + 90 + s * side * 28).toFixed(0)} ${cx} ${cy})"/>`; }).join('');
+      };
+      for (let a = 118; a <= 236; a += 13) orn += leaf(a, 1);
+      for (let a = -56; a <= 62; a += 13) orn += leaf(a, -1);
+      orn += '<path d="M49 37 L47.5 27 L53.5 31.5 L60 24 L66.5 31.5 L72.5 27 L71 37 Z"/><circle cx="47.5" cy="26" r="1.4"/><circle cx="60" cy="22.6" r="1.6"/><circle cx="72.5" cy="26" r="1.4"/><path d="M56 95 l4 -4 l4 4 l-4 4 z"/>';
+      orn = `<g class="seal-deco" fill="${T.mot}" filter="url(#${k}m)">${orn}</g>`;
+    }
     return `<svg class="wax" viewBox="0 0 120 120" aria-hidden="true">
       <defs>
         <radialGradient id="${k}g" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="${T.wax[0]}"/><stop offset=".55" stop-color="${T.wax[1]}"/><stop offset="1" stop-color="${T.wax[2]}"/></radialGradient>
@@ -161,6 +173,7 @@
         <circle cx="60" cy="60" r="43" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="4" transform="translate(-1.4 -1.6)" filter="url(#${k}i)"/>
       </g>
       <g style="filter:drop-shadow(.7px .9px .5px ${T.sh}99)">
+        ${orn}
         ${img ? `<g filter="url(#${k}m)"><image class="seal-img" href="${img}" x="31" y="31" width="58" height="58" preserveAspectRatio="xMidYMid meet" filter="url(#${k}t)"/></g>`
           : `<g filter="url(#${k}m)" fill="${T.mot}" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="600" text-anchor="middle">${glyphs}</g>`}
       </g>
