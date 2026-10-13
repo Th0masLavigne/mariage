@@ -119,7 +119,7 @@ window.CONFIG = {
      reveler: false → en grattant on découvre « Chut… pas encore ! »
      reveler: true  → en grattant on découvre les couleurs ci-dessous.   */
   codeCouleur: {
-    reveler: true,
+    reveler: false,
     texte: 'Le blanc est réservé aux mariés. Le port du gilet est réservé au marié.',
     /* Dress code illustré (affiché une fois révélé) */
     eux: 'Costume clair',
