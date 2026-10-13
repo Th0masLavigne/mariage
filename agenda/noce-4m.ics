@@ -1,0 +1,27 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Tiphaine et Thomas//Faire-part//FR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Mariage Tiphaine & Thomas
+BEGIN:VEVENT
+UID:mariage-tt-noce-4m-07@faire-part
+DTSTAMP:20261013T120000Z
+DTSTART;VALUE=DATE:20270807
+DTEND;VALUE=DATE:20270808
+SUMMARY:Mariage de Tiphaine & Thomas
+LOCATION:Église Saint-Martin d’Égreville\, 77620 Égreville
+DESCRIPTION:Cérémonie religieuse à l’église d’Égreville\, puis vin d’honneur\, dîner et soirée au Château de la Fontaine (Griselles). Horaires à venir.
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:mariage-tt-noce-4m-08@faire-part
+DTSTAMP:20261013T120000Z
+DTSTART;VALUE=DATE:20270808
+DTEND;VALUE=DATE:20270809
+SUMMARY:Brunch — mariage de Tiphaine & Thomas
+LOCATION:Château de la Fontaine\, 41 Bois le Roi\, 45210 Griselles
+DESCRIPTION:Brunch au Château de la Fontaine.
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

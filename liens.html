@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Générateur de liens</title>
+<script src="config.js"></script>
+<style>
+  :root { --paper: #f6f4ec; --ink: #26322b; --cedar: #4f6b4a; --line: #d6d0bd; --muted: #6f786d; color-scheme: light; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 system-ui, sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 18px 80px; }
+  h1 { font: italic 500 34px/1.1 Georgia, serif; margin: 0 0 6px; }
+  p { color: var(--muted); }
+  label { display: block; font-weight: 700; margin-top: 18px; }
+  select, textarea, input { width: 100%; box-sizing: border-box; font: inherit; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; margin-top: 6px; }
+  textarea { min-height: 140px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 22px; background: #fff; border-radius: 10px; overflow: hidden; }
+  td, th { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  td.u { font: 12px/1.4 ui-monospace, monospace; word-break: break-all; }
+  button { border: 0; background: var(--cedar); color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font: inherit; }
+  .tw { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Liens personnalisés</h1>
+  <p>Pour les mariés uniquement. Choisissez le faire-part, collez un nom par ligne (ex. « Mamie Jo », « Claire &amp; Paul ») : chaque lien ouvrira l’enveloppe « Pour Claire &amp; Paul ». Sans nom, le lien générique fonctionne aussi.</p>
+  <label for="base">Adresse du site</label><input id="base">
+  <label for="f">Faire-part</label><select id="f"></select>
+  <label for="names">Noms (un par ligne)</label><textarea id="names" placeholder="Mamie Jo&#10;Claire & Paul"></textarea>
+  <div class="tw"><table><thead><tr><th>Nom</th><th>Lien</th><th></th></tr></thead><tbody id="out"></tbody></table></div>
+</div>
+<script>
+  const C = window.CONFIG, $ = s => document.querySelector(s);
+  $('#base').value = location.href.replace(/liens\.html.*$/, '');
+  $('#f').innerHTML = Object.keys(C.formules).map(k => `<option value="${k}">${C.formules[k].nom}</option>`).join('');
+  function draw() {
+    const base = $('#base').value.trim(), f = $('#f').value;
+    const names = ['', ...$('#names').value.split('\n').map(s => s.trim()).filter(Boolean)];
+    $('#out').innerHTML = names.map(n => {
+      const u = base + '?f=' + encodeURIComponent(f) + (n ? '&n=' + encodeURIComponent(n) : '');
+      return `<tr><td>${n ? n.replace(/</g, '&lt;') : '<i>lien générique</i>'}</td><td class="u">${u.replace(/</g, '&lt;')}</td><td><button data-u="${u.replace(/"/g, '&quot;')}">Copier</button></td></tr>`;
+    }).join('');
+  }
+  document.addEventListener('input', draw);
+  $('#out').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    navigator.clipboard.writeText(b.dataset.u).then(() => { b.textContent = 'Copié'; setTimeout(() => b.textContent = 'Copier', 1200); }, () => {});
+  });
+  draw();
+</script>
+</body>
+</html>
