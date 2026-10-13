@@ -334,6 +334,14 @@ h2 { font: italic 500 clamp(34px, 6vw, 46px)/1.05 var(--f-display); margin: 8px 
 .chk { display: flex; gap: 12px; align-items: center; padding: 11px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--paper); cursor: pointer; }
 .chk input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
 .chk small { color: var(--muted); margin-left: auto; font: 500 12px/1 var(--f-mono); text-align: right; }
+.coords { margin-top: 24px; padding-top: 18px; border-top: 1.5px dashed var(--line); }
+.coords h3 { font: italic 600 24px/1.1 var(--f-display); margin: 0; }
+.coords p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+.fld input[type=tel] { width: 100%; border: 1.5px solid var(--line); border-radius: 12px; background: var(--paper); padding: 12px 14px; font-size: 16px; }
+.fld input[type=tel]:focus { border-color: var(--accent); outline: none; }
+.row3 { display: grid; grid-template-columns: 7.5em 1fr 1fr; gap: 0 12px; }
+.row3 .fld { min-width: 0; }
+@media (max-width: 480px) { .row3 { grid-template-columns: 7em 1fr; } .row3 .fld:last-child { grid-column: 1 / -1; } }
 .sleep { margin-top: 22px; border: 1.5px dashed var(--peach); border-radius: 16px; padding: 18px; background: rgba(227,154,111,.08); }
 .sleep h3 { font: italic 600 24px/1.1 var(--f-display); margin: 0; }
 .sleep p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
@@ -716,13 +724,27 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
   }
 
   /* ---------------- RSVP ---------------- */
+  /* Coordonnées : faire-part papier et contact en cas d'imprévu */
+  const coordsHtml = R => `
+          <div class="coords">
+            <h3>Vos coordonnées</h3>
+            <p>Pour vous envoyer le faire-part papier et vous joindre en cas d’imprévu.</p>
+            <label class="fld"><span>Téléphone</span><input id="telephone" type="tel" inputmode="tel" value="${esc(R.telephone)}" placeholder="06 12 34 56 78" autocomplete="tel"></label>
+            <label class="fld"><span>Adresse postale</span><input id="adresse" type="text" value="${esc(R.adresse)}" placeholder="12 rue des Lilas, bât. B" autocomplete="street-address"></label>
+            <div class="row3">
+              <label class="fld"><span>Code postal</span><input id="cp" type="text" inputmode="numeric" value="${esc(R.cp)}" autocomplete="postal-code"></label>
+              <label class="fld"><span>Ville</span><input id="ville" type="text" value="${esc(R.ville)}" autocomplete="address-level2"></label>
+              <label class="fld"><span>Pays</span><input id="pays" type="text" value="${esc(R.pays)}" autocomplete="country-name"></label>
+            </div>
+          </div>`;
+
   function renderRSVP(F) {
     const box = $('#rsvpBox');
     const prev = store.get('rsvp.' + state.code);
     if (prev && !box.dataset.edit) return renderDone(F, prev, true);
     const R = prev ? Object.assign({}, prev) : {
       presence: '', nom: state.nom, adultes: 1, enfants: 0, moments: F.moments.slice(), regime: '', couchage: false,
-      nuits: F.nuits.map(n => n.id), nb_couchage: 1, partage: false, chanson: '', message: '', email: ''
+      nuits: F.nuits.map(n => n.id), nb_couchage: 1, partage: false, chanson: '', message: '', email: '', telephone: '', adresse: '', cp: '', ville: '', pays: 'France'
     };
     let tries = 0;
 
@@ -788,6 +810,8 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
       if (R.presence === 'Non') {
         d.innerHTML = `<div class="more">
           <label class="fld"><span>Un petit mot pour nous ?</span><textarea id="message" placeholder="Nous penserons fort à vous…">${esc(R.message)}</textarea></label>
+          <label class="fld"><span>E-mail</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
+          ${coordsHtml(R)}
           <button class="submit" type="submit">Envoyer ma réponse</button></div>`;
       } else {
         const multi = F.moments.length > 2;
@@ -813,6 +837,7 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
           <label class="fld"><span>La chanson qui vous fera danser</span><input id="chanson" type="text" value="${esc(R.chanson)}" placeholder="Titre – artiste"></label>
           <label class="fld"><span>Un mot pour les mariés</span><textarea id="message" placeholder="Conseils, blagues, déclarations…">${esc(R.message)}</textarea></label>
           <label class="fld"><span>E-mail (pour recevoir les infos à venir)</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
+          ${coordsHtml(R)}
           <button class="submit" type="submit">Confirmer notre venue</button></div>`;
         d.querySelectorAll('.stepper').forEach(st => st.addEventListener('click', e => {
           const btn = e.target.closest('button'); if (!btn) return;
@@ -845,7 +870,7 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
       e.preventDefault();
       const err = $('#err'); err.textContent = '';
       R.nom = $('#nom').value.trim();
-      ['regime', 'chanson', 'message', 'email'].forEach(k => { const el = $('#' + k); if (el) R[k] = el.value.trim(); });
+      ['regime', 'chanson', 'message', 'email', 'telephone', 'adresse', 'cp', 'ville', 'pays'].forEach(k => { const el = $('#' + k); if (el) R[k] = el.value.trim(); });
       const p = $('#partage'); if (p) R.partage = p.checked;
       readChecks();
       if (!R.nom) { err.textContent = 'Indiquez vos prénoms et noms pour qu’on sache qui répond.'; $('#nom').focus(); return; }
@@ -866,7 +891,8 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
         nb_couchage: oui && R.couchage ? R.nb_couchage : 0,
         partage: oui && R.couchage ? (R.partage ? 'Oui' : 'Non') : '',
         estimation_eur: oui && R.couchage ? R.nuits.length * R.nb_couchage * C.prixNuit : 0,
-        regime: oui ? R.regime : '', chanson: oui ? R.chanson : '', message: R.message, email: R.email
+        regime: oui ? R.regime : '', chanson: oui ? R.chanson : '', message: R.message, email: R.email,
+        telephone: R.telephone, adresse: R.adresse, cp: R.cp, ville: R.ville, pays: R.pays
       };
       try {
         if (DEMO) await new Promise(r => setTimeout(r, 700));

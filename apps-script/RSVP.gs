@@ -16,7 +16,7 @@ const NOTIFY = 'lavignethomas@hotmail.fr, tiphaine.thomas91@gmail.com';
 const SHEET = 'RSVP';
 const COLS = ['id', 'recu_le', 'formule', 'nom', 'presence', 'adultes', 'enfants', 'moments',
   'couchage', 'nuits', 'nb_couchage', 'partage', 'estimation_eur', 'regime', 'chanson',
-  'message', 'email', 'lien_nom', 'code', 'modifs'];
+  'message', 'email', 'telephone', 'adresse', 'cp', 'ville', 'pays', 'lien_nom', 'code', 'modifs'];
 
 function doGet() {
   return ContentService.createTextOutput('RSVP en ligne ✔');
@@ -56,7 +56,9 @@ function doPost(e) {
       d.regime ? 'Régime : ' + d.regime : '',
       d.chanson ? 'Chanson : ' + d.chanson : '',
       d.message ? '\nMessage :\n' + d.message : '',
-      d.email ? '\nE-mail : ' + d.email : ''
+      d.email ? '\nE-mail : ' + d.email : '',
+      d.telephone ? 'Téléphone : ' + d.telephone : '',
+      (d.adresse || d.ville) ? 'Adresse : ' + [d.adresse, [d.cp, d.ville].filter(String).join(' '), d.pays].filter(String).join(', ') : ''
     ].filter(String);
     try { MailApp.sendEmail(NOTIFY, 'RSVP mariage : ' + d.nom + ' — ' + d.presence, lignes.join('\n')); } catch (x) {}
   }
