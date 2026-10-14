@@ -422,7 +422,8 @@ window.CONFIG = {
          Pour activer un exemple : retirez les // en début de ligne et remplacez les valeurs. */
       personnes: [
         // { nom: 'Claire Martin', role: 'Témoin de Tiphaine', tel: '06 12 34 56 78', email: 'claire@exemple.fr' },
-        // { nom: 'Paul Durand',   role: 'Témoin de Thomas',   tel: '06 98 76 54 32' },
+        { nom: 'Bastien Sauty',   role: 'Témoin de Thomas',   tel: '06 XX XX XX XX', email: 'bastien@exemple.fr' },
+        { nom: 'Antoine Perney',   role: 'Témoin de Thomas',   tel: '06 XX XX XX XX', email: 'antoine@exemple.fr' },
       ]
     },
 
