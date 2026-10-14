@@ -42,6 +42,9 @@ window.CONFIG = {
   filigrane: true,
   ornements: { branche: 'photos/branche.png', ruban: 'photos/ruban.png' },
 
+  /* Durée d’un aller-retour du reflet doré, en secondes (plus grand = plus lent et plus léger) */
+  refletSecondes: 12,
+
   /* Phrase sous la grande date ('' pour la masquer) */
   phraseDate: 'Une date à garder précieusement.',
 
@@ -150,6 +153,8 @@ window.CONFIG = {
     /* sous-titre en mode balade (ex. « Tenue de cocktail chic ») */
     tenue: 'Chic, mais comme vous êtes',
     reveler: false,
+    /* couleurs de la robe et du costume du couple (mode balade) */
+    couleursBalade: { robe: '#c98d97', costume: '#6c7a99' },
     texte: [
       'Pas de gilet pour ces messieurs : il est réservé au marié.',
       'Le blanc et les tons clairs apparentés sont réservés aux mariés.'
@@ -183,9 +188,10 @@ window.CONFIG = {
   },
 
   /* --- « Plus d’infos très bientôt » (cartes à retourner) -------------
-     texte vide → « Chut… bientôt ». Remplissez « texte » quand c’est prêt. */
+     accroche : la phrase principale. texte vide → texte par défaut.
+     lien vide → tampon « Bientôt » ; renseignez lien quand la liste est prête. */
   bientot: [
-    { titre: 'Liste de mariage', texte: '', lien: '' }
+    { accroche: 'Votre présence est notre plus beau cadeau.', titre: 'Liste de mariage', texte: '', lien: '' }
   ],
 
   /* Pétales de cerisier qui tombent en fond (true / false) */

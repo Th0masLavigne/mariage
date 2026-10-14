@@ -44,8 +44,8 @@
   --f-hand: 'Parisienne', 'Snell Roundhand', 'Apple Chancery', cursive;
   --r: 6px;
   --dc-robe: #c98d97; --dc-costume: #6c7a99;
-  --fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.03 .8' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .4 -.14'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
-  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .22 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --fibre: url("photos/fibres.png") 0 0 / 260px 260px;
+  --noise: url("photos/grain-carte.png") 0 0 / 200px 200px;
   color-scheme: light;
 }
 
@@ -64,15 +64,12 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; color: var(--ink); font: 17.5px/1.6 var(--f-body);
   background-color: var(--paper);
-  /* papier : grain doux (le filigrane de monogrammes est dans body::before) */
+  /* papier : grain doux (le filigrane de monogrammes est ajouté en tuile par le script) */
   background-image:
     radial-gradient(120% 90% at 50% 30%, var(--card) 0%, var(--paper) 60%, var(--paper-2) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .28 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    url("photos/grain-fond.png");
+  background-size: auto, 220px 220px;
 }
-html.filigrane body::before { content: ''; position: fixed; inset: -60px; z-index: 0; pointer-events: none; background: var(--accent); opacity: .06;
-  -webkit-mask: var(--fil) 0 0 / 120px auto repeat, var(--fil) 60px 84px / 120px auto repeat; mask: var(--fil) 0 0 / 120px auto repeat, var(--fil) 60px 84px / 120px auto repeat;
-  -webkit-mask-composite: source-over; mask-composite: add; transform: rotate(-8deg); }
-body { background-attachment: fixed; }
 img { max-width: 100%; display: block; }
 a { color: var(--accent); text-underline-offset: 3px; }
 button, input, textarea, select { font: inherit; color: inherit; }
@@ -176,9 +173,10 @@ h2 { font: italic 400 clamp(32px, 6.4vw, 46px)/1.08 var(--f-display); margin: 10
 .gold {
   background: linear-gradient(100deg, #8a6424 0%, #c9a24a 18%, #fff1bf 32%, #d4ad55 46%, #9b7330 60%, #e9cd84 76%, #fff6d6 86%, #a98035 100%) 0 0 / 250% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
-  animation: foil 5s ease-in-out infinite; filter: drop-shadow(0 1px 0 rgba(120,80,20,.25));
+  animation: foil var(--reflet, 12s) ease-in-out infinite; filter: drop-shadow(0 1px 0 rgba(120,80,20,.25));
 }
-@keyframes foil { 50% { background-position: 100% 0; } }
+/* reflet : passage lent, puis pause immobile (rien n'est redessiné pendant la pause) */
+@keyframes foil { 0%, 15% { background-position: 0 0; } 50%, 65% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 .hero-seal { width: 78px; margin: 0 auto 16px; transform: rotate(-8deg); }
 .foot-seal { width: 64px; margin: 0 auto 12px; transform: rotate(6deg); }
 .hero-mono { display: block; width: min(250px, 62vw); height: auto; margin: -8px auto 4px; }
@@ -454,13 +452,14 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .orn-img { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 8px rgba(var(--shade-rgb),.16)); }
 .deco.sprig-tl.img { width: clamp(150px, 46vw, 230px); left: -34px; top: -40px; transform: none; }
 .deco.ribbon-tr.img { width: clamp(58px, 16vw, 80px); right: -34px; top: -40px; transform: rotate(14deg); z-index: -1; }
-.gate .sprig-env.img { width: 70%; left: -16%; top: -12%; transform: none; }
+.gate .sprig-env.img { width: 58%; left: -15%; top: -5%; transform: none; }
+.env-to { position: relative; z-index: 6; margin-bottom: 8px; }
 .gate .ribbon-env.img { width: 30%; right: -19%; bottom: -3%; transform: rotate(-12deg); z-index: -1; }
 
 /* --- Enveloppe à volets --- */
 #envelope { background: radial-gradient(120% 90% at 50% 30%, var(--card) 0%, var(--paper) 60%, var(--paper-2) 100%); animation: none; }
 #envelope::before { content: ''; position: absolute; inset: 0; background: var(--noise); pointer-events: none; }
-#envelope.filigrane::after { content: ''; position: absolute; inset: -60px; pointer-events: none; background: var(--accent); opacity: .06; -webkit-mask: var(--fil) 0 0 / 120px auto repeat, var(--fil) 60px 84px / 120px auto repeat; mask: var(--fil) 0 0 / 120px auto repeat, var(--fil) 60px 84px / 120px auto repeat; transform: rotate(-8deg); }
+#envelope.filigrane::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: var(--fil-tile) 0 0 / 120px 168px repeat; }
 .env-to { font: 400 38px/1.1 var(--f-hand); color: var(--blue-d); }
 .gate { position: relative; width: min(74vw, 340px); aspect-ratio: 5 / 7; perspective: 1500px; border: 0; padding: 0; background: none; cursor: pointer; transition: transform 1s cubic-bezier(.3,.7,.2,1) 1.2s; }
 .gate > * { position: absolute; }
@@ -481,6 +480,14 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .door .face::after, .g-base::after { content: ''; position: absolute; inset: 7px; z-index: -1; border: 1.3px solid transparent; border-image: linear-gradient(130deg, #8a6424, #e9cd84 25%, #fff3c8 40%, #b48a3c 60%, #f0d690 80%, #8a6424) 1; filter: url(#torn); opacity: .9; pointer-events: none; }
 .door.l .face::after { right: 3px; } .door.r .face::after { left: 3px; }
 .g-base { inset: 0; z-index: 0; isolation: isolate; }
+.door, .g-base, .gate .seal { will-change: transform; }
+/* Enveloppe vieux rose : papier, bords et liseré pré-calculés en images (beaucoup plus fluide sur téléphone) */
+.pal-rose .door.l .face::before { inset: -6.303% -17.647%; background: url("photos/volet-g.webp") 0 0 / 100% 100% no-repeat; filter: none; }
+.pal-rose .door.r .face::before { inset: -6.303% -17.647%; background: url("photos/volet-d.webp") 0 0 / 100% 100% no-repeat; filter: none; }
+.pal-rose .g-base::before { inset: -6.303% -8.824%; background: url("photos/fond-carte.webp") 0 0 / 100% 100% no-repeat; filter: none; }
+.pal-rose .door .face::after, .pal-rose .g-base::after { display: none; }
+
+#app.paused, #app.paused * { animation-play-state: paused !important; }
 .g-base::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--fibre), radial-gradient(90% 70% at 50% 50%, rgba(255,255,255,.18), rgba(0,0,0,.05)), var(--base) var(--noise); filter: url(#deckle) drop-shadow(0 18px 30px rgba(var(--shade-rgb),.22)); }
 .g-base::after { inset: 6px; }
 .gate .g-inner { inset: 6% 7%; z-index: 1; }
@@ -537,9 +544,9 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
   background: var(--noise), linear-gradient(100deg, #8a6424 0%, #c9a24a 16%, #fff1bf 30%, #d4ad55 44%, #9b7330 58%, #e9cd84 74%, #fff6d6 84%, #a98035 100%);
   background-size: 120px 120px, 260% 100%; background-position: 0 0, 0 0;
   -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
-  animation: foil2 6s ease-in-out infinite; filter: drop-shadow(0 1px 0 rgba(255,255,255,.7)) drop-shadow(0 2px 2px rgba(110,80,20,.25));
+  animation: foil2 var(--reflet, 12s) ease-in-out infinite; filter: drop-shadow(0 1px 0 rgba(255,255,255,.7)) drop-shadow(0 2px 2px rgba(110,80,20,.25));
 }
-@keyframes foil2 { 50% { background-position: 0 0, 100% 0; } }
+@keyframes foil2 { 0%, 15% { background-position: 0 0, 0 0; } 50%, 65% { background-position: 0 0, 100% 0; } 100% { background-position: 0 0, 0 0; } }
 .gold { background: var(--noise), linear-gradient(100deg, #8a6424 0%, #c9a24a 18%, #fff1bf 32%, #d4ad55 46%, #9b7330 60%, #e9cd84 76%, #fff6d6 86%, #a98035 100%); background-size: 120px 120px, 250% 100%; -webkit-background-clip: text; background-clip: text; }
 .phrase { font: italic 400 clamp(26px, 6vw, 36px)/1.15 var(--f-display); color: var(--blue); margin: 20px auto 30px; max-width: 16ch; text-wrap: balance; }
 
@@ -581,6 +588,16 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .tl-body .where a { color: var(--muted); }
 .tl-body p { margin: 4px 0 0; color: #55516a; font-size: 16px; }
 .tl-body .doodle { width: 34px; height: 34px; float: right; margin: -4px 0 0 8px; opacity: .8; }
+
+
+/* --- Programme : organisation par jour (dessin, titre sur une ligne, heure et lieu) --- */
+.prog { text-align: left; padding: 34px 26px 30px; }
+.prog .day-h { color: var(--rose); letter-spacing: .26em; }
+.prog .moment h3 { font: italic 400 25px/1.15 var(--f-display); color: var(--blue); white-space: nowrap; }
+.prog .moment .meta a { color: var(--muted); }
+.prog .moment p { color: #55516a; }
+.prog .moment .doodle-wrap { background: var(--blue-soft); }
+@media (max-width: 480px) { .prog { padding: 30px 18px 26px; } }
 
 /* --- Lieux --- */
 .places { gap: 30px; }
@@ -643,7 +660,10 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 .couple .ink { stroke-width: 1.35; }
 .sk.couple.draw.on path { animation-duration: 1.3s; animation-delay: calc(var(--i, 0) * 28ms); }
 .couple .ground { fill: var(--blue-soft); opacity: .7; }
-.couple .wash { stroke: none; opacity: 1 !important; mix-blend-mode: normal; }
+.couple .wash { stroke: none; opacity: 1; mix-blend-mode: normal; }
+/* couleurs : apparaissent une fois le dessin terminé */
+.sk.couple.draw .wash { opacity: 0; transition: opacity 1.4s ease 2.6s; }
+.sk.couple.draw.on .wash { opacity: 1; }
 .couple .wash.robe { fill: var(--dc-robe); fill-opacity: .78; }
 .couple .wash.costume { fill: var(--dc-costume); fill-opacity: .72; }
 .couple .leg, .couple .skirt, .couple .arm-w, .couple .arm-m, .couple .w-body, .couple .m-body { transform-box: fill-box; }
@@ -672,6 +692,14 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 .stay-note { margin: 12px auto 0; max-width: 36ch; font-size: 14.5px; color: var(--muted); font-style: italic; }
 .stay .go { display: inline-block; margin-top: 20px; padding: 11px 18px; border-radius: 99px; background: var(--blue); color: #fff; text-decoration: none; font: 500 14px/1 var(--f-body); letter-spacing: .06em; box-shadow: 0 8px 18px rgba(var(--accent-rgb),.25); }
 
+
+/* ---- Fluidité : les éléments animés ont leur propre calque, pour ne pas redessiner
+   les cartes en papier déchiré (filtres coûteux) à chaque image ---- */
+.names .w, .names .amp, .pen, .dc-walk, .cd-cell b, .bigdate .num, #sakura i, .petal, .soon { will-change: transform; }
+.cd-cell b { display: block; }
+/* reflets dorés continus, mais chacun sur son propre calque (seul le texte doré est redessiné) */
+.gold, .foil { will-change: transform; transform: translateZ(0); }
+.btn-open { animation-iteration-count: 4; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -711,13 +739,32 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   const H = C.hebergement || {};
   /* ornements : image (config.ornements) ou dessin intégré */
   if (DC.couleursBalade) { const cb = DC.couleursBalade; if (cb.robe) document.documentElement.style.setProperty('--dc-robe', cb.robe); if (cb.costume) document.documentElement.style.setProperty('--dc-costume', cb.costume); }
+  if (C.refletSecondes) document.documentElement.style.setProperty('--reflet', (+C.refletSecondes || 12) + 's');
   const ORN = C.ornements || {};
   const orn = k => ORN[k] ? `<img class="orn-img" src="${esc(ORN[k])}" alt="">` : (k === 'branche' ? S.sprig() : S.ribbon());
   const ornCls = k => ORN[k] ? ' img' : '';
   if (C.palette !== 'bleu') document.documentElement.classList.add('pal-rose');
+  /* filigrane : une petite tuile (monogrammes décalés et inclinés) dessinée une seule fois puis répétée en fond.
+     (Un calque masqué plein écran recalculé à chaque image faisait saccader les animations.) */
   if (C.filigrane !== false && C.monogrammeLettres) {
-    document.documentElement.style.setProperty('--fil', `url('${C.monogrammeLettres}')`);
-    document.documentElement.classList.add('filigrane'); const ev = document.getElementById('envelope'); if (ev) ev.classList.add('filigrane');
+    const im = new Image();
+    im.onload = () => {
+      try {
+        const k = 2, W = 120 * k, Hh = 168 * k, cv = document.createElement('canvas'); cv.width = W; cv.height = Hh;
+        const g = cv.getContext('2d'), w = 92 * k, h = w * im.height / im.width;
+        const col = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#9a5866';
+        [[0, 0], [W, 0], [0, Hh], [W, Hh], [W / 2, Hh / 2]].forEach(([x, y]) => { g.save(); g.translate(x, y); g.rotate(-8 * Math.PI / 180); g.drawImage(im, -w / 2, -h / 2, w, h); g.restore(); });
+        g.globalCompositeOperation = 'source-in'; g.fillStyle = col; g.fillRect(0, 0, W, Hh);
+        const t = document.createElement('canvas'); t.width = W; t.height = Hh; const g2 = t.getContext('2d'); g2.globalAlpha = .065; g2.drawImage(cv, 0, 0);
+        const url = `url(${t.toDataURL('image/png')})`;
+        document.documentElement.style.setProperty('--fil-tile', url);
+        const bs = getComputedStyle(document.body);
+        document.body.style.backgroundImage = url + ', ' + bs.backgroundImage;
+        document.body.style.backgroundSize = '120px 168px, ' + bs.backgroundSize;
+        const ev = document.getElementById('envelope'); if (ev) ev.classList.add('filigrane');
+      } catch (e) {}
+    };
+    im.src = C.monogrammeLettres;
   }
   /* texte du dress code : une phrase ou une liste de phrases */
   const dcText = () => { const t = DC.texte; if (!t || !t.length) return ''; return Array.isArray(t) ? `<ul class="dc-rules">${t.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : `<p>${esc(t)}</p>`; };
@@ -927,15 +974,15 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     <section id="programme">
       <div class="eyebrow">Le programme</div>
       <h2>Notre week‑end, avec vous</h2>
-      <div class="paper alt" style="--tilt:.5deg"><span class="in-border"></span><div class="timeline">
-      ${days.map(d => `<div class="tl-day">${esc(d.jour)}</div>${d.items.map(k => {
-        const m = C.moments[k], L = C.lieux[m.lieu], hm = String(m.heure || '').match(/(\d{1,2})\D?(\d{2})?/);
-        return `<div class="tl-item"><div class="tl-time">${hm ? `${hm[1]}:${hm[2] || '00'}` : '<small>horaire<br>à venir</small>'}</div><div class="tl-dot"></div><div class="tl-body">
-          ${S.doodle(m.dessin)}<h3>${esc(m.titre)}</h3>
-          <div class="where"><a href="${esc(L.maps)}" target="_blank" rel="noopener">${esc(L.nom)}</a></div>
+      <div class="paper alt prog" style="--tilt:.5deg"><span class="in-border"></span>
+      ${days.map(d => `<div class="day"><div class="day-h">${esc(d.jour)}</div>${d.items.map(k => {
+        const m = C.moments[k], L = C.lieux[m.lieu];
+        return `<div class="moment"><div class="doodle-wrap">${S.doodle(m.dessin)}</div><div class="body">
+          <h3>${esc(m.titre)}</h3>
+          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon('horaire à venir')}<a href="${esc(L.maps)}" target="_blank" rel="noopener">${esc(L.nom)}</a></div>
           ${m.texte ? `<p>${esc(m.texte)}</p>` : ''}</div></div>`;
-      }).join('')}`).join('')}
-      </div></div>
+      }).join('')}</div>`).join('')}
+      </div>
     </section>
 
     ${rule()}
@@ -1031,11 +1078,24 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     </footer>`;
 
     prepDraw();
+    fitTitles();
     stampSeal();
     startCountdown(F);
     scratch();
     renderRSVP(F);
   }
+
+
+  /* titres du programme : toujours sur une seule ligne (la taille s'ajuste) */
+  function fitTitles() {
+    document.querySelectorAll('.prog .moment h3').forEach(h => {
+      h.style.fontSize = '';
+      let f = parseFloat(getComputedStyle(h).fontSize);
+      while (h.scrollWidth > h.clientWidth && f > 13) { f -= .5; h.style.fontSize = f + 'px'; }
+    });
+  }
+  window.addEventListener('resize', () => fitTitles());
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitTitles());
 
   /* ---------------- zone à gratter ---------------- */
   /* Tenue : image (si fournie dans config) ou dessin intégré.
@@ -1345,12 +1405,17 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const F = C.formules[state.code];
     $('#envSeal').innerHTML = sealAt('enveloppe');
     $('#envLetter').innerHTML = `${C.monogrammeLettres && ((C.sceaux || {}).carte || 'image') === 'image' ? `<img class="l-mono" src="${esc(C.monogrammeLettres)}" alt="">` : ''}<span class="l-eye">Vous êtes invités</span><span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-date gold">${esc(F.dates)}</span>`;
-    $('#doorL').innerHTML = S.branch(false); $('#doorR').innerHTML = S.branch(false);
+    const br = C.palette !== 'bleu' ? '<img class="branch" src="photos/branche-or.webp" alt="">' : S.branch(false);
+    $('#doorL').innerHTML = br; $('#doorR').innerHTML = br;
     $('#envSprig').innerHTML = orn('branche'); $('#envSprig').className = 'sprig-env' + ornCls('branche'); $('#envRibbon').innerHTML = orn('ruban'); $('#envRibbon').className = 'ribbon-env' + ornCls('ruban');
     $('#envTo').textContent = state.nom ? 'Pour ' + state.nom : 'Une lettre pour vous';
     $('#petals').innerHTML = Array.from({ length: PET('enveloppe') }, () =>
       `<i class="petal" style="left:${Math.random() * 100}%;animation-duration:${10 + Math.random() * 8}s;animation-delay:${-Math.random() * 12}s;transform:scale(${.6 + Math.random() * .8}) rotate(${Math.round(Math.random() * 360)}deg)"></i>`).join('');
-    let opened = false;
+    let opened = false, ready = false;
+    /* la page est construite derrière l'enveloppe pendant qu'on la regarde, animations en pause :
+       le clic n'a plus qu'à ouvrir les volets (sinon l'ouverture saccade) */
+    const prep = () => { if (ready || opened) return; ready = true; NAME_DELAY = 2.9; $('#app').classList.add('paused'); render(); };
+    setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(prep, { timeout: 1500 }) : prep()), 700);
     const open = () => {
       if (opened) return; opened = true; NAME_DELAY = 2.9;
       const env = $('#env');
@@ -1358,7 +1423,9 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       $('#openBtn').style.opacity = '0'; $('#envTo').style.opacity = '0';
       setTimeout(() => env.classList.add('flapped'), 480);
       setTimeout(() => { const b = env.getBoundingClientRect(); petalBurst(b.left + b.width / 2, b.top + b.height * .45); }, 1000);
-      render();
+      if (!ready) { ready = true; render(); }
+      $('#app').classList.remove('paused');
+      fitTitles(); setTimeout(fitTitles, 3100);
       setTimeout(() => { $('#envelope').classList.add('gone'); scrollTo(0, 0); sakura(); }, 3000);
     };
     $('#env').addEventListener('click', open);

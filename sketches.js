@@ -304,13 +304,13 @@
       <g class="m-body">
         <g class="leg l"><g class="ink">${j(M.l)}</g></g>
         <g class="leg r"><g class="ink">${j(M.r)}</g></g>
-        <path class="wash" fill-opacity=".2" fill="var(--blue)" d="M121 54 C121 74 122 88 124 98 C124 108 123 118 123 128 C128 131 133 129 137 124 C141 130 150 132 156 128 C156 118 155 108 155 98 C157 88 158 74 158 54 C157 46 151 44 143.5 43 L136 43 C128 44 122 46 121 54 Z"/>
+        <path class="wash costume" d="M121 54 C121 74 122 88 124 98 C124 108 123 118 123 128 C128 131 133 129 137 124 C141 130 150 132 156 128 C156 118 155 108 155 98 C157 88 158 74 158 54 C157 46 151 44 143.5 43 L136 43 C128 44 122 46 121 54 Z"/>
         <g class="ink">${j(M.body)}</g>
         <g class="arm-m"><g class="ink">${j(M.arm)}</g></g>
       </g>
       <g class="w-body">
-        <g class="skirt"><path class="wash" fill-opacity=".28" fill="var(--rose)" d="M66 90 C62 110 58 130 56 150 C52 190 46 230 38 278 C48 284 58 279 68 285 C78 290 92 284 102 280 C106 278 110 276 112 274 C102 230 94 190 88 150 C86 130 83 110 79 90 Z"/><g class="ink">${j(W.skirt)}</g></g>
-        <path class="wash" fill-opacity=".28" fill="var(--rose)" d="M61 62 C65 59 68 63 72.5 61 C77 63 80 59 84 62 C83 72 81 80 79 90 L66 90 C64 80 62 72 61 62 Z"/>
+        <g class="skirt"><path class="wash robe" d="M66 90 C62 110 58 130 56 150 C52 190 46 230 38 278 C48 284 58 279 68 285 C78 290 92 284 102 280 C106 278 110 276 112 274 C102 230 94 190 88 150 C86 130 83 110 79 90 Z"/><g class="ink">${j(W.skirt)}</g></g>
+        <path class="wash robe" d="M61 62 C65 59 68 63 72.5 61 C77 63 80 59 84 62 C83 72 81 80 79 90 L66 90 C64 80 62 72 61 62 Z"/>
         <g class="ink">${j(W.body)}</g>
         <g class="arm-w"><g class="ink">${j(W.arm)}</g></g>
       </g>
