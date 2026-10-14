@@ -625,7 +625,11 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .finale .meta { margin-top: 10px; font: 500 12px/1.4 var(--f-display); letter-spacing: .34em; text-transform: uppercase; opacity: .9; }
 footer { padding-top: 40px; }
 footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
-.site-link { display: inline-block; margin-top: 18px; padding: 11px 20px; border: 1.5px solid var(--line); border-radius: 99px; background: rgba(255,255,255,.7); color: var(--accent); text-decoration: none; font: 500 12.5px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; }
+.site-link { display: inline-block; margin-top: 18px; padding: 13px 22px; border-radius: 99px; position: relative; overflow: hidden; text-decoration: none;
+  background: linear-gradient(180deg, #FDFBF7 0%, #F3EFE6 100%); color: #1E2D4A; border: 1px solid #C5A059; outline: 1px solid rgba(197,160,89,.45); outline-offset: -4px;
+  box-shadow: 0 6px 20px rgba(30,45,74,.12); font: 500 12.5px/1.3 var(--f-display); letter-spacing: .14em; text-transform: uppercase; }
+.site-link::after { content: ''; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%; background: linear-gradient(100deg, transparent, rgba(255,240,200,.75), transparent); transform: skewX(-20deg); transition: left .7s ease; pointer-events: none; }
+.site-link:hover::after { left: 120%; }
 .demo-bar { font: 500 13px/1 var(--f-body); }
 @media (max-width: 480px) {
   .tl-item { grid-template-columns: 56px 20px 1fr; gap: 0 8px; }

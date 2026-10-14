@@ -163,7 +163,14 @@ section > .grid.places { text-align: center; }
 .place .art { height: 150px; display: grid; place-items: center; }
 .place .art img { max-height: 150px; width: auto; }
 .place h3 { margin-top: 12px; }
-.addr { color: var(--muted); font-size: 15px; }
+.addr { color: var(--muted); font-size: 15px; line-height: 1.35; }
+/* cartes côte à côte (lieux, adresses, témoins) : titres, textes et boutons alignés d’une carte à l’autre */
+.grid.aligned { row-gap: 0; align-items: stretch; }
+.grid.aligned > * { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 6px; align-content: start; margin-bottom: 30px; }
+.grid.aligned > * > .links { align-self: end; margin-top: 6px; }
+.grid.aligned > * > h3 { align-self: end; }
+@supports not (grid-template-rows: subgrid) { .grid.aligned > * { grid-template-rows: auto auto 1fr auto; } }
+.temoin .coords { font-size: 15.5px; color: #55516a; line-height: 1.45; user-select: all; }
 .links { display: flex; justify-content: center; gap: 14px; margin-top: 8px; font: 500 12px/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; }
 
 /* lignes d’infos (venir, contacts) */
@@ -261,6 +268,34 @@ footer .seal { width: 60px; transform: rotate(6deg); }
 footer .sig { font: 400 40px/1.1 var(--f-hand); margin-top: 6px; }
 footer .links { margin-top: 18px; flex-wrap: wrap; }
 
+/* ---------- Boutons « haute papeterie » : mêmes que le faire-part
+   (ivoire, bordure dorée, filet intérieur, bleu nuit, reflet au survol) ---------- */
+.btn, .links a, .site-link {
+  position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: linear-gradient(180deg, #FDFBF7 0%, #F3EFE6 100%); color: #1E2D4A; border: 1px solid #C5A059;
+  outline: 1px solid rgba(197,160,89,.45); outline-offset: -4px; box-shadow: 0 6px 20px rgba(30,45,74,.12);
+  font: 500 13px/1 var(--f-display); letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
+  border-radius: 99px; cursor: pointer; }
+.btn { margin-top: 14px; padding: 14px 24px; }
+.btn.ghost { background: linear-gradient(180deg, #FDFBF7 0%, #F3EFE6 100%); color: #1E2D4A; border-color: #C5A059; box-shadow: 0 6px 20px rgba(30,45,74,.12); }
+.btn.cta { background: linear-gradient(180deg, #2a3d60 0%, #1E2D4A 100%); color: #FDFBF7; outline-color: rgba(233,205,132,.55); }
+.btn svg { color: var(--gold); }
+.btn::after, .links a::after, .site-link::after { content: ''; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%; background: linear-gradient(100deg, transparent, rgba(255,240,200,.75), transparent); transform: skewX(-20deg); transition: left .7s ease; pointer-events: none; }
+.btn:hover::after, .links a:hover::after, .site-link:hover::after { left: 120%; }
+.btn[disabled] { opacity: .55; cursor: wait; }
+.links { flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.links a { padding: 10px 16px; font-size: 11.5px; }
+/* liens dans le texte : discrets, soulignés d’or (comme les lieux du programme du faire-part) */
+.meta a, .lead a, .faq a, .note a { color: var(--muted); text-decoration-color: #C5A059; text-underline-offset: 4px; }
+.meta a:hover, .lead a:hover, .faq a:hover { color: var(--ink); }
+/* petits boutons texte : italique et soulignement doré (comme « Modifier ma réponse ») */
+.cv .retirer { color: var(--ink); font: italic 400 14.5px/1.3 var(--f-display); text-decoration: underline; text-decoration-color: #C5A059; text-underline-offset: 4px; }
+/* choix « je propose / je cherche » : même filet doré */
+.seg span { border-color: rgba(197,160,89,.55); font-family: var(--f-display); letter-spacing: .12em; }
+.seg input:checked + span { background: linear-gradient(180deg, #2a3d60 0%, #1E2D4A 100%); color: #FDFBF7; border-color: #C5A059; }
+.drop { border-color: #C5A059; }
+@media (prefers-reduced-motion: reduce) { .btn::after, .links a::after { display: none; } }
+
 /* apparition douce au défilement */
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
 .reveal.in { opacity: 1; transform: none; }
@@ -325,7 +360,11 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
 
   /* ---------- petits outils ---------- */
   const JOUR_J = new Date(C.dateMariage + 'T00:00:00+02:00');
-  const on = sec => { if (!sec) return false; if (TOUT) return true; const a = sec.actif; return a === 'jour-j' ? Date.now() >= JOUR_J : !!a; };
+  /* actif : true / false / 'jour-j' / une date 'AAAA-MM-JJ' (visible à partir de ce jour, heure de Paris) */
+  const on = sec => { if (!sec) return false; if (TOUT) return true; const a = sec.actif;
+    if (a === 'jour-j') return Date.now() >= JOUR_J;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(String(a))) return Date.now() >= new Date(a + 'T00:00:00+02:00');
+    return !!a; };
   const soon = t => `<span class="soon">${esc(t || 'bientôt')}</span>`;
   const rule = () => C.palette === 'bleu' ? '<svg class="rule" viewBox="0 0 120 18" aria-hidden="true"><path d="M4 9 H46 M74 9 H116" stroke="currentColor" stroke-width=".8"/><path d="M60 3 L64 9 L60 15 L56 9 Z" fill="currentColor"/></svg>' : S.ornement();
   const ICONES = ['rings', 'moon', 'bells', 'glasses', 'plate', 'croissant', 'window', 'gift'];
@@ -389,7 +428,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       ${perso ? `<a class="btn" href="agenda/${encodeURIComponent(code)}.ics">${ICON_CAL} iPhone, Mac, Outlook</a>` : ''}
       <a class="btn ghost" href="${esc(gcal())}" target="_blank" rel="noopener">${ICON_CAL} Google Agenda</a>
     </div>
-    <div class="grid">${lieuxUsed.map(k => { const L = C.lieux[k];
+    <div class="grid aligned">${lieuxUsed.map(k => { const L = C.lieux[k];
       return `<div class="place"><div class="art">${C.illustrationsLieux !== false ? `<img src="photos/lieux/${k}.webp" alt="${esc(L.nom)}" loading="lazy">` : S[k]}</div>
         <h3>${esc(L.nom)}</h3><div class="addr">${esc(L.adresse)}</div>
         <div class="links">${ext(L.maps, 'Google Maps')}${ext('https://waze.com/ul?navigate=yes&q=' + encodeURIComponent(L.nom + ' ' + L.adresse), 'Waze')}</div></div>`; }).join('')}
@@ -428,7 +467,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         <label>Un mot (facultatif)<input type="text" id="cvMot" name="message" maxlength="140" placeholder="Départ vers 13h, retour dimanche…"></label>
         <input class="hp" name="website" tabindex="-1" aria-hidden="true">
         <p class="note" style="margin:0">Votre prénom, votre ville et votre contact seront visibles par les autres invités. Vous pourrez retirer l’annonce depuis ce téléphone.</p>
-        <button class="btn" type="submit">Publier</button>
+        <button class="btn cta" type="submit">Publier</button>
       </form>
       <p class="msg" id="cvMsg" aria-live="polite"></p>
     </div>` : ''}` }); }
@@ -446,9 +485,9 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       ${H.note ? `<p class="note">${esc(H.note)}</p>` : ''}
       <a class="btn" href="${esc(lienFP)}">Je le précise dans ma réponse</a></div>` : ''}
     <p class="lead" style="margin-top:${F.nuits.length ? 40 : 0}px">${esc(D.autour || '')}</p>
-    ${adr.length ? `<div class="grid">${adr.map((a, i) => `<div class="paper adr${i % 2 ? ' alt' : ''}" style="--tilt:${i % 2 ? .5 : -.4}deg"><span class="in-border"></span>
+    ${adr.length ? `<div class="grid aligned">${adr.map((a, i) => `<div class="paper adr${i % 2 ? ' alt' : ''}" style="--tilt:${i % 2 ? .5 : -.4}deg"><span class="in-border"></span>
         <div class="type">${esc(a.type || '')}${a.distance ? ' · ' + esc(a.distance) : ''}</div><h3>${esc(a.nom)}</h3>
-        ${a.texte ? `<p>${esc(a.texte)}</p>` : ''}${a.lien ? `<div class="links" style="justify-content:flex-start">${ext(a.lien, 'Voir l’adresse →')}</div>` : ''}</div>`).join('')}</div>`
+        <p>${esc(a.texte || '')}</p><div class="links" style="justify-content:flex-start">${a.lien ? ext(a.lien, 'Voir l’adresse →') : ''}</div></div>`).join('')}</div>`
       : soon('adresses à venir')}` }); }
 
   /* --- Dress code : exactement la carte du faire-part (dresscode.js) --- */
@@ -477,8 +516,9 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     sections.push({ id: 'temoins', menu: 'Témoins', html: `
     ${head('Surprises & discours', T.titre || 'Les témoins')}
     <p class="lead">${esc(T.texte || '')}</p>
-    ${P.length ? `<div class="grid">${P.map((p, i) => `<div class="paper temoin${i % 2 ? ' alt' : ''}" style="--tilt:${i % 2 ? .5 : -.5}deg"><span class="in-border"></span>
+    ${P.length ? `<div class="grid aligned">${P.map((p, i) => `<div class="paper temoin${i % 2 ? ' alt' : ''}" style="--tilt:${i % 2 ? .5 : -.5}deg"><span class="in-border"></span>
         <h3>${esc(p.nom)}</h3><div class="role">${esc(p.role || '')}</div>
+        <div class="coords">${[p.tel, p.email].filter(Boolean).map(esc).join('<br>')}</div>
         <div class="links">${p.tel ? `<a href="tel:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">Appeler</a><a href="sms:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">SMS</a>` : ''}${p.email ? `<a href="mailto:${esc(p.email)}">E-mail</a>` : ''}</div></div>`).join('')}</div>` : soon('contacts à venir')}` }); }
 
   /* --- Playlist --- */
@@ -492,7 +532,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         <label>Votre chanson<input type="text" name="chanson" maxlength="140" placeholder="Titre — artiste" required></label>
         <label>Votre prénom<input type="text" name="nom" maxlength="80" value="${esc(nom || (store.get('rsvp.' + code) || {}).nom || '')}"></label>
         <input class="hp" name="website" tabindex="-1" aria-hidden="true">
-        <button class="btn" type="submit">Proposer</button>
+        <button class="btn cta" type="submit">Proposer</button>
         <p class="msg" id="chansonMsg" aria-live="polite"></p>
       </form>`}
     </div>` }); }
@@ -538,7 +578,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     : perso ? `<div class="paper statut alt"><span class="in-border"></span>
       <div class="big">Serez-vous des nôtres ?</div>
       ${C.repondreAvant ? `<p>Réponse souhaitée avant le ${esc(C.repondreAvant)}.</p>` : ''}
-      <a class="btn" href="${esc(lienFP)}">Répondre au faire-part</a></div>` : '';
+      <a class="btn cta" href="${esc(lienFP)}">Répondre au faire-part</a></div>` : '';
 
   $('#annonce').innerHTML = SI.annonce ? `<div class="annonce">${esc(SI.annonce)}</div>` : '';
   $('#app').innerHTML = `

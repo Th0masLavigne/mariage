@@ -94,7 +94,8 @@ programme avec horaires, accès, où dormir, dress code, questions, liste, témo
   (la partie commune), pour que personne ne découvre un moment auquel il n’est pas convié.
 - **Tout se règle dans `config.js`, bloc `site`.** Lieux, horaires, dress code, hébergement et liste viennent du reste
   du fichier : un horaire changé une fois change partout.
-- **Chaque rubrique** : `actif: true`, `false` ou `'jour-j'` (apparaît le jour du mariage — pratique pour Photos et Merci).
+- **Chaque rubrique** : `actif: true`, `false`, `'jour-j'` (apparaît le jour du mariage) ou une date `'2027-08-08'`
+  (apparaît automatiquement ce jour-là, à minuit, heure de Paris). Le « Merci » est réglé sur le 8 août.
   Un texte vide affiche « bientôt » ; une question de FAQ sans réponse reste cachée.
 - **Où dormir** n’apparaît que pour les formules qui ont des `nuits` : les invités « Église & vin d’honneur » ne le voient pas.
 - **Bandeau** : `site.annonce: 'Les horaires sont en ligne !'` affiche un bandeau doré en haut.

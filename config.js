@@ -317,6 +317,7 @@ window.CONFIG = {
      sinon on montre la formule « formuleParDefaut » (la partie commune).
      Chaque section :  actif: true  (affichée) · false (masquée)
                        'jour-j' (affichée seulement à partir du jour du mariage)
+                       '2027-08-08' (affichée automatiquement à partir de cette date)
      Un texte vide '' → la section affiche « bientôt ».
      Lieux, horaires, dress code, hébergement, liste : repris d’en haut.
      ===================================================================== */
@@ -383,8 +384,12 @@ window.CONFIG = {
       actif: true,
       titre: 'Les témoins',
       texte: 'Un discours, une surprise, une idée ? Passez par eux : on préfère ne rien savoir.',
-      /* { nom, role: 'Témoin de Tiphaine', tel: '06…', email: '…' } */
-      personnes: []
+      /* une ligne par témoin ; tel et email facultatifs (affichés + boutons Appeler / SMS / E-mail).
+         Pour activer un exemple : retirez les // en début de ligne et remplacez les valeurs. */
+      personnes: [
+        // { nom: 'Claire Martin', role: 'Témoin de Tiphaine', tel: '06 12 34 56 78', email: 'claire@exemple.fr' },
+        // { nom: 'Paul Durand',   role: 'Témoin de Thomas',   tel: '06 98 76 54 32' },
+      ]
     },
 
     playlist: {
@@ -410,8 +415,9 @@ window.CONFIG = {
       videoMaxMo: 40
     },
 
+    /* apparaît tout seul le lendemain de la fête */
     merci: {
-      actif: 'jour-j',
+      actif: '2027-08-08',
       titre: 'Merci',
       texte: ''
     }
