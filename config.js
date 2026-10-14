@@ -405,6 +405,8 @@ window.CONFIG = {
          Laissez vide ce que vous n’utilisez pas.                                                      */
       paiement: {
         texte: 'Par virement (RIB sur demande) ou par Wero avec Thomas, en indiquant « Liste + votre prénom » en libellé. Pour un objet, vous pouvez aussi l’apporter le jour J ou nous le faire livrer.',
+        /* urne le jour J (affichée sous la liste et dans la fenêtre « Participer ») ; '' pour la masquer */
+        urne: 'Une urne sera aussi à votre disposition le jour J, pour participer de façon anonyme.',
         titulaire: '',
         iban: '',
         lydia: '',     // pas utilisé

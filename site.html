@@ -314,6 +314,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
 .pay { max-width: 520px; margin: 6px auto 0; text-align: center; }
 .pay h3, .pay-in h3 { font: italic 400 22px/1.2 var(--f-display); color: var(--blue); }
 .pay p, .pay-in p { color: #55516a; font-size: 15.5px; }
+.urne { font-style: italic; color: var(--muted); font-size: 15px; text-align: center; }
+.urne::before { content: '✦ '; color: var(--gold); font-style: normal; }
 .iban { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; margin: 10px 0; font-size: 15px; }
 .iban b { font: 500 15px/1.4 var(--f-display); letter-spacing: .06em; user-select: all; word-break: break-all; }
 .copy { background: none; border: 0; cursor: pointer; color: var(--ink); font: italic 400 14.5px/1.3 var(--f-display); text-decoration: underline; text-decoration-color: #C5A059; text-underline-offset: 4px; }
@@ -557,11 +559,12 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* bloc « comment nous faire parvenir votre participation » */
   function payHtml(inPanel) {
     const P = LI.paiement || {};
-    if (!P.texte && !P.iban && !P.lydia && !P.paypal) return '';
+    if (!P.texte && !P.iban && !P.lydia && !P.paypal && !P.urne) return '';
     return `<div class="${inPanel ? 'pay-in' : 'paper alt pay carte'}"${inPanel ? '' : ' style="--tilt:-.3deg"'}>${inPanel ? '' : '<span class="in-border"></span><h3>Pour participer</h3>'}
       ${P.texte ? `<p>${esc(P.texte)}</p>` : ''}
       ${P.iban ? `<div class="iban"><span>${P.titulaire ? esc(P.titulaire) + '<br>' : ''}<b>${esc(P.iban)}</b></span><button class="copy" type="button" data-copy="${esc(String(P.iban).replace(/\s+/g, ''))}">Copier l’IBAN</button></div>` : ''}
       ${P.lydia || P.paypal ? `<div class="links">${P.lydia ? ext(P.lydia, 'Lydia') : ''}${P.paypal ? ext(P.paypal, 'PayPal') : ''}</div>` : ''}
+      ${P.urne ? `<p class="urne">${esc(P.urne)}</p>` : ''}
     </div>`;
   }
 
@@ -780,6 +783,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
           ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="50"></label>
             <div class="chips">${[30, 50, 100, 150].map(v => `<button type="button" data-v="${v}">${v} €</button>`).join('')}</div>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est vous.</p>`}
           <label>Un petit mot (facultatif)<input type="text" id="lpMot" name="message" maxlength="200"></label>
+          ${part && (LI.paiement || {}).urne ? `<p class="urne" style="margin:0">${esc(LI.paiement.urne)}</p>` : ''}
           <input class="hp" name="website" tabindex="-1" aria-hidden="true">
           <button class="btn cta" type="submit">${part ? 'Je participe' : 'Je m’en occupe'}</button>
           <p class="msg" id="lpMsg" aria-live="polite"></p>
