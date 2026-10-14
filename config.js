@@ -95,6 +95,12 @@ window.CONFIG = {
     fin: 'On vous attend'
   },
 
+  /* Phrase au-dessus de l'enveloppe fermée ('' pour la masquer).
+     Idées : 'Une invitation vous attend' · 'Vous êtes conviés' · 'De la part de Tiphaine & Thomas' */
+  titreEnveloppe: 'Une invitation vous attend',
+  /* … et avec un lien personnalisé (?n=…) : {nom} est remplacé par le nom de l'invité */
+  titreEnveloppeNom: 'Une invitation pour {nom}',
+
   /* Phrase sous la grande date ('' pour la masquer) */
   phraseDate: 'Une date à garder précieusement.',
 

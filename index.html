@@ -1716,7 +1716,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const br = C.palette !== 'bleu' ? '<img class="branch" src="photos/branche-or.webp" alt="">' : S.branch(false);
     $('#doorL').innerHTML = br; $('#doorR').innerHTML = br;
     $('#envSprig').innerHTML = orn('branche'); $('#envSprig').className = 'sprig-env' + ornCls('branche'); $('#envRibbon').innerHTML = orn('ruban'); $('#envRibbon').className = 'ribbon-env' + ornCls('ruban');
-    $('#envTo').innerHTML = `Une lettre pour vous${state.nom ? `<span class="env-for">Pour ${esc(nomInvites(state.nom))}</span>` : ''}`;
+    $('#envTo').textContent = state.nom ? (C.titreEnveloppeNom || 'Une invitation pour {nom}').replace('{nom}', nomInvites(state.nom)) : (C.titreEnveloppe == null ? 'Une invitation vous attend' : C.titreEnveloppe);
     $('#petals').innerHTML = Array.from({ length: PET('enveloppe') }, () =>
       `<i class="petal${Math.random() < .35 ? ' g' : ''}" style="left:${Math.random() * 100}%;animation-duration:${10 + Math.random() * 8}s;animation-delay:${-Math.random() * 12}s;transform:scale(${.6 + Math.random() * .8}) rotate(${Math.round(Math.random() * 360)}deg)"></i>`).join('');
     let opened = false, ready = false;
