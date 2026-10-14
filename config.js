@@ -24,8 +24,13 @@ window.CONFIG = {
        'image'            lettres calligraphiées (monogrammeLettres), sceau épuré
        'image-couronne'   lettres calligraphiées + couronne et laurier
        'dessin'           lettres tracées (« monogramme » ci-dessus) + couronne et laurier
+       'photo'            le sceau photographié (sceauImage ci-dessous)
+     calendrier : 'photo' ou 'dessin' (sceau posé sur le jour J).
      carte (la carte qui sort de l'enveloppe) : 'image' ou 'aucun'.            */
-  sceaux: { enveloppe: 'image', carte: 'image', haut: 'dessin', bas: 'dessin' },
+  sceaux: { enveloppe: 'photo', carte: 'image', haut: 'photo', bas: 'photo', calendrier: 'photo' },
+  sceauImage: 'photos/sceau.webp',
+  /* sceau de l'enveloppe en mode 'photo' (avec les branches dorées assorties) */
+  sceauEnveloppe: 'photos/sceau-enveloppe.webp',
 
   /* Dates utilisées pour le compte à rebours (format AAAA-MM-JJ) */
   dateCivil: '2027-08-06',

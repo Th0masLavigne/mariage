@@ -177,6 +177,10 @@ h2 { font: italic 400 clamp(32px, 6.4vw, 46px)/1.08 var(--f-display); margin: 10
 }
 /* reflet : passage lent, puis pause immobile (rien n'est redessiné pendant la pause) */
 @keyframes foil { 0%, 15% { background-position: 0 0; } 50%, 65% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+.seal-photo { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 4px rgba(90,60,15,.35)); }
+.cal-seal .seal-photo { width: 100%; height: 100%; object-fit: contain; }
+.cal-g .wed.photo b { position: absolute; right: -9px; bottom: -9px; width: 20px; height: 20px; display: grid; place-items: center; font: 600 12px/1 var(--f-display); color: var(--ink); background: var(--card); border: 1px solid var(--gold); border-radius: 50%; text-shadow: none; opacity: 0; transition: opacity .3s .5s; }
+.cal.stamped .wed.photo b { opacity: 1; }
 .hero-seal { width: 78px; margin: 0 auto 16px; transform: rotate(-8deg); }
 .foot-seal { width: 64px; margin: 0 auto 12px; transform: rotate(6deg); }
 .hero-mono { display: block; width: min(250px, 62vw); height: auto; margin: -8px auto 4px; }
@@ -486,6 +490,13 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .pal-rose .door.r .face::before { inset: -6.303% -17.647%; background: url("photos/volet-d.webp") 0 0 / 100% 100% no-repeat; filter: none; }
 .pal-rose .g-base::before { inset: -6.303% -8.824%; background: url("photos/fond-carte.webp") 0 0 / 100% 100% no-repeat; filter: none; }
 .pal-rose .door .face::after, .pal-rose .g-base::after { display: none; }
+/* sceau photographié + branches : proportions de l'image d'origine (sceau = 44 % de la largeur) */
+.gate.photo-seal .seal { width: 44%; transform: translate(-50%, -50%) rotate(-3deg); }
+.gate.photo-seal:hover .seal { transform: translate(-50%, -50%) rotate(2deg) scale(1.04); }
+.gate.photo-seal.open .seal { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+.gate.photo-seal .seal .seal-photo { filter: drop-shadow(0 4px 6px rgba(70,40,20,.35)); }
+.gate.photo-seal .door.l img.branch { height: 52.4%; right: 4.95%; }
+.gate.photo-seal .door.r img.branch { height: 52.4%; left: 4.95%; }
 
 #app.paused, #app.paused * { animation-play-state: paused !important; }
 .g-base::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--fibre), radial-gradient(90% 70% at 50% 50%, rgba(255,255,255,.18), rgba(0,0,0,.05)), var(--base) var(--noise); filter: url(#deckle) drop-shadow(0 18px 30px rgba(var(--shade-rgb),.22)); }
@@ -658,6 +669,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 .dc-rules li::before { content: '◆'; display: block; font-size: 7px; color: var(--gold); margin-bottom: 3px; }
 .dc-arch p { margin: 6px auto 0; max-width: 30ch; color: #55516a; font-size: 16px; text-wrap: balance; }
 .couple .ink { stroke-width: 1.35; }
+.st-sketch .sk.couple .ink { filter: none; }
+.couple.wait *, .couple.still * { animation-play-state: paused !important; }
 .sk.couple.draw.on path { animation-duration: 1.3s; animation-delay: calc(var(--i, 0) * 28ms); }
 .couple .ground { fill: var(--blue-soft); opacity: .7; }
 .couple .wash { stroke: none; opacity: 1; mix-blend-mode: normal; }
@@ -815,7 +828,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     let cells = '';
     for (let i = 0; i < first; i++) cells += '<span></span>';
     for (let d = 1; d <= n; d++) {
-      cells += d === wed && days[d] ? `<span class="wed"><i class="cal-seal">${S.seal(C.monogramme, C.cachet || 'or', '', true)}</i><b>${d}</b></span>`
+      cells += d === wed && days[d] ? `<span class="wed${(C.sceaux || {}).calendrier === 'photo' && C.sceauImage ? ' photo' : ''}"><i class="cal-seal">${(C.sceaux || {}).calendrier === 'photo' && C.sceauImage ? sealPhoto() : S.seal(C.monogramme, C.cachet || 'or', '', true)}</i><b>${d}</b></span>`
         : days[d] ? `<span class="mark">${d}</span>` : `<span>${d}</span>`;
     }
     const legend = Object.keys(days).sort((a, b) => a - b).map(k => `<li><b>${esc(days[k].jour)}</b> · ${esc(days[k].t.join(', '))}</li>`).join('');
@@ -852,7 +865,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   }
 
   /* Lettres d'un sceau selon son emplacement : 'image' (monogrammeLettres) ou 'dessin' (lettres tracées) */
-  const sealAt = where => { const m = (C.sceaux || {})[where] || 'image'; return S.seal(C.monogramme, C.cachet || 'or', /^image/.test(m) ? C.monogrammeLettres : '', /couronne|^dessin/.test(m)); };
+  const sealPhoto = () => `<img class="seal-photo" src="${esc(C.sceauImage)}" alt="">`;
+  const sealAt = where => { const m = (C.sceaux || {})[where] || 'image'; if (m === 'photo' && where === 'enveloppe' && C.sceauEnveloppe) return `<img class="seal-photo" src="${esc(C.sceauEnveloppe)}" alt="">`; if (m === 'photo' && C.sceauImage) return sealPhoto(); return S.seal(C.monogramme, C.cachet || 'or', /^image/.test(m) ? C.monogrammeLettres : '', /couronne|^dessin/.test(m)); };
   /* Densité des pétales : nombre ou 0 pour aucun */
   const PET = k => { const d = { fond: 12, enveloppe: 12, ouverture: 22 }; if (C.petales === false) return 0; const v = (C.petales || {})[k]; return v == null || isNaN(+v) ? d[k] : Math.max(0, Math.min(200, +v)); };
 
@@ -1079,6 +1093,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     prepDraw();
     fitTitles();
+    coupleWatch();
     stampSeal();
     startCountdown(F);
     scratch();
@@ -1096,6 +1111,12 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   }
   window.addEventListener('resize', () => fitTitles());
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitTitles());
+
+  /* le couple ne marche que lorsqu'il est à l'écran */
+  function coupleWatch() {
+    const c = document.querySelector('.couple'); if (!c || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver(es => es.forEach(e => c.classList.toggle('still', !e.isIntersecting))).observe(c);
+  }
 
   /* ---------------- zone à gratter ---------------- */
   /* Tenue : image (si fournie dans config) ou dessin intégré.
@@ -1127,7 +1148,9 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   function scratch() {
     palettePick();
     const box = $('#scratch'), cv = $('#scratchCv'); if (!box) return;
-    const ctx = cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
+    const ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
+    /* part grattée suivie sur une grille légère (au lieu de relire tous les pixels du calque) */
+    const GX = 18, GY = 24, grid = new Uint8Array(GX * GY); let cleared = 0, queue = [];
     let done = false, moves = 0, last = null;
     const paint = () => {
       const r = box.getBoundingClientRect(); if (!r.width) return;
@@ -1147,15 +1170,28 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     window.addEventListener('resize', () => { if (!moves && !done) paint(); });
     const pos = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     const reveal = () => { done = true; cv.classList.add('gone'); $('#scSkip').hidden = true; document.querySelectorAll('.couple.wait').forEach(el => { el.classList.remove('wait'); setTimeout(() => el.classList.add('on'), 250); }); };
-    const scratchAt = p => {
-      ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = box.offsetHeight > 300 ? 56 : 38; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo((last || p).x, (last || p).y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p;
-      if (++moves % 12 === 0) {
-        const d = ctx.getImageData(0, 0, cv.width, cv.height).data; let clear = 0, n = 0;
-        for (let i = 3; i < d.length; i += 4 * 37) { n++; if (d[i] < 40) clear++; }
-        if (clear / n > .45) reveal();
-      }
+    const mark = (x, y, rad) => {
+      const W = cv.clientWidth, H = cv.clientHeight, cw = W / GX, ch = H / GY;
+      for (let gy = Math.max(0, Math.floor((y - rad) / ch)); gy <= Math.min(GY - 1, Math.floor((y + rad) / ch)); gy++)
+        for (let gx = Math.max(0, Math.floor((x - rad) / cw)); gx <= Math.min(GX - 1, Math.floor((x + rad) / cw)); gx++) {
+          const cx = (gx + .5) * cw, cy = (gy + .5) * ch, i = gy * GX + gx;
+          if (!grid[i] && (cx - x) ** 2 + (cy - y) ** 2 <= rad * rad) { grid[i] = 1; cleared++; }
+        }
     };
+    /* les traits du doigt sont dessinés une fois par image (requestAnimationFrame) */
+    const flush = () => {
+      raf = 0; if (!queue.length) return;
+      const lw = box.offsetHeight > 300 ? 56 : 38;
+      ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      queue.forEach(([a, b]) => { ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        const n = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 8));
+        for (let k = 0; k <= n; k++) mark(a.x + (b.x - a.x) * k / n, a.y + (b.y - a.y) * k / n, lw / 2); });
+      ctx.stroke(); queue = [];
+      if (cleared / (GX * GY) > .45) reveal();
+    };
+    let raf = 0;
+    const scratchAt = p => { moves++; queue.push([last || p, p]); last = p; if (!raf) raf = requestAnimationFrame(flush); };
     let down = false;
     cv.addEventListener('pointerdown', e => { if (done) return; down = true; last = null; cv.setPointerCapture(e.pointerId); scratchAt(pos(e)); });
     cv.addEventListener('pointermove', e => { if (down && !done) scratchAt(pos(e)); });
@@ -1404,6 +1440,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   function envelope() {
     const F = C.formules[state.code];
     $('#envSeal').innerHTML = sealAt('enveloppe');
+    $('#env').classList.toggle('photo-seal', ((C.sceaux || {}).enveloppe === 'photo'));
     $('#envLetter').innerHTML = `${C.monogrammeLettres && ((C.sceaux || {}).carte || 'image') === 'image' ? `<img class="l-mono" src="${esc(C.monogrammeLettres)}" alt="">` : ''}<span class="l-eye">Vous êtes invités</span><span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-date gold">${esc(F.dates)}</span>`;
     const br = C.palette !== 'bleu' ? '<img class="branch" src="photos/branche-or.webp" alt="">' : S.branch(false);
     $('#doorL').innerHTML = br; $('#doorR').innerHTML = br;
