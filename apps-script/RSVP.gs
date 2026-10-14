@@ -20,6 +20,9 @@ const COLS = ['id', 'recu_le', 'formule', 'nom', 'presence', 'adultes', 'enfants
 
 function doGet(e) {
   /* carnet pratique : liste des annonces de covoiturage */
+  if (e && e.parameter && e.parameter.action === 'liste') {
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, etat: listeEtat_() })).setMimeType(ContentService.MimeType.JSON);
+  }
   if (e && e.parameter && e.parameter.action === 'covoiturage') {
     return ContentService.createTextOutput(JSON.stringify({ ok: true, annonces: covoiturageListe_() })).setMimeType(ContentService.MimeType.JSON);
   }
@@ -33,6 +36,8 @@ function doPost(e) {
   /* carnet pratique (site.html) : photos des invités et suggestions de chansons */
   if (d && d.action === 'photo') return out(photo_(d));
   if (d && d.action === 'chanson') return out(chanson_(d));
+  if (d && d.action === 'liste') return out(liste_(d));
+  if (d && d.action === 'liste-annuler') return out(listeAnnuler_(d));
   if (d && d.action === 'covoiturage') return out(covoiturage_(d));
   if (d && d.action === 'covoiturage-retirer') return out(covoiturageRetirer_(d));
   if (!d || !d.id || !d.nom || d.website) return out({ ok: false });
@@ -225,5 +230,69 @@ function covoiturageRetirer_(d) {
   const i = rows.findIndex(r => String(r[head.indexOf('id')]).replace(/^'/, '') === String(d.id) && String(r[head.indexOf('cle')]).replace(/^'/, '') === String(d.cle));
   if (i < 0) return { ok: false };
   sh.getRange(i + 2, head.indexOf('visible') + 1).setValue('non');
+  return { ok: true };
+}
+
+
+/* --- Liste de mariage : onglet « Liste » ----------------------------------
+   Une ligne par participation (ou par cadeau réservé).
+   statut « annulé » = ne compte plus (l’invité a annulé, ou vous l’écrivez à la main) ;
+   recu = « oui » quand l’argent / le cadeau est arrivé (coché dans l’appli) ;
+   vu = lu dans l’appli. Les invités ne reçoivent que les totaux, jamais les noms.          */
+const LISTE_COLS = ['id', 'recu_le', 'cadeau', 'titre', 'type', 'objectif', 'nom', 'montant', 'message', 'code', 'statut', 'recu', 'vu', 'cle'];
+
+function listeRows_() {
+  const sh = tab_('Liste', LISTE_COLS), n = sh.getLastRow();
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+  const rows = n < 2 ? [] : sh.getRange(2, 1, n - 1, head.length).getValues()
+    .map(r => { const o = {}; head.forEach((k, i) => o[k] = String(r[i]).replace(/^'/, '')); return o; });
+  return { sh, head, rows };
+}
+const listeActif_ = o => o.id && String(o.statut).toLowerCase().indexOf('annul') !== 0;
+
+function listeEtat_() {
+  const e = {};
+  listeRows_().rows.filter(listeActif_).forEach(o => {
+    const x = e[o.cadeau] = e[o.cadeau] || { total: 0, nb: 0, offert: false };
+    x.total += Number(String(o.montant).replace(',', '.')) || 0; x.nb++;
+    if (o.type === 'cadeau') x.offert = true;
+  });
+  return e;
+}
+
+function liste_(d) {
+  if (d.website || !d.id || !d.cadeau || !String(d.nom || '').trim()) return { ok: false };
+  const type = d.type === 'cadeau' ? 'cadeau' : 'participation';
+  const montant = Math.max(0, Math.min(100000, Math.round(Number(d.montant) || 0)));
+  if (type === 'participation' && montant < 1) return { ok: false, error: 'montant' };
+  const t = v => clean_(String(v == null ? '' : v).slice(0, 200));
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const L = listeRows_();
+    /* un objet ne peut être offert qu’une fois */
+    if (type === 'cadeau' && L.rows.some(o => listeActif_(o) && o.cadeau === String(d.cadeau) && o.type === 'cadeau')) return { ok: false, error: 'deja' };
+    const obj = { id: t(d.id), recu_le: now_(), cadeau: t(d.cadeau), titre: t(d.titre), type, objectif: Number(d.objectif) || '', nom: t(d.nom),
+      montant, message: t(d.message), code: t(d.code), statut: '', recu: '', vu: '', cle: t(d.cle) };
+    L.sh.appendRow(L.head.map(k => obj[k] === undefined ? '' : obj[k]));
+  } finally { lock.releaseLock(); }
+  if (NOTIFY) {
+    try {
+      MailApp.sendEmail(NOTIFY, '🎁 Liste : ' + d.nom + ' — ' + d.titre,
+        d.nom + (type === 'cadeau' ? ' offre « ' + d.titre + ' »' : ' participe à « ' + d.titre + ' » : ' + montant + ' €')
+        + (d.message ? '\n\nSon mot :\n' + d.message : '') + '\n\n(Pensez à cocher « reçu » dans l’appli quand le virement ou le cadeau arrive.)');
+    } catch (x) {}
+  }
+  return { ok: true };
+}
+
+function listeAnnuler_(d) {
+  if (!d.id || !d.cle) return { ok: false };
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const L = listeRows_(), i = L.rows.findIndex(o => o.id === String(d.id) && o.cle === String(d.cle));
+    if (i < 0) return { ok: false };
+    L.sh.getRange(i + 2, L.head.indexOf('statut') + 1).setValue('annulé par l’invité');
+    L.sh.getRange(i + 2, L.head.indexOf('vu') + 1).setValue('');
+  } finally { lock.releaseLock(); }
   return { ok: true };
 }

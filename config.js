@@ -270,7 +270,9 @@ window.CONFIG = {
      accroche : la phrase principale. texte vide → texte par défaut.
      lien vide → tampon « Bientôt » ; renseignez lien quand la liste est prête. */
   bientot: [
-    { accroche: 'Votre présence est notre plus beau cadeau.', titre: 'Liste de mariage', texte: '', lien: '' }
+    /* lien : 'carnet' → mène à la liste du carnet dès qu’elle contient des cadeaux (site.liste) ;
+       ou une adresse https://… vers une liste externe ; '' → tampon « Bientôt ».                  */
+    { accroche: 'Votre présence est notre plus beau cadeau.', titre: 'Liste de mariage', texte: '', lien: 'carnet' }
   ],
 
   /* Pétales de cerisier qui tombent en fond (true / false) */
@@ -330,7 +332,7 @@ window.CONFIG = {
     titre: 'Le carnet du mariage',
     intro: 'Tout ce qu’il faut savoir pour nous rejoindre, mis à jour au fil des mois. Revenez de temps en temps : les nouveautés apparaissent ici.',
     /* bandeau doré tout en haut ('' = aucun). Ex. 'Les horaires sont en ligne !' */
-    annonce: '',
+    annonce: 'Cette page sera mise a jour au fil des mois : revenez de temps en temps !',
     /* adresse e-mail de contact (pied de page) — '' = masquée */
     contact: '',
 
@@ -377,8 +379,38 @@ window.CONFIG = {
       ]
     },
 
-    /* reprend la carte « Liste de mariage » (bientot[0]) : renseignez son lien quand elle est prête */
-    liste: { actif: true },
+    /* --- Liste de mariage (dans le carnet) -------------------------------
+       Chaque cadeau est une carte :
+         type: 'participation' → barre d’avancement (objectif en €, facultatif) + bouton « Participer »
+         type: 'cadeau'        → un objet, offert par une seule personne : « Je m’en occupe »,
+                                 puis « Déjà offert » pour tout le monde
+       id : court et unique, NE PLUS LE CHANGER une fois la liste ouverte (il relie les participations).
+       image : facultative (ex. 'photos/liste/voyage.jpg'), sinon le petit paquet doré.
+       lien : facultatif, page de l’article (bouton « Voir l’article »).
+       Les participations arrivent dans l’onglet « Liste » du Sheet et dans l’appli (écran Liste).
+       Les invités ne voient que l’avancement, jamais les noms ni les montants des autres.
+       Liste vide → carte « bientôt en ligne ».                                                     */
+    liste: {
+      actif: true,
+      titre: 'Liste de mariage',
+      accroche: 'Votre présence est notre plus beau cadeau.',
+      texte: 'Si vous souhaitez malgré tout nous gâter, voici quelques idées. Vous pouvez participer à hauteur de ce que vous voulez.',
+      cadeaux: [
+        // { id: 'voyage', type: 'participation', titre: 'Notre voyage de noces', texte: 'Deux semaines au Japon, entre Kyoto et les onsen.', objectif: 3000, image: '' },
+        // { id: 'cuisine', type: 'participation', titre: 'Une batterie de cuisine', texte: 'Pour les dîners entre amis.', objectif: 600 },
+        // { id: 'cocotte', type: 'cadeau', titre: 'Une cocotte en fonte', texte: 'Ronde, 24 cm, bleu nuit.', prix: 220, lien: 'https://…' },
+        // { id: 'libre', type: 'participation', titre: 'Participation libre', texte: 'Pour la suite de nos aventures.' },
+      ],
+      /* Comment faire parvenir sa participation (affiché sous la liste et après chaque participation).
+         Laissez vide ce que vous n’utilisez pas.                                                      */
+      paiement: {
+        texte: 'Par virement (RIB sur demande) ou par Wero avec Thomas, en indiquant « Liste + votre prénom » en libellé. Pour un objet, vous pouvez aussi l’apporter le jour J ou nous le faire livrer.',
+        titulaire: '',
+        iban: '',
+        lydia: '',     // pas utilisé
+        paypal: ''     // pas utilisé
+      }
+    },
 
     temoins: {
       actif: true,

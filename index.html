@@ -906,6 +906,11 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     nom: params.get('n') || ''
   };
   document.body.insertAdjacentHTML('afterbegin', S.defs + S.pageDefs);
+  /* carnet pratique (site.html) : lien avec le code de l'invité ; « carnet » = la liste de mariage du carnet */
+  const carnetUrl = h => `site.html?f=${encodeURIComponent(state.code)}${state.nom ? '&n=' + encodeURIComponent(state.nom) : ''}${h || ''}`;
+  const listeEnLigne = () => { const L = C.site && C.site.liste; if (!L || !(L.cadeaux || []).some(x => x && x.id)) return false;
+    const a = L.actif; return a === false ? false : /^\d{4}-\d{2}-\d{2}$/.test(String(a)) ? Date.now() >= new Date(a + 'T00:00:00+02:00') : true; };
+  const lienListe = l => l === 'carnet' ? (listeEnLigne() ? carnetUrl('#liste') : '') : (l || '');
   /* le carnet pratique (site.html) retrouve ainsi la formule sans code dans le lien */
   if (!DEMO && C.formules[state.code]) store.set('code', state.code);
 
@@ -1158,14 +1163,14 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       <h2>${esc(TX.bientot)}</h2>
       <div class="soon-grid">
         ${DressCode.html()}
-        ${C.bientot.map(t => `
+        ${C.bientot.map(t => ({ ...t, lien: lienListe(t.lien) })).map(t => `
         <div class="gift-card">
           <div class="gift-art">${ico('gift')}</div>
           <div class="gift-body">
             ${t.accroche ? `<p class="gift-lead">${esc(t.accroche)}</p>` : ''}
             <div class="sc-title">${esc(t.titre)}${t.lien ? '' : '<span class="gold-stamp">Bientôt</span>'}</div>
             <p>${esc(t.texte || 'Pour ceux qui le souhaitent, une liste sera là pour vous aider. Le lien arrive très vite.')}</p>
-            ${t.lien ? `<a class="btn-cal" href="${esc(t.lien)}" target="_blank" rel="noopener">Voir la liste ↗</a>` : ''}</div>
+            ${t.lien ? `<a class="btn-cal" href="${esc(t.lien)}"${/^https?:/.test(t.lien) ? ' target="_blank" rel="noopener"' : ''}>Voir la liste ${/^https?:/.test(t.lien) ? '↗' : '→'}</a>` : ''}</div>
         </div>`).join('')}
       </div>
     </section>
@@ -1415,7 +1420,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       <div class="big">${oui ? 'C’est noté, on trinquera ensemble !' : 'Vous allez nous manquer.'}</div>
       <p>${oui ? 'Merci ' + esc(R.nom) + ' ! Nous vous enverrons les horaires, le code couleur et les infos pratiques très bientôt.' : 'Merci de nous avoir répondu, ' + esc(R.nom) + '. On lèvera un verre à votre santé.'}</p>
       ${already ? `<p class="deadline" style="margin:14px 0 0">Réponse envoyée${R.date ? ' le ' + new Date(R.date).toLocaleDateString('fr-FR') : ''}${DEMO ? ' (aperçu : rien n’a été envoyé)' : ''}</p>` : (DEMO ? '<p class="deadline" style="margin:14px 0 0">Mode aperçu : rien n’a été envoyé.</p>' : '')}
-      ${C.site && C.site.lienFairePart ? `<a class="site-link" href="site.html?f=${encodeURIComponent(state.code)}${state.nom ? '&n=' + encodeURIComponent(state.nom) : ''}">Le carnet pratique : accès, hébergement, covoiturage →</a><br>` : ''}
+      ${C.site && C.site.lienFairePart ? `<a class="site-link" href="${carnetUrl()}">Le carnet pratique : accès, hébergement, covoiturage →</a><br>` : ''}
+      ${oui && lienListe((C.bientot[0] || {}).lien) ? `<a class="site-link" href="${esc(lienListe(C.bientot[0].lien))}">Notre liste de mariage →</a><br>` : ''}
       <button class="linkbtn" id="edit" type="button">Modifier ma réponse</button></div>`;
     $('#edit').addEventListener('click', () => { box.dataset.edit = '1'; renderRSVP(F); });
     if (oui && !already) confetti();

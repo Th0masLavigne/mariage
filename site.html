@@ -296,6 +296,39 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
 .drop { border-color: #C5A059; }
 @media (prefers-reduced-motion: reduce) { .btn::after, .links a::after { display: none; } }
 
+/* ---------- Liste de mariage ---------- */
+.cadeaux { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.cadeau { text-align: center; padding: 26px 20px 22px; }
+.cd-art { height: 130px; display: grid; place-items: center; }
+.cd-art img { max-height: 130px; width: auto; max-width: 100%; border-radius: 4px; object-fit: cover; }
+.cd-art .ico { width: 84px; height: 84px; }
+.cadeau h3 { font: italic 400 23px/1.2 var(--f-display); color: var(--blue); align-self: end; }
+.cd-body p { margin: 0 0 8px; font-size: 15.5px; color: #55516a; line-height: 1.45; }
+.cd-etat { font-size: 14.5px; color: var(--muted); }
+.jauge { height: 7px; border-radius: 9px; background: var(--paper-2); overflow: hidden; margin: 8px auto 6px; max-width: 220px; box-shadow: inset 0 0 0 1px rgba(197,160,89,.35); }
+.jauge i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #C5A059, #e9cd84); transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+.cd-etat b { font: 400 17px/1 var(--f-display); color: var(--ink); }
+.offert { display: inline-block; font: 400 24px/1.1 var(--f-hand); color: var(--rose); }
+.mine { display: block; flex-basis: 100%; margin-top: 4px; font-size: 14px; color: var(--muted); }
+.mine button { background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); font: italic 400 14px/1.3 var(--f-display); text-decoration: underline; text-decoration-color: #C5A059; text-underline-offset: 4px; }
+.pay { max-width: 520px; margin: 6px auto 0; text-align: center; }
+.pay h3, .pay-in h3 { font: italic 400 22px/1.2 var(--f-display); color: var(--blue); }
+.pay p, .pay-in p { color: #55516a; font-size: 15.5px; }
+.iban { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; margin: 10px 0; font-size: 15px; }
+.iban b { font: 500 15px/1.4 var(--f-display); letter-spacing: .06em; user-select: all; word-break: break-all; }
+.copy { background: none; border: 0; cursor: pointer; color: var(--ink); font: italic 400 14.5px/1.3 var(--f-display); text-decoration: underline; text-decoration-color: #C5A059; text-underline-offset: 4px; }
+/* panneau « Participer » */
+.lp-bg { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px)); background: rgba(30,36,60,.38); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.lp { width: min(440px, 100%); max-height: 100%; overflow: auto; text-align: center; padding: 34px 26px 28px; }
+.lp .lp-t { font: italic 400 26px/1.15 var(--f-display); color: var(--blue); margin: 0 0 4px; }
+.lp .form { margin-top: 14px; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chips button { flex: 1; padding: 9px 0; border-radius: 99px; border: 1px solid rgba(197,160,89,.6); background: #fff; cursor: pointer; font: 500 14px/1 var(--f-display); color: var(--ink); }
+.chips button.on { background: linear-gradient(180deg, #2a3d60 0%, #1E2D4A 100%); color: #FDFBF7; border-color: #C5A059; }
+.lp .close { position: absolute; right: 16px; top: 12px; background: none; border: 0; font-size: 26px; line-height: 1; color: var(--muted); cursor: pointer; z-index: 2; }
+.lp .merci-l { font: 400 34px/1.1 var(--f-hand); color: var(--rose); margin: 4px 0 6px; }
+.pay-in { margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(197,160,89,.6); }
+
 /* apparition douce au défilement */
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
 .reveal.in { opacity: 1; transform: none; }
@@ -501,15 +534,36 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     ${head('Bon à savoir', SI.faq.titre || 'Vos questions')}
     ${Q.length ? `<div class="faq">${Q.map(x => `<details><summary>${esc(x.q)}</summary><p>${esc(x.r)}</p></details>`).join('')}</div>` : soon()}` }); }
 
-  /* --- Liste de mariage --- */
-  const B = (C.bientot || [])[0];
-  if (on(SI.liste) && B) sections.push({ id: 'liste', menu: 'Liste', html: `
-    ${head('Cadeaux', B.titre || 'Liste de mariage')}
+  /* --- Liste de mariage : cadeaux et participations (config.js → site.liste) --- */
+  const B = (C.bientot || [])[0] || {}, LI = SI.liste || {}, CAD = (LI.cadeaux || []).filter(x => x && x.id && x.titre);
+  if (on(SI.liste)) sections.push({ id: 'liste', menu: 'Liste', html: `
+    ${head('Cadeaux', LI.titre || B.titre || 'Liste de mariage')}
+    ${CAD.length ? `
+    <p class="accroche" style="max-width:34ch;margin:0 auto 12px">${esc(LI.accroche || B.accroche || '')}</p>
+    ${LI.texte ? `<p class="lead">${esc(LI.texte)}</p>` : ''}
+    <div class="grid aligned cadeaux" id="cadeaux">${CAD.map((g, i) => `
+      <div class="paper cadeau${i % 2 ? ' alt' : ''}" data-id="${esc(g.id)}" style="--tilt:${[-.4, .4, -.2, .3][i % 4]}deg"><span class="in-border"></span>
+        <div class="cd-art">${g.image ? `<img src="${esc(g.image)}" alt="" loading="lazy">` : ico('gift')}</div>
+        <h3>${esc(g.titre)}</h3>
+        <div class="cd-body">${g.texte ? `<p>${esc(g.texte)}</p>` : ''}<div class="cd-etat" data-etat="${esc(g.id)}"></div></div>
+        <div class="links cd-act" data-act="${esc(g.id)}"></div>
+      </div>`).join('')}
+    </div>
+    ${payHtml(false)}` : `
     <div class="paper carte fil" style="--tilt:.4deg"><span class="in-border"></span>${fili()}
-      ${ico('gift')}<p class="accroche">${esc(B.accroche || '')}</p>
-      ${B.texte ? `<p class="muted">${esc(B.texte)}</p>` : ''}
-      ${B.lien ? `<a class="btn" href="${esc(B.lien)}" target="_blank" rel="noopener">Découvrir la liste</a>` : `<p style="margin:16px 0 0">${soon('bientôt en ligne')}</p>`}
-    </div>` });
+      ${ico('gift')}<p class="accroche">${esc(LI.accroche || B.accroche || '')}</p>
+      ${B.lien && B.lien !== 'carnet' ? `<a class="btn" href="${esc(B.lien)}" target="_blank" rel="noopener">Découvrir la liste</a>` : `<p style="margin:16px 0 0">${soon('bientôt en ligne')}</p>`}
+    </div>`}` });
+  /* bloc « comment nous faire parvenir votre participation » */
+  function payHtml(inPanel) {
+    const P = LI.paiement || {};
+    if (!P.texte && !P.iban && !P.lydia && !P.paypal) return '';
+    return `<div class="${inPanel ? 'pay-in' : 'paper alt pay carte'}"${inPanel ? '' : ' style="--tilt:-.3deg"'}>${inPanel ? '' : '<span class="in-border"></span><h3>Pour participer</h3>'}
+      ${P.texte ? `<p>${esc(P.texte)}</p>` : ''}
+      ${P.iban ? `<div class="iban"><span>${P.titulaire ? esc(P.titulaire) + '<br>' : ''}<b>${esc(P.iban)}</b></span><button class="copy" type="button" data-copy="${esc(String(P.iban).replace(/\s+/g, ''))}">Copier l’IBAN</button></div>` : ''}
+      ${P.lydia || P.paypal ? `<div class="links">${P.lydia ? ext(P.lydia, 'Lydia') : ''}${P.paypal ? ext(P.paypal, 'PayPal') : ''}</div>` : ''}
+    </div>`;
+  }
 
   /* --- Témoins --- */
   if (on(SI.temoins)) { const T = SI.temoins, P = T.personnes || [];
@@ -682,6 +736,106 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       } catch (x) { b.disabled = false; msg.textContent = 'Le retrait n’a pas abouti, réessayez.'; }
     });
   }
+
+  /* ---------- liste de mariage : avancement, participations, annulation ---------- */
+  if ($('#cadeaux')) (function () {
+    const URL_ = (SI.photos && SI.photos.url) || BACKEND, DEMO_ = !URL_ || params.has('demo');
+    const eur = n => (Math.round(n * 100) / 100).toLocaleString('fr-FR') + ' €';
+    const mine = () => store.get('liste') || {};      /* { idLigne: { cle, cadeau } } : ce que ce téléphone a offert */
+    let etat = {}, demoRows = [];
+    const demoEtat = () => { const e = {}; demoRows.forEach(r => { const x = e[r.cadeau] = e[r.cadeau] || { total: 0, nb: 0, offert: false }; x.total += +r.montant || 0; x.nb++; if (r.type === 'cadeau') x.offert = true; }); return e; };
+    function paint() {
+      const M = mine();
+      CAD.forEach(g => {
+        const e = etat[g.id] || { total: 0, nb: 0, offert: false }, box = $(`[data-etat="${g.id}"]`), act = $(`[data-act="${g.id}"]`);
+        const myRows = Object.keys(M).filter(k => M[k].cadeau === g.id);
+        if (g.type === 'cadeau') {
+          box.innerHTML = `${g.prix ? `<b>≈ ${eur(+g.prix)}</b>` : ''}${e.offert ? `<div class="offert">${myRows.length ? 'Vous l’offrez, merci !' : 'Déjà offert, merci !'}</div>` : ''}`;
+          act.innerHTML = (e.offert ? '' : `<button class="btn cta" type="button" data-give="${esc(g.id)}">Je m’en occupe</button>`)
+            + (g.lien ? ext(g.lien, 'Voir l’article') : '')
+            + (myRows.length ? `<span class="mine"><button type="button" data-undo="${esc(myRows[0])}">Annuler, finalement je ne l’offre pas</button></span>` : '');
+        } else {
+          const obj = +g.objectif || 0, pc = obj ? Math.min(100, e.total / obj * 100) : 0;
+          box.innerHTML = obj ? `<div class="jauge" role="progressbar" aria-valuemin="0" aria-valuemax="${obj}" aria-valuenow="${Math.round(e.total)}"><i style="width:${pc}%"></i></div><b>${eur(e.total)}</b> sur ${eur(obj)}${e.total >= obj ? '<div class="offert">Objectif atteint, merci !</div>' : ''}`
+            : (e.nb ? `${e.nb} participation${e.nb > 1 ? 's' : ''}, merci !` : '');
+          act.innerHTML = `<button class="btn cta" type="button" data-give="${esc(g.id)}">Participer</button>`
+            + (myRows.length ? `<span class="mine">Merci pour votre participation · <button type="button" data-undo="${esc(myRows[myRows.length - 1])}">l’annuler</button></span>` : '');
+        }
+      });
+    }
+    async function load() {
+      if (DEMO_) { etat = demoEtat(); return paint(); }
+      try { const r = await (await fetch(URL_ + '?action=liste')).json(); etat = r.etat || {}; } catch (e) { etat = {}; }
+      paint();
+    }
+    paint(); load();
+    /* panneau Participer / Je m'en occupe */
+    function panel(g) {
+      const part = g.type !== 'cadeau', bg = document.createElement('div');
+      bg.className = 'lp-bg';
+      bg.innerHTML = `<div class="paper lp" role="dialog" aria-modal="true" aria-labelledby="lpT"><span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
+        <div class="eyebrow">${part ? 'Participer' : 'Offrir'}</div><p class="lp-t" id="lpT">${esc(g.titre)}</p>
+        <form class="form" id="lpForm" autocomplete="on">
+          <label>Vos prénoms<input type="text" id="lpNom" name="nom" maxlength="80" required value="${esc(store.get('listeNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Claire & Paul"></label>
+          ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="50"></label>
+            <div class="chips">${[30, 50, 100, 150].map(v => `<button type="button" data-v="${v}">${v} €</button>`).join('')}</div>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est vous.</p>`}
+          <label>Un petit mot (facultatif)<input type="text" id="lpMot" name="message" maxlength="200"></label>
+          <input class="hp" name="website" tabindex="-1" aria-hidden="true">
+          <button class="btn cta" type="submit">${part ? 'Je participe' : 'Je m’en occupe'}</button>
+          <p class="msg" id="lpMsg" aria-live="polite"></p>
+        </form></div>`;
+      document.body.appendChild(bg);
+      const close = () => { bg.remove(); document.removeEventListener('keydown', esc_); };
+      const esc_ = e => { if (e.key === 'Escape') close(); };
+      document.addEventListener('keydown', esc_);
+      bg.addEventListener('click', e => { if (e.target === bg || e.target.closest('.close')) close(); });
+      const f = bg.querySelector('form'), msg = bg.querySelector('#lpMsg');
+      bg.querySelectorAll('.chips button').forEach(b => b.addEventListener('click', () => { f.montant.value = b.dataset.v; bg.querySelectorAll('.chips button').forEach(x => x.classList.toggle('on', x === b)); }));
+      if (f.montant) f.montant.addEventListener('input', () => bg.querySelectorAll('.chips button').forEach(x => x.classList.toggle('on', x.dataset.v === f.montant.value)));
+      setTimeout(() => (f.nom.value ? (f.montant || f.message) : f.nom).focus(), 50);
+      f.addEventListener('submit', async e => {
+        e.preventDefault(); if (f.website.value) return;
+        const montant = part ? Math.round(+f.montant.value || 0) : (+g.prix || 0);
+        if (part && montant < 1) { msg.textContent = 'Indiquez un montant.'; f.montant.focus(); return; }
+        const btn = f.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Envoi…';
+        const id = 'l_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), cle = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+        const row = { action: 'liste', id, cle, code, cadeau: g.id, titre: g.titre, type: part ? 'participation' : 'cadeau', objectif: +g.objectif || '', nom: f.nom.value.trim(), montant, message: f.message.value.trim() };
+        try {
+          let r;
+          if (DEMO_) { if (!part && demoEtat()[g.id] && demoEtat()[g.id].offert) r = { ok: false, error: 'deja' }; else { demoRows.push(row); r = { ok: true }; } }
+          else r = await post(row);
+          if (!r.ok) throw new Error(r.error || '');
+          const m = mine(); m[id] = { cle, cadeau: g.id }; store.set('liste', m); store.set('listeNom', row.nom);
+          bg.querySelector('.lp').innerHTML = `<span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
+            <div class="merci-l">Merci ${esc(row.nom)} !</div>
+            <p class="lead" style="margin:0 auto">${part ? `Votre participation de <b>${eur(montant)}</b> à « ${esc(g.titre)} » est notée.` : `C’est noté : vous nous offrez « ${esc(g.titre)} ».`}${DEMO_ ? ' (aperçu : rien n’a été envoyé)' : ''}</p>
+            ${payHtml(true)}
+            <button class="btn" type="button" data-close>Fermer</button>`;
+          bg.querySelector('[data-close]').addEventListener('click', close);
+          load();
+        } catch (x) {
+          btn.disabled = false;
+          msg.textContent = x.message === 'deja' ? 'Quelqu’un vient juste de le réserver ! Choisissez une autre idée.' : 'L’envoi n’a pas abouti, réessayez un peu plus tard.';
+          if (x.message === 'deja') load();
+        }
+      });
+    }
+    document.addEventListener('click', async e => {
+      const g = e.target.closest('[data-give]'); if (g) return panel(CAD.find(x => x.id === g.dataset.give));
+      const u = e.target.closest('[data-undo]');
+      if (u) {
+        const id = u.dataset.undo, m = mine(); u.disabled = true;
+        try {
+          if (DEMO_) demoRows = demoRows.filter(r => r.id !== id); else { const r = await post({ action: 'liste-annuler', id, cle: (m[id] || {}).cle }); if (!r.ok) throw 0; }
+          delete m[id]; store.set('liste', m); load();
+        } catch (x) { u.disabled = false; }
+      }
+      const c = e.target.closest('[data-copy]');
+      if (c) { try { await navigator.clipboard.writeText(c.dataset.copy); c.textContent = 'IBAN copié'; } catch (x) { const b = c.parentNode.querySelector('b'); if (b) getSelection().selectAllChildren(b); } }
+    });
+  })();
+  /* liens #liste, #covoiturage… : la page est construite par le script, on y va une fois prête */
+  if (location.hash.length > 1) { const t = document.getElementById(location.hash.slice(1)); if (t) setTimeout(() => t.scrollIntoView(), 60); }
 
   /* ---------- playlist : suggestion → onglet « Chansons » ---------- */
   const cf = $('#chansonForm');

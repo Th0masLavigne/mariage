@@ -108,6 +108,23 @@ programme avec horaires, accès, où dormir, dress code, questions, liste, témo
   toute modification du bloc `dressCode` de `config.js` s’applique aux deux pages.
 - **Liens** : `liens.html` donne pour chaque invité le lien du faire-part et celui du carnet, plus la démo et les aperçus.
 
+### Liste de mariage (intégrée au carnet)
+Dans `config.js` → `site.liste` : une carte par idée de cadeau (exemples en commentaire, retirez les `//`).
+- `type: 'participation'` : barre d’avancement vers `objectif` (en €, facultatif) et bouton « Participer » (montant libre,
+  suggestions 30 / 50 / 100 / 150 €).
+- `type: 'cadeau'` : un objet offert par une seule personne (« Je m’en occupe »), ensuite « Déjà offert » pour tous.
+- `image` : facultative (déposez-la dans `photos/liste/`) ; `lien` : page de l’article.
+- `paiement` : texte, IBAN (bouton « Copier »), liens Lydia / PayPal, affichés sous la liste et après chaque participation.
+  Le site n’encaisse rien : l’invité vous fait un virement ou vous apporte le cadeau.
+- Les invités ne voient que l’avancement (totaux), jamais les noms ni les montants des autres. Ils peuvent annuler depuis
+  leur téléphone. Vous recevez un e-mail à chaque participation.
+- Suivi : onglet **Liste** du Sheet, et écran « Liste de mariage » de l’appli (pastille pour chaque nouveauté,
+  bouton « Marquer reçu », regroupement par cadeau : pratique pour les remerciements). Pour annuler une ligne à la main :
+  écrire `annulé` dans la colonne **statut**.
+- Ne changez plus l’`id` d’un cadeau une fois la liste ouverte (il relie les participations).
+- Le faire-part (carte « Liste de mariage » avec `lien: 'carnet'`, et après une réponse « oui ») mène à `site.html#liste`
+  dès que la liste contient un cadeau.
+
 ### Covoiturage (intégré au carnet)
 Avec `site.venir.covoiturage.lien: ''`, le carnet affiche un tableau d’annonces « je propose / je cherche »
 (prénom, ville de départ, jour, places, contact). Les annonces sont rangées dans l’onglet **Covoiturage** du Sheet.
