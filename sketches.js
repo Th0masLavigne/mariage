@@ -198,7 +198,145 @@
           <feMerge><feMergeNode in="sh"/><feMergeNode in="p"/></feMerge>
         </filter>`;
 
+  /* ================= Ornements « papeterie » (version 2) =================
+     branch : rinceau doré embossé pour les volets de l'enveloppe
+     sprig  : branche de fleurs d'oranger blanches (coin des cartes)
+     ribbon : ruban de satin bleu                                       */
+  let ornN = 0;
+  function goldDefs(k) {
+    return `<linearGradient id="${k}gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e2a6"/><stop offset=".35" stop-color="#d2ad5a"/><stop offset=".6" stop-color="#b48a3c"/><stop offset="1" stop-color="#e9cf86"/></linearGradient>
+      <filter id="${k}em" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceAlpha" stdDeviation=".6" result="h"/>
+        <feSpecularLighting in="h" surfaceScale="1.6" specularConstant=".9" specularExponent="18" lighting-color="#fff6d8" result="s"><feDistantLight azimuth="225" elevation="48"/></feSpecularLighting>
+        <feComposite in="s" in2="SourceAlpha" operator="in" result="sl"/>
+        <feOffset in="SourceAlpha" dx=".5" dy=".7" result="o"/><feColorMatrix in="o" values="0 0 0 0 .1  0 0 0 0 .12  0 0 0 0 .3  0 0 0 .45 0" result="sh"/>
+        <feMerge><feMergeNode in="sh"/><feMergeNode in="SourceGraphic"/><feMergeNode in="sl"/></feMerge>
+      </filter>`;
+  }
+  const leafP = (x, y, ang, L, w) => `<path d="M0 0 Q${(L * .45).toFixed(1)} ${(-w).toFixed(1)} ${L.toFixed(1)} 0 Q${(L * .5).toFixed(1)} ${w.toFixed(1)} 0 0Z" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${ang.toFixed(1)})"/>`;
+  const flowerP = (x, y, r) => {
+    let s = '';
+    for (let i = 0; i < 5; i++) { const a = i * 72 - 90; s += `<ellipse cx="${(x + Math.cos(a * Math.PI / 180) * r * .9).toFixed(1)}" cy="${(y + Math.sin(a * Math.PI / 180) * r * .9).toFixed(1)}" rx="${(r * .62).toFixed(1)}" ry="${(r * .42).toFixed(1)}" transform="rotate(${a + 90} ${(x + Math.cos(a * Math.PI / 180) * r * .9).toFixed(1)} ${(y + Math.sin(a * Math.PI / 180) * r * .9).toFixed(1)})"/>`; }
+    return s + `<circle cx="${x}" cy="${y}" r="${(r * .32).toFixed(1)}" fill-opacity=".55"/>`;
+  };
+  /* demi-couronne : arc de cercle centré sur la jointure des volets (x = 100, y = 140) */
+  function branch(mirror) {
+    const k = 'b' + (ornN++), cx = 100, cy = 140, R = 66;
+    const P = a => [cx + R * Math.cos(a * Math.PI / 180), cy + R * Math.sin(a * Math.PI / 180)];
+    const a0 = 112, a1 = 250;
+    const [x0, y0] = P(a0), [x1, y1] = P(a1);
+    let g = `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} A${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="url(#${k}gd)" stroke-width="1.6" stroke-linecap="round"/>`;
+    for (let i = 0; i <= 13; i++) {
+      const t = i / 13, a = a0 + (a1 - a0) * t, [x, y] = P(a), tang = a + 90; /* tangente (sens de la tige) */
+      const L = 17 - Math.abs(t - .45) * 9, w = 5 - Math.abs(t - .45) * 2.2;
+      g += leafP(x, y, tang - 38, L, w) + leafP(x, y, tang + 38, L * .9, w * .9);
+    }
+    /* petites tiges et fleurs vers l'extérieur */
+    [[150, 9], [182, 7.5], [214, 8.5]].forEach(([a, r]) => {
+      const [x, y] = P(a), [xo, yo] = [cx + (R + 15) * Math.cos(a * Math.PI / 180), cy + (R + 15) * Math.sin(a * Math.PI / 180)];
+      g += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} Q${((x + xo) / 2 - 4).toFixed(1)} ${((y + yo) / 2 - 6).toFixed(1)} ${xo.toFixed(1)} ${yo.toFixed(1)}" fill="none" stroke="url(#${k}gd)" stroke-width="1"/>` + flowerP(xo, yo, r);
+    });
+    /* volutes en haut et en bas */
+    g += `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} c-6 -10 -2 -22 8 -24 c8 -1 10 8 4 11" fill="none" stroke="url(#${k}gd)" stroke-width="1.3" stroke-linecap="round"/>`;
+    g += `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} c-8 8 -6 20 4 22 c8 1 10 -8 4 -10" fill="none" stroke="url(#${k}gd)" stroke-width="1.3" stroke-linecap="round"/>`;
+    return `<svg class="branch" viewBox="0 0 100 280" preserveAspectRatio="xMaxYMid meet" aria-hidden="true"${mirror ? ' style="transform:scaleX(-1)"' : ''}><defs>${goldDefs(k)}</defs><g fill="url(#${k}gd)" filter="url(#${k}em)">${g}</g></svg>`;
+  }
+  /* branche de fleurs d'oranger (aquarelle douce) */
+  function sprig() {
+    const k = 'p' + (ornN++);
+    const leaves = [[30, 104, -95, 28, 9], [36, 99, 15, 30, 10], [52, 85, -100, 30, 10], [60, 76, 20, 32, 11], [84, 50, -120, 26, 9], [90, 44, 0, 28, 9], [106, 30, -60, 20, 7]]
+      .map(([x, y, a, L, w]) => leafP(x, y, a, L, w)).join('');
+    const fl = (x, y, r, rot) => {
+      let s = `<g transform="rotate(${rot} ${x} ${y})">`;
+      for (let i = 0; i < 5; i++) { const a = i * 72; s += `<ellipse cx="${x}" cy="${y - r * .62}" rx="${r * .42}" ry="${r * .62}" transform="rotate(${a} ${x} ${y})" fill="url(#${k}w)"/>`; }
+      return s + `<circle cx="${x}" cy="${y}" r="${r * .2}" fill="#e7c766"/><g fill="#caa13a">${[0, 60, 120, 180, 240, 300].map(a => `<circle cx="${(x + Math.cos(a * Math.PI / 180) * r * .32).toFixed(1)}" cy="${(y + Math.sin(a * Math.PI / 180) * r * .32).toFixed(1)}" r=".9"/>`).join('')}</g></g>`;
+    };
+    return `<svg class="sprig" viewBox="0 0 140 130" aria-hidden="true"><defs>
+        <linearGradient id="${k}l" x1="0" x2="1"><stop offset="0" stop-color="#5f8a57"/><stop offset=".6" stop-color="#86ad74"/><stop offset="1" stop-color="#b9d1a2"/></linearGradient>
+        <radialGradient id="${k}w" cx=".5" cy=".7" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#fbf8f1"/><stop offset="1" stop-color="#e9e2d2"/></radialGradient>
+        <filter id="${k}d"><feDropShadow dx="0" dy="2" stdDeviation="1.6" flood-color="#3b3a2a" flood-opacity=".22"/></filter></defs>
+      <g filter="url(#${k}d)">
+        <path d="M10 120 Q50 90 70 64 T118 22" fill="none" stroke="#6d8a5c" stroke-width="2.2" stroke-linecap="round"/>
+        <g fill="url(#${k}l)" fill-opacity=".92">${leaves}</g>
+        ${fl(74, 40, 15, 10)}${fl(104, 32, 12, -20)}${fl(50, 66, 11, 30)}${fl(118, 54, 8, 0)}
+        <g fill="#f6f1e4" stroke="#d8cfb9" stroke-width=".6"><circle cx="124" cy="18" r="4.2"/><circle cx="92" cy="14" r="3.4"/><circle cx="36" cy="82" r="3.6"/></g>
+      </g></svg>`;
+  }
+  /* ruban de satin bleu qui retombe */
+  function ribbon() {
+    const k = 'r' + (ornN++);
+    return `<svg class="ribbon" viewBox="0 0 90 180" aria-hidden="true"><defs>
+        <linearGradient id="${k}a" x1="0" x2="1"><stop offset="0" stop-color="#3c58a6"/><stop offset=".35" stop-color="#7f97d8"/><stop offset=".5" stop-color="#c9d4f2"/><stop offset=".65" stop-color="#6d86cc"/><stop offset="1" stop-color="#34509b"/></linearGradient>
+        <filter id="${k}d"><feDropShadow dx="1" dy="3" stdDeviation="2" flood-color="#1c2550" flood-opacity=".28"/></filter></defs>
+      <g filter="url(#${k}d)">
+        <path d="M18 4 C46 22 70 40 56 70 C44 96 22 102 34 132 C42 150 58 160 70 176 L56 178 C44 162 26 150 20 132 C8 98 32 92 42 70 C54 44 32 26 8 12 Z" fill="url(#${k}a)"/>
+        <path d="M60 4 C40 24 26 34 30 52 C32 62 40 66 46 74 L40 80 C30 70 20 64 18 52 C14 32 32 20 48 2 Z" fill="url(#${k}a)" opacity=".92"/>
+      </g></svg>`;
+  }
+  /* Dress code « balade » : un couple au trait qui marche (cycle de marche en CSS :
+     jambes alternées, robe qui ondule, bras qui balance, léger rebond). */
+  function couple() {
+    const j = a => a.map(d => `<path d="${d}"/>`).join('');
+    const W = {
+      body: ['M66 26 C66 17 78 16 79 26 C79 33 75 40 72 40 C68 40 66 34 66 26 Z', 'M65 27 C62 15 72 10 78 15 C81 18 80 23 79 26', 'M66 33 C60 36 58 29 64 27', 'M68 18 C72 21 76 21 79 24',
+        'M70 40 C70 44 69.5 47 69 50', 'M75 39 C75 44 75.5 47 76 50', 'M69 50 C64 51 60 53 59 57', 'M76 50 C81 51 85 53 86 57',
+        'M61 62 C65 59 68 63 72.5 61 C77 63 80 59 84 62', 'M61 62 C62 72 64 80 66 90', 'M84 62 C83 72 81 80 79 90', 'M66 90 C70 92 75 92 79 90',
+        'M86 57 C90 70 93 84 95 96 C97 106 99 112 101 117', 'M83 66 C86 76 89 88 91 98 C93 106 95 112 97 118'],
+      arm: ['M59 57 C56 68 55 80 56 92 C57 102 56 110 55 118', 'M62 66 C60 76 60 86 60 96 C60 104 59 110 58 118', 'M55 118 C54 123 58 124 58 118', 'M49 116 L61 114 L62 122 L50 124 Z', 'M49 116 L55.5 120 L61 114'],
+      skirt: ['M66 90 C62 110 58 130 56 150 C52 190 46 230 38 278', 'M79 90 C83 110 86 130 88 150 C94 190 102 230 112 274',
+        'M38 278 C48 284 58 279 68 285 C78 290 92 284 102 280 C106 278 110 276 112 274', 'M112 274 C118 278 124 282 128 284 C120 287 110 287 102 284',
+        'M72 104 C70 150 66 220 62 282', 'M77 108 C82 160 90 220 96 284', 'M64 140 C60 190 54 240 50 281', 'M84 140 C88 190 98 240 106 278', 'M70 287 C73 291 80 291 82 287']
+    };
+    const M = {
+      body: ['M133 22 C133 13 146 12 147 22 C147 30 143 36 139.5 36 C135 36 133 30 133 22 Z', 'M132 22 C130 11 138 6 145 8 C149 10 150 16 147 21', 'M134 12 C138 9 144 9 148 13', 'M147 22 C150 22 150 27 147 27',
+        'M136.5 35 L136.5 42', 'M143 35 L143 42', 'M136.5 42 L139.8 48 L143 42', 'M139.8 48 L134.5 45.5 L134.5 50.5 Z', 'M139.8 48 L145 45.5 L145 50.5 Z',
+        'M136 43 C128 44 122 46 120 52', 'M143.5 43 C151 44 157 46 159 52', 'M136 43 L132 56 L136 60 L139.8 84', 'M143.5 43 L148 56 L144 60 L139.8 84',
+        'M121 54 C121 74 122 88 124 98 C124 108 123 118 123 128', 'M158 54 C158 74 157 88 155 98 C155 108 156 118 156 128',
+        'M139.8 84 C139 100 138 112 137 124', 'M123 128 C128 131 133 129 137 124 C141 130 150 132 156 128',
+        'M138.3 93 a1.2 1.2 0 1 0 2.4 0 a1.2 1.2 0 1 0 -2.4 0', 'M137.8 105 a1.2 1.2 0 1 0 2.4 0 a1.2 1.2 0 1 0 -2.4 0', 'M149 64 L155 63 L154 67', 'M146 113 L154 112',
+        'M120 52 C115 66 112 82 111 96 C110 106 109 112 108 117', 'M124 62 C120 74 117 86 116 98 C115 106 113 112 111 118', 'M107.5 112.5 L112.5 113.5', 'M97 118 C98 124 104 126 108 123 C111 121 111.5 118.5 108 117', 'M101 117 C103 119 105.5 119 107.5 118', 'M108 117 C106 115 103 115 101 117'],
+      arm: ['M159 52 C163 66 164 80 163 96 C163 106 162 114 161 122', 'M155 64 C156 78 156 90 155 102 C155 110 156 116 157 122', 'M157 122 C156 128 162 129 161 122'],
+      l: ['M125 128 C125 170 127 210 128 272', 'M138 128 C137 170 136 210 136 272', 'M128 272 C122 276 122 281 130 281 L138 281 C139 277 138 274 136 272'],
+      r: ['M141 128 C143 170 145 210 146 272', 'M155 128 C156 170 155 210 154 272', 'M146 272 C144 276 145 281 152 281 L160 281 C162 277 158 274 154 272']
+    };
+    return `<svg class="sk draw couple" viewBox="26 0 148 294" role="img" aria-label="Croquis d’un couple élégant qui marche bras dessus bras dessous">
+      <ellipse class="ground" cx="100" cy="285" rx="70" ry="5"/>
+      <g class="m-body">
+        <g class="leg l"><g class="ink">${j(M.l)}</g></g>
+        <g class="leg r"><g class="ink">${j(M.r)}</g></g>
+        <path class="wash" fill-opacity=".2" fill="var(--blue)" d="M121 54 C121 74 122 88 124 98 C124 108 123 118 123 128 C128 131 133 129 137 124 C141 130 150 132 156 128 C156 118 155 108 155 98 C157 88 158 74 158 54 C157 46 151 44 143.5 43 L136 43 C128 44 122 46 121 54 Z"/>
+        <g class="ink">${j(M.body)}</g>
+        <g class="arm-m"><g class="ink">${j(M.arm)}</g></g>
+      </g>
+      <g class="w-body">
+        <g class="skirt"><path class="wash" fill-opacity=".28" fill="var(--rose)" d="M66 90 C62 110 58 130 56 150 C52 190 46 230 38 278 C48 284 58 279 68 285 C78 290 92 284 102 280 C106 278 110 276 112 274 C102 230 94 190 88 150 C86 130 83 110 79 90 Z"/><g class="ink">${j(W.skirt)}</g></g>
+        <path class="wash" fill-opacity=".28" fill="var(--rose)" d="M61 62 C65 59 68 63 72.5 61 C77 63 80 59 84 62 C83 72 81 80 79 90 L66 90 C64 80 62 72 61 62 Z"/>
+        <g class="ink">${j(W.body)}</g>
+        <g class="arm-w"><g class="ink">${j(W.arm)}</g></g>
+      </g>
+    </svg>`;
+  }
+  /* Hébergement : fenêtre à volets ouverts et fleurs grimpantes */
+  function fenetre() {
+    const p = ['M40 30 L80 30 L80 96 L40 96 Z', 'M40 30 C40 14 80 14 80 30', 'M60 18 L60 96', 'M40 56 L80 56', 'M40 76 L80 76',
+      'M40 30 L22 36 L22 100 L40 96', 'M26 46 L36 44', 'M26 58 L36 56', 'M26 70 L36 68', 'M26 82 L36 80',
+      'M80 30 L98 36 L98 100 L80 96', 'M84 44 L94 46', 'M84 56 L94 58', 'M84 68 L94 70', 'M84 80 L94 82',
+      'M34 98 L86 98 L90 106 L30 106 Z', 'M36 106 C38 112 44 116 60 116 C76 116 82 112 84 106',
+      'M42 100 C40 94 44 90 46 94 C48 90 52 94 50 98', 'M58 100 C56 92 62 88 64 94 C66 90 70 94 66 100', 'M72 100 C72 94 76 92 78 96',
+      'M20 112 C14 88 18 60 16 30 C15 20 22 12 30 12', 'M18 70 C12 66 10 60 14 58 C18 60 18 66 18 70', 'M17 48 C22 44 26 46 24 50 C22 52 18 50 17 48',
+      'M30 12 C34 6 40 8 38 14 C36 18 30 16 30 12', 'M100 112 C106 90 102 66 104 44', 'M102 78 C108 74 110 68 106 66 C102 68 102 74 102 78',
+      'M104 44 C100 38 104 34 108 38 C110 42 106 46 104 44'];
+    return `<svg class="sk draw fenetre" viewBox="0 0 120 124" aria-hidden="true"><path class="wash" d="M40 30 C40 14 80 14 80 30 L80 96 L40 96 Z" fill="var(--blue-soft)" opacity=".7"/><g class="ink">${p.map(d => `<path d="${d}"/>`).join('')}</g><g class="fill"><circle cx="46" cy="94" r="2.4"/><circle cx="64" cy="93" r="2.4"/><circle cx="16" cy="58" r="2"/><circle cx="106" cy="66" r="2"/><circle cx="34" cy="12" r="2"/></g></svg>`;
+  }
+  /* filtres de page : bords de papier déchirés */
+  const pageDefs = `<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <filter id="torn" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="3" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter>
+      <filter id="deckle" x="-4%" y="-4%" width="108%" height="108%"><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="5" result="a"/><feDisplacementMap in="SourceGraphic" in2="a" scale="6" xChannelSelector="R" yChannelSelector="G" result="b"/><feTurbulence type="fractalNoise" baseFrequency=".9 .5" numOctaves="2" seed="9" result="c"/><feDisplacementMap in="b" in2="c" scale="4.5" xChannelSelector="R" yChannelSelector="G"/></filter>
+      <filter id="torn2" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="3" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
+    </svg>`;
+
   window.SKETCH = {
+    branch, sprig, ribbon, pageDefs, couple, fenetre,
     chateau: wrap('0 0 420 236', chateauW, chateau, 'Aquarelle du Château de la Fontaine et de son grand cèdre'),
     eglise: wrap('0 0 420 236', egliseW, eglise, 'Aquarelle de l’église et de la halle d’Égreville'),
     mairie: wrap('0 0 420 236', mairieW, mairie, 'Aquarelle de l’hôtel de ville de Suresnes'),

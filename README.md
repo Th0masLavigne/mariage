@@ -48,7 +48,11 @@ Bon à savoir : un dépôt GitHub Pages gratuit est **public** (photos et adress
 ## Modifier au fil de l’eau
 Tout se fait dans `config.js` (sur GitHub : ouvrir le fichier → crayon ✏️ → *Commit changes*) :
 - **Horaires** : `moments.mairie.heure: '15h00'` → le badge « horaire à venir » disparaît.
-- **Code couleur (zone à gratter)** : renseigner `codeCouleur.couleurs` puis `codeCouleur.reveler: true` → en grattant, on découvre la palette (avant : « Chut… pas encore ! »).
+- **Dress code** (`dressCode` dans config.js) :
+  - Toujours caché sous une zone à gratter. `reveler: false` → on découvre « Chut… pas encore ! ».
+  - `affichage: 'balade'` → en grattant, un couple dessiné apparaît et marche, avec `tenue` (sous-titre) et `texte` (une phrase ou une liste de règles).
+  - `affichage: 'couleurs'` → en grattant, les tenues teintées et la palette `couleurs`.
+- **Hébergement** (`hebergement`) : encadré « Dormir sur place » affiché juste avant le RSVP, uniquement pour les faire-parts qui ont des `nuits` (le prix et le choix des nuits restent dans le formulaire).
 - **Liste de mariage** : remplir `bientot[0].texte` → la carte se révèle.
 - **Cachet de cire** : `monogramme: 'TL'` (ou `'T&T'`). **Compte à rebours** : vise l’heure du 1er moment, ou `heureParDefaut`.
 - **Date limite** : `repondreAvant: '1er mai 2027'`.
@@ -70,3 +74,9 @@ Avant publication, il ajoute `?v=<numéro du commit>` à `config.js`, `sketches.
 chaque visiteur recharge automatiquement les fichiers modifiés. Rien à faire à la main.
 Réglage à faire une seule fois : *Settings → Pages → Build and deployment → Source : **GitHub Actions***.
 Suivi des publications : onglet **Actions** (coche verte = en ligne).
+
+## Couleurs, décor et démo
+- `palette` : `'vieux-rose'` (vieux rose + or) ou `'bleu'`. `filigrane: true` affiche les monogrammes en filigrane sur le fond.
+- `ornements` : branche fleurie et ruban (PNG détourés dans photos/). Vide → dessins intégrés.
+- `phraseDate` : la phrase sous la grande date (`''` pour la masquer).
+- **Démo** : `…/demo.html` montre les options une à une (rien n'est envoyé). Pratique pour en discuter.

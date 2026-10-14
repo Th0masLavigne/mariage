@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="robots" content="noindex">
+<title>Démo du faire-part</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Parisienne&display=swap">
+<style>
+body { margin: 0; }
+/* Mise en page : banc d'essai — à gauche les étapes numérotées (vraie séquence), à droite le faire-part dans un cadre de téléphone. */
+:root {
+  --bg: #f4ebe5;
+  --panel: #fbf8f1;
+  --ink: #3a2e33;
+  --muted: #6c6879;
+  --blue: #9a5866;
+  --blue-soft: #f2e2df;
+  --rose: #a97a4c;
+  --gold: #b48a3c;
+  --line: #e2d9c8;
+  --frame: #2e2328;
+  --f-display: 'Bodoni Moda', Georgia, serif;
+  --f-body: 'EB Garamond', Georgia, serif;
+  --f-hand: 'Parisienne', 'Snell Roundhand', cursive;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #181a26; --panel: #222536; --ink: #ece7dc; --muted: #a9a4b6; --blue: #e0a9b4; --blue-soft: #3a2a30; --rose: #d6b16a; --gold: #d6b16a; --line: #34384d; --frame: #0d0e16; color-scheme: dark;
+} }
+:root[data-theme="dark"] { --bg: #181a26; --panel: #222536; --ink: #ece7dc; --muted: #a9a4b6; --blue: #e0a9b4; --blue-soft: #3a2a30; --rose: #d6b16a; --gold: #d6b16a; --line: #34384d; --frame: #0d0e16; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 18px/1.5 var(--f-body); }
+.wrap { max-width: 1060px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 48px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: start; }
+header { grid-column: 1 / -1; }
+.eyebrow { font: 500 12px/1 var(--f-body); letter-spacing: .3em; text-transform: uppercase; color: var(--rose); }
+h1 { font: italic 400 clamp(30px, 5vw, 42px)/1.1 var(--f-display); color: var(--blue); margin: 8px 0 6px; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 60ch; }
+.side { min-width: 0; display: grid; gap: 22px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; counter-reset: s; }
+.steps button { width: 100%; display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: baseline; text-align: left; padding: 10px 12px; border: 1px solid transparent; border-radius: 8px; background: none; color: var(--ink); font: 17px/1.3 var(--f-body); cursor: pointer; }
+.steps button:hover { background: var(--panel); }
+.steps button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.steps button[aria-current="step"] { background: var(--panel); border-color: var(--line); }
+.steps .n { font: italic 400 22px/1 var(--f-display); color: var(--gold); }
+.steps small { display: block; color: var(--muted); font-size: 14px; }
+.note { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 10px; }
+.note h2 { margin: 0; font: italic 400 24px/1.15 var(--f-display); color: var(--blue); text-wrap: balance; }
+.note p { margin: 0; }
+.note code { display: block; white-space: pre-wrap; font: 13.5px/1.5 ui-monospace, 'SF Mono', Menlo, monospace; background: var(--bg); border-radius: 6px; padding: 10px 12px; color: var(--ink); overflow-x: auto; }
+.nav { display: flex; gap: 10px; flex-wrap: wrap; }
+.nav button { font: 500 15px/1 var(--f-body); letter-spacing: .04em; padding: 11px 18px; border-radius: 99px; border: 1px solid var(--blue); background: none; color: var(--blue); cursor: pointer; }
+.nav button.primary { background: var(--blue); color: var(--panel); }
+.nav button:disabled { opacity: .4; cursor: default; }
+.nav button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.phone { width: 400px; max-width: 100%; padding: 12px; border-radius: 46px; background: var(--frame); box-shadow: 0 30px 60px rgba(20,22,40,.25); }
+.phone iframe { display: block; width: 100%; height: min(780px, 82vh); border: 0; border-radius: 34px; background: #f3ede2; }
+.hand { font: 400 22px/1.2 var(--f-hand); color: var(--rose); text-align: center; margin-top: 10px; }
+@media (max-width: 820px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 22px; padding-block: 20px 36px; }
+  .side { position: static; }
+  .steps { grid-auto-flow: column; grid-auto-columns: minmax(170px, 1fr); overflow-x: auto; padding-bottom: 4px; }
+  .phone { justify-self: center; padding: 8px; border-radius: 38px; }
+  .phone iframe { height: 74vh; border-radius: 30px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Faire-part de Tiphaine &amp; Thomas · démo</div>
+    <h1>Les options, une à une</h1>
+    <p>Chaque étape recharge le faire-part avec un réglage différent : l’enveloppe s’ouvre toute seule, puis la page descend jusqu’à la section concernée. Vous pouvez gratter, cliquer et faire défiler comme un invité. Rien n’est envoyé.</p>
+  </header>
+
+  <div class="side">
+    <ol class="steps" id="steps"></ol>
+    <div class="note" aria-live="polite">
+      <h2 id="nTitle"></h2>
+      <p id="nText"></p>
+      <code id="nCode"></code>
+      <div class="nav">
+        <button type="button" id="prev">← Précédente</button>
+        <button type="button" id="replay">Rejouer</button>
+        <button type="button" id="next" class="primary">Suivante →</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="phone"><iframe id="site" title="Aperçu du faire-part"></iframe></div>
+    <div class="hand">aperçu sur téléphone</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var STEPS = [
+    { t: 'L’enveloppe en vieux rose', s: 'Papier artisanal, liseré doré',
+      p: 'Touchez l’enveloppe ou le bouton : les volets s’ouvrent sur la carte, posée sur son fond vieux rose. La branche et le ruban sont vos images, et les monogrammes apparaissent en filigrane sur le fond.',
+      c: "palette: 'vieux-rose',\nfiligrane: true,\nornements: {\n  branche: 'photos/branche.png',\n  ruban: 'photos/ruban.png',\n}",
+      o: { f: 'noce-4m', wait: true } },
+    { t: 'Dress code « balade », pas encore révélé', s: 'Votre réglage actuel',
+      p: 'Grattez la zone nacrée : on découvre « Chut… pas encore ! » devant le couple flouté. Rien n’est dévoilé tant que reveler vaut false.',
+      c: "dressCode: {\n  affichage: 'balade',\n  reveler: false,\n}",
+      o: { f: 'noce-4m', dc: 'balade', rev: false, go: '#bientot' } },
+    { t: 'Dress code « balade », révélé', s: 'Le jour où vous êtes prêts',
+      p: 'Grattez, ou touchez « Révéler sans gratter » : le couple se dessine puis marche, avec la tenue en sous-titre et vos deux règles.',
+      c: "dressCode: {\n  affichage: 'balade',\n  reveler: true,\n  tenue: 'Chic, mais comme vous êtes',\n  texte: [ 'Pas de gilet…', 'Le blanc…' ],\n}",
+      o: { f: 'noce-4m', dc: 'balade', rev: true, go: '#bientot' } },
+    { t: 'Dress code « couleurs »', s: 'L’ancienne version, toujours là',
+      p: 'Même zone à gratter, mais on découvre les tenues teintées et les pastilles. Touchez une couleur pour habiller le costume et la robe.',
+      c: "dressCode: {\n  affichage: 'couleurs',\n  reveler: true,\n}",
+      o: { f: 'noce-4m', dc: 'couleurs', rev: true, go: '#bientot' } },
+    { t: 'Hébergement · Le grand week-end', s: 'Deux nuits possibles',
+      p: 'L’encadré « Dormir sur place » arrive juste avant le RSVP. Le prix et le choix des nuits restent dans le formulaire, juste en dessous.',
+      c: "hebergement: {\n  titre: 'Dormir sur place',\n  texte: 'Pour prolonger la fête…',\n  note: 'Places limitées…',\n}",
+      o: { f: 'grand-weekend-7q', dc: 'balade', rev: false, go: '#hebergement' } },
+    { t: 'Hébergement · Église, vin d’honneur & dîner', s: 'Une nuit possible',
+      p: 'Même encadré pour la noce. Descendez un peu : le formulaire ne propose que la nuit du samedi.',
+      c: "formules['noce-4m'].nuits: [ sam ]",
+      o: { f: 'noce-4m', dc: 'balade', rev: false, go: '#hebergement' } },
+    { t: 'Église & vin d’honneur', s: 'Pas de nuit, pas d’encadré',
+      p: 'Sans nuit prévue, la section hébergement disparaît : on passe directement au RSVP.',
+      c: "formules['vin-honneur-2k'].nuits: []",
+      o: { f: 'vin-honneur-2k', dc: 'balade', rev: false, go: '#rsvp' } },
+    { t: 'Pour comparer : la palette bleue', s: 'L’ancienne couleur, en un mot',
+      p: 'Toute la page repasse en bleu Majorelle avec un seul réglage. Les images de branche et de ruban restent les mêmes.',
+      c: "palette: 'bleu',",
+      o: { f: 'grand-weekend-7q', pal: 'bleu', go: '#date' } }
+  ];
+  var OVERRIDE = "(function(){\n  var o = window.DEMO_OPT || {}, C = window.CONFIG;\n  C.rsvpUrl = '';\n  if (o.pal) C.palette = o.pal;\n  if (o.dc) C.dressCode.affichage = o.dc;\n  if (o.rev != null) C.dressCode.reveler = o.rev;\n  if (o.f && C.formules[o.f]) { var F = {}; F[o.f] = C.formules[o.f]; Object.keys(C.formules).forEach(function(k){ if (k !== o.f) F[k] = C.formules[k]; }); C.formules = F; }\n  document.addEventListener('DOMContentLoaded', function(){\n    var st = document.createElement('style'); st.textContent = '.demo-bar{display:none!important}'; document.head.appendChild(st);\n    if (!o.wait) setTimeout(function(){ var b = document.getElementById('openBtn'); if (b) b.click(); }, 900);\n    if (o.go) setTimeout(function(){ var t = document.querySelector(o.go); if (t) t.scrollIntoView({ behavior: 'smooth', block: o.block || 'start' }); }, 4300);\n  });\n})();\n";
+  var SITE = '', pending = null;
+  /* Le faire-part : intégré à la page (artefact) ou lu à côté (GitHub Pages : index.html) */
+  var data = document.getElementById('siteData');
+  var ready = data ? Promise.resolve((function () { var bin = atob(data.textContent.trim()), bytes = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); return new TextDecoder().decode(bytes); })())
+    : fetch('index.html', { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+        return t.replace(/(<script src="config\.js[^"]*"><\/script>)/, '$1\n<script>/*__OVERRIDE__*/<\/script>\n<script>' + OVERRIDE + '<\/script>');
+      });
+  var frame = document.getElementById('site'), list = document.getElementById('steps'), cur = 0;
+  list.innerHTML = STEPS.map(function (s, i) { return '<li><button type="button" data-i="' + i + '"><span class="n">' + (i + 1) + '</span><span>' + s.t + '<small>' + s.s + '</small></span></button></li>'; }).join('');
+  function show(i) {
+    cur = i; var s = STEPS[i];
+    list.querySelectorAll('button').forEach(function (b, k) { if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+    document.getElementById('nTitle').textContent = s.t;
+    document.getElementById('nText').textContent = s.p;
+    document.getElementById('nCode').textContent = s.c;
+    document.getElementById('prev').disabled = i === 0;
+    document.getElementById('next').disabled = i === STEPS.length - 1;
+    var html = 'window.DEMO_OPT=' + JSON.stringify(s.o) + ';';
+    if (SITE) frame.srcdoc = SITE.replace('/*__OVERRIDE__*/', html); else pending = i;
+  }
+  ready.then(function (t) { SITE = t; show(pending == null ? cur : pending); }).catch(function () { document.getElementById('nText').textContent = 'Impossible de charger le faire-part (index.html).'; });
+  list.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) show(+b.dataset.i); });
+  document.getElementById('prev').addEventListener('click', function () { if (cur > 0) show(cur - 1); });
+  document.getElementById('next').addEventListener('click', function () { if (cur < STEPS.length - 1) show(cur + 1); });
+  document.getElementById('replay').addEventListener('click', function () { show(cur); });
+  show(0);
+})();
+</script>
+
+</html>

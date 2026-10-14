@@ -33,6 +33,18 @@ window.CONFIG = {
   /* Heure visée par le compte à rebours tant que l’horaire du 1er moment n’est pas connu */
   heureParDefaut: '15:00',
 
+  /* --- Couleurs & décor ---------------------------------------------
+     palette   : 'vieux-rose' (vieux rose + or) ou 'bleu' (bleu Majorelle)
+     filigrane : monogrammes (monogrammeLettres) en filigrane sur le fond
+     ornements : branche fleurie et ruban (PNG à fond transparent).
+                 Vide '' → versions dessinées intégrées.                   */
+  palette: 'vieux-rose',
+  filigrane: true,
+  ornements: { branche: 'photos/branche.png', ruban: 'photos/ruban.png' },
+
+  /* Phrase sous la grande date ('' pour la masquer) */
+  phraseDate: 'Une date à garder précieusement.',
+
   /* --- Apparence ------------------------------------------------------
      style : 'sketch'      → croquis dessinés à la main des lieux
              'placeholder' → cadres photo à remplir (mettez vos photos
@@ -125,12 +137,23 @@ window.CONFIG = {
     }
   },
 
-  /* --- Code couleur : zone à gratter ---------------------------------
-     reveler: false → en grattant on découvre « Chut… pas encore ! »
-     reveler: true  → en grattant on découvre les couleurs ci-dessous.   */
-  codeCouleur: {
+  /* --- Dress code ----------------------------------------------------
+     Dans les deux cas, une zone à gratter cache le dress code.
+     affichage : 'couleurs' → tenues teintées + pastilles de couleur
+                 'balade'   → croquis animé d’un couple qui marche + texte
+     reveler   : false → en grattant : « Chut… pas encore ! »
+                 true  → en grattant : le dress code.
+     texte     : une phrase, ou une liste [ '…', '…' ] (une ligne par règle). */
+  dressCode: {
+    affichage: 'balade',
+    titre: 'Dress code',
+    /* sous-titre en mode balade (ex. « Tenue de cocktail chic ») */
+    tenue: 'Chic, mais comme vous êtes',
     reveler: false,
-    texte: 'Le blanc et couleurs apparentées est réservé aux mariés. Le port du gilet est réservé au marié.',
+    texte: [
+      'Pas de gilet pour ces messieurs : il est réservé au marié.',
+      'Le blanc et les tons clairs apparentés sont réservés aux mariés.'
+    ],
     /* Dress code illustré (affiché une fois révélé) */
     eux: 'Costume clair',
     elles: 'Robe longue ou midi',
@@ -149,6 +172,14 @@ window.CONFIG = {
       { nom: 'Pêche',       hex: '#e39a6f' },
       { nom: 'Lilas',       hex: '#e9d5f5' },
     ]
+  },
+
+  /* --- Hébergement (affiché seulement pour les faire-parts avec des nuits) ---
+     Le prix et les nuits sont détaillés dans le formulaire de réponse.      */
+  hebergement: {
+    titre: 'Dormir sur place',
+    texte: 'Pour prolonger la fête sans reprendre la route, il est possible de dormir au château.',
+    note: 'Places limitées, attribuées par ordre de réponse. Plus de détails très bientôt.'
   },
 
   /* --- « Plus d’infos très bientôt » (cartes à retourner) -------------
@@ -180,6 +211,8 @@ window.CONFIG = {
     { src: 'photos/bruges-diner.jpg',  legende: 'Dîner au bord du canal' }
   ],
   photoHero: 'photos/bateau-nb.jpg',
+  /* Grande photo de fin « On vous attend » */
+  photoFin: 'photos/halong.jpg',
 
   /* --- Le bouton « Non » qui s’enfuit --------------------------------- */
   fuite: [

@@ -33,7 +33,7 @@ jobs:
       - name: Préparer le dossier publié
         run: |
           mkdir -p _site
-          cp -r index.html liens.html config.js sketches.js photos agenda _site/
+          cp -r index.html demo.html liens.html config.js sketches.js photos agenda _site/
           ls -R _site | head -40
 
       - uses: actions/configure-pages@v5
