@@ -348,6 +348,7 @@ window.CONFIG = {
       covoiturage: { texte: 'Vous avez des places dans votre voiture, ou vous en cherchez une ? Déposez une annonce, les autres invités vous contacteront.', lien: '' }
     },
 
+    /* affiché uniquement pour les formules avec des nuits (jamais pour « Église & vin d’honneur ») */
     dormir: {
       actif: true,
       titre: 'Où dormir',

@@ -434,7 +434,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     </div>` : ''}` }); }
 
   /* --- Dormir --- */
-  if (on(SI.dormir)) { const D = SI.dormir, adr = D.adresses || [];
+  /* « Où dormir » : seulement pour les faire-parts qui ont des nuits (pas pour « Église & vin d’honneur ») */
+  if (on(SI.dormir) && F.nuits.length) { const D = SI.dormir, adr = D.adresses || [];
     sections.push({ id: 'dormir', menu: 'Dormir', html: `
     ${head('Hébergement', D.titre || 'Où dormir')}
     ${F.nuits.length ? `<div class="paper stay" style="--tilt:.3deg"><span class="in-border"></span>

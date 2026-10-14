@@ -96,6 +96,7 @@ programme avec horaires, accès, où dormir, dress code, questions, liste, témo
   du fichier : un horaire changé une fois change partout.
 - **Chaque rubrique** : `actif: true`, `false` ou `'jour-j'` (apparaît le jour du mariage — pratique pour Photos et Merci).
   Un texte vide affiche « bientôt » ; une question de FAQ sans réponse reste cachée.
+- **Où dormir** n’apparaît que pour les formules qui ont des `nuits` : les invités « Église & vin d’honneur » ne le voient pas.
 - **Bandeau** : `site.annonce: 'Les horaires sont en ligne !'` affiche un bandeau doré en haut.
 - **Vérifier** : `site.html?f=CODE&tout&demo` montre toutes les rubriques, même désactivées, sans rien envoyer.
 - **Lien depuis le faire-part** : avec `site.lienFairePart: true`, « Le carnet pratique → » apparaît en bas du faire-part
