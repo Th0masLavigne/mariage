@@ -94,9 +94,9 @@ header p { margin: 0; color: var(--muted); max-width: 60ch; }
 <script>
 (function () {
   var STEPS = [
-    { t: 'L’enveloppe en vieux rose', s: 'Papier artisanal, liseré doré',
-      p: 'Touchez l’enveloppe ou le bouton : les volets s’ouvrent sur la carte, posée sur son fond vieux rose. La branche et le ruban sont vos images, et les monogrammes apparaissent en filigrane sur le fond.',
-      c: "palette: 'vieux-rose',\nfiligrane: true,\nornements: {\n  branche: 'photos/branche.png',\n  ruban: 'photos/ruban.png',\n}",
+    { t: 'L’enveloppe « Bridgerton »', s: 'Bleu poudré, sceau et pompon dorés',
+      p: 'Touchez l’enveloppe : les volets s’ouvrent, puis les prénoms s’écrivent sous votre portrait en médaillon doré, dans une carte aux coins en filigrane.',
+      c: "palette: 'bridgerton',\nornements: { branche: 'aucune', ruban: 'pompon' },\ncadrePhoto: 'ovale',\nfiligranesCoins: true,\nstylo: false,",
       o: { f: 'noce-4m', wait: true } },
     { t: 'Dress code « balade », pas encore révélé', s: 'Votre réglage actuel',
       p: 'Grattez la zone nacrée : on découvre « Chut… pas encore ! » devant le couple flouté. Rien n’est dévoilé tant que reveler vaut false.',
@@ -122,10 +122,10 @@ header p { margin: 0; color: var(--muted); max-width: 60ch; }
       p: 'Sans nuit prévue, la section hébergement disparaît : on passe directement au RSVP.',
       c: "formules['vin-honneur-2k'].nuits: []",
       o: { f: 'vin-honneur-2k', dc: 'balade', rev: false, go: '#rsvp' } },
-    { t: 'Pour comparer : la palette bleue', s: 'L’ancienne couleur, en un mot',
-      p: 'Toute la page repasse en bleu Majorelle avec un seul réglage. Les images de branche et de ruban restent les mêmes.',
-      c: "palette: 'bleu',",
-      o: { f: 'grand-weekend-7q', pal: 'bleu', go: '#date' } }
+    { t: 'Pour comparer : vieux rose', s: 'L’autre palette, en un mot',
+      p: 'Toute la page passe en vieux rose avec un seul réglage. Les couleurs se retouchent une à une dans « couleurs ».',
+      c: "palette: 'vieux-rose',",
+      o: { f: 'grand-weekend-7q', pal: 'vieux-rose', wait: true } }
   ];
   var OVERRIDE = "(function(){\n  var o = window.DEMO_OPT || {}, C = window.CONFIG;\n  C.rsvpUrl = '';\n  if (o.pal) C.palette = o.pal;\n  if (o.dc) C.dressCode.affichage = o.dc;\n  if (o.rev != null) C.dressCode.reveler = o.rev;\n  if (o.f && C.formules[o.f]) { var F = {}; F[o.f] = C.formules[o.f]; Object.keys(C.formules).forEach(function(k){ if (k !== o.f) F[k] = C.formules[k]; }); C.formules = F; }\n  document.addEventListener('DOMContentLoaded', function(){\n    var st = document.createElement('style'); st.textContent = '.demo-bar{display:none!important}'; document.head.appendChild(st);\n    if (!o.wait) setTimeout(function(){ var b = document.getElementById('openBtn'); if (b) b.click(); }, 900);\n    if (o.go) setTimeout(function(){ var t = document.querySelector(o.go); if (t) t.scrollIntoView({ behavior: 'smooth', block: o.block || 'start' }); }, 4300);\n  });\n})();\n";
   var SITE = '', pending = null;

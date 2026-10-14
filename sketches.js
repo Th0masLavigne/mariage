@@ -328,6 +328,81 @@
       'M104 44 C100 38 104 34 108 38 C110 42 106 46 104 44'];
     return `<svg class="sk draw fenetre" viewBox="0 0 120 124" aria-hidden="true"><path class="wash" d="M40 30 C40 14 80 14 80 30 L80 96 L40 96 Z" fill="var(--blue-soft)" opacity=".7"/><g class="ink">${p.map(d => `<path d="${d}"/>`).join('')}</g><g class="fill"><circle cx="46" cy="94" r="2.4"/><circle cx="64" cy="93" r="2.4"/><circle cx="16" cy="58" r="2"/><circle cx="106" cy="66" r="2"/><circle cx="34" cy="12" r="2"/></g></svg>`;
   }
+
+  /* ---- Style « château » ---- */
+  /* glycine en cascade (grappes dessinées, couleurs prises dans la palette : --fleur1/2/3, --feuille) */
+  function glycine(seed) {
+    let r = (seed || 7) * 9301 % 233280; const rnd = () => (r = (r * 9301 + 49297) % 233280) / 233280;
+    const k = 'gl' + (ornN++);
+    let g = '';
+    /* tige principale */
+    g += `<path d="M-6 14 C 40 4, 90 30, 140 18 S 200 26, 214 14" fill="none" stroke="#8a7a5c" stroke-width="2.2" stroke-linecap="round"/>`;
+    g += `<path d="M30 10 C 46 22, 52 36, 50 52 M96 24 C 110 34, 114 48, 112 60 M150 20 C 160 30, 170 40, 168 52" fill="none" stroke="#8a7a5c" stroke-width="1.3" stroke-linecap="round"/>`;
+    /* feuilles composées */
+    const leaf = (x, y, a, L) => `<path d="M0 0 C ${L * .3} ${-L * .22}, ${L * .7} ${-L * .2}, ${L} 0 C ${L * .7} ${L * .2}, ${L * .3} ${L * .22}, 0 0 Z" transform="translate(${x} ${y}) rotate(${a})" fill="var(--feuille, #9fb39a)" opacity=".92"/><path d="M0 0 L${L * .9} 0" transform="translate(${x} ${y}) rotate(${a})" stroke="rgba(255,255,255,.45)" stroke-width=".6"/>`;
+    [[12, 9, -160, 22], [18, 12, 150, 18], [62, 14, -20, 20], [70, 16, 30, 17], [124, 20, -150, 21], [132, 22, 160, 16], [182, 18, -30, 20], [190, 18, 20, 16], [44, 18, 110, 14], [160, 24, 70, 14]]
+      .forEach(([x, y, a, L]) => g += leaf(x, y, a, L));
+    /* grappes : fleurs claires en haut, boutons plus foncés en bas */
+    const raceme = (x0, y0, L, sway) => {
+      let s = '';
+      const n = Math.round(L / 3.2);
+      for (let i = 0; i < n; i++) {
+        const t = i / n, w = (1 - t) * 22 + 3, y = y0 + t * L, x = x0 + Math.sin(t * 3.1) * sway;
+        const col = t < .3 ? 'var(--fleur1, #c9b6e4)' : t < .68 ? 'var(--fleur2, #a690cc)' : 'var(--fleur3, #8c74b8)';
+        const per = t < .7 ? 4 : 3;
+        for (let j = 0; j < per; j++) {
+          const dx = (rnd() - .5) * w, rx = (5.2 - t * 2.6) * (.8 + rnd() * .4), ry = rx * (.62 + rnd() * .2), cx = x + dx, cy = y + (rnd() - .5) * 3;
+          const rot = Math.round((rnd() - .5) * 70 + (dx > 0 ? 18 : -18));
+          s += `<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${col}" transform="rotate(${rot} ${cx.toFixed(1)} ${cy.toFixed(1)})"/>`;
+          if (t < .65 && rnd() < .6) s += `<ellipse cx="${(cx - rx * .25).toFixed(1)}" cy="${(cy - ry * .3).toFixed(1)}" rx="${(rx * .5).toFixed(1)}" ry="${(ry * .38).toFixed(1)}" fill="#fff" opacity=".5" transform="rotate(${rot} ${cx.toFixed(1)} ${cy.toFixed(1)})"/>`;
+          if (t < .55 && rnd() < .35) s += `<circle cx="${(cx + rx * .15).toFixed(1)}" cy="${(cy + ry * .2).toFixed(1)}" r="${(rx * .22).toFixed(1)}" fill="#e9d48a" opacity=".85"/>`;
+        }
+      }
+      return s;
+    };
+    g += raceme(22, 14, 64, 2) + raceme(196, 20, 58, 2) + raceme(84, 24, 82, -3) + raceme(50, 48, 118, 4) + raceme(168, 48, 92, 3) + raceme(112, 56, 148, -5);
+    return `<svg class="glycine" viewBox="0 0 210 220" aria-hidden="true"><g filter="url(#${k}s)">${g}</g><defs><filter id="${k}s" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="2" stdDeviation="1.6" flood-color="#3a3050" flood-opacity=".18"/></filter></defs></svg>`;
+  }
+  /* coin en filigrane doré (volutes) */
+  function filigrane() {
+    const k = 'fg' + (ornN++);
+    return `<svg class="filigrane" viewBox="0 0 100 100" aria-hidden="true"><defs>${goldDefs(k)}</defs><g fill="none" stroke="url(#${k}gd)" stroke-width="1.6" stroke-linecap="round">
+      <path d="M6 94 L6 30 C 6 14 14 6 30 6 L94 6"/>
+      <path d="M12 88 L12 34 C 12 20 20 12 34 12 L88 12" stroke-width=".7"/>
+      <path d="M6 30 C 18 30 26 22 26 12 C 26 6 20 4 17 8 C 14 12 18 17 22 14"/>
+      <path d="M30 6 C 30 18 22 26 12 26 C 6 26 4 20 8 17 C 12 14 17 18 14 22"/>
+      <path d="M26 26 C 40 30 46 40 40 50 C 36 56 28 54 30 47 C 32 42 38 44 36 48"/>
+      <path d="M26 26 C 30 40 40 46 50 40 C 56 36 54 28 47 30 C 42 32 44 38 48 36"/>
+      <path d="M40 50 C 42 62 36 70 30 74 M50 40 C 62 42 70 36 74 30"/>
+      <path d="M30 74 C 26 78 28 84 33 83 M74 30 C 78 26 84 28 83 33"/></g>
+      <g fill="url(#${k}gd)"><circle cx="26" cy="26" r="2.6"/><circle cx="6" cy="94" r="1.6"/><circle cx="94" cy="6" r="1.6"/>
+      <path d="M33 33 C 36 28 42 28 44 33 C 40 34 36 36 33 33 Z"/><path d="M33 33 C 28 36 28 42 33 44 C 34 40 36 36 33 33 Z"/></g></svg>`;
+  }
+  /* séparateur orné */
+  function ornement() {
+    const k = 'or' + (ornN++);
+    return `<svg class="rule orne" viewBox="0 0 240 30" aria-hidden="true"><defs>${goldDefs(k)}</defs><g fill="none" stroke="url(#${k}gd)" stroke-width="1.3" stroke-linecap="round">
+      <path d="M20 15 H92 M148 15 H220" stroke-width=".8"/>
+      <path d="M92 15 C 98 15 102 9 108 9 C 113 9 114 14 110 15 C 107 16 106 13 108 12"/>
+      <path d="M148 15 C 142 15 138 9 132 9 C 127 9 126 14 130 15 C 133 16 134 13 132 12"/>
+      <path d="M92 15 C 98 15 102 21 108 21 C 113 21 114 16 110 15 C 107 14 106 17 108 18"/>
+      <path d="M148 15 C 142 15 138 21 132 21 C 127 21 126 16 130 15 C 133 14 134 17 132 18"/></g>
+      <g fill="url(#${k}gd)"><path d="M120 5 L126 15 L120 25 L114 15 Z"/><circle cx="20" cy="15" r="1.8"/><circle cx="220" cy="15" r="1.8"/><circle cx="104" cy="15" r="1.3"/><circle cx="136" cy="15" r="1.3"/></g></svg>`;
+  }
+
+  /* pompon doré au bout d'une cordelette (sous l'enveloppe) */
+  function pompon() {
+    const k = 'pp' + (ornN++);
+    let fr = '';
+    for (let i = 0; i < 26; i++) { const x = 22 + i * 1.25, c = (i % 3 === 0) ? `url(#${k}hl)` : `url(#${k}gd)`;
+      fr += `<path d="M${x.toFixed(1)} 118 C ${(x + (i - 13) * .25).toFixed(1)} 140, ${(x + (i - 13) * .55).toFixed(1)} 160, ${(x + (i - 13) * .7).toFixed(1)} ${172 + (i % 4)}" stroke="${c}" stroke-width="1.2" fill="none" stroke-linecap="round"/>`; }
+    return `<svg class="pompon" viewBox="0 0 80 190" aria-hidden="true"><defs>${goldDefs(k)}<linearGradient id="${k}hl" x1="0" x2="1"><stop offset="0" stop-color="#fff3c8"/><stop offset="1" stop-color="#d9b56a"/></linearGradient></defs>
+      <path d="M40 0 C 34 20, 46 34, 38 52 C 32 66, 44 78, 40 92" stroke="url(#${k}gd)" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      <path d="M40 0 C 34 20, 46 34, 38 52 C 32 66, 44 78, 40 92" stroke="#fff3c8" stroke-width="1" fill="none" stroke-dasharray="2 3" opacity=".7"/>
+      <ellipse cx="40" cy="98" rx="9" ry="8" fill="url(#${k}gd)"/><ellipse cx="37" cy="95" rx="3.5" ry="2.5" fill="#fff6d6" opacity=".6"/>
+      <path d="M30 106 L50 106 L54 118 L26 118 Z" fill="url(#${k}gd)"/><path d="M27 112 H53" stroke="#8a6424" stroke-width=".8" opacity=".6"/>
+      <g>${fr}</g></svg>`;
+  }
   /* filtres de page : bords de papier déchirés */
   const pageDefs = `<svg width="0" height="0" style="position:absolute" aria-hidden="true">
       <filter id="torn" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="3" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter>
@@ -336,7 +411,7 @@
     </svg>`;
 
   window.SKETCH = {
-    branch, sprig, ribbon, pageDefs, couple, fenetre,
+    branch, sprig, ribbon, pageDefs, couple, fenetre, glycine, filigrane, ornement, pompon,
     chateau: wrap('0 0 420 236', chateauW, chateau, 'Aquarelle du Château de la Fontaine et de son grand cèdre'),
     eglise: wrap('0 0 420 236', egliseW, eglise, 'Aquarelle de l’église et de la halle d’Égreville'),
     mairie: wrap('0 0 420 236', mairieW, mairie, 'Aquarelle de l’hôtel de ville de Suresnes'),

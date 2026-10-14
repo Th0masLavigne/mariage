@@ -39,16 +39,50 @@ window.CONFIG = {
   heureParDefaut: '15:00',
 
   /* --- Couleurs & décor ---------------------------------------------
-     palette   : 'vieux-rose' (vieux rose + or) ou 'bleu' (bleu Majorelle)
+     palette   : 'bridgerton' (bleu poudré, glycine, rose et or, encre bleu nuit)
+                 'vieux-rose' (vieux rose + or)   ·   'bleu' (bleu Majorelle)
      filigrane : monogrammes (monogrammeLettres) en filigrane sur le fond
      ornements : branche fleurie et ruban (PNG à fond transparent).
                  Vide '' → versions dessinées intégrées.                   */
-  palette: 'vieux-rose',
+  palette: 'bridgerton',
+  /* Retouches de couleurs (facultatif) : décommentez et changez les codes.
+     enveloppe / fondEnveloppe : l'enveloppe est alors dessinée (un peu plus lourde). */
+  couleurs: {
+    // fond: '#f5f0e8',        // fond de page
+    // papier: '#fffdf8',      // cartes
+    // texte: '#2b3150',       // texte (bleu nuit)
+    // titres: '#4a6a9c',      // titres, boutons
+    // accent: '#a8789a',      // jours du programme, petits accents
+    // or: '#b48a3c',
+    // fleurs: ['#d6c8ec', '#ab95d1', '#8670b6'],   // glycine : claire → foncée
+    // feuilles: '#9fb39a',
+    // robe: '#b9a4d6', costume: '#4a6a9c',          // couple du dress code
+    // enveloppe: '#9fbadb', fondEnveloppe: '#b9cde4'
+  },
+  /* Photo du haut : 'ovale' (médaillon doré) ou 'arche' */
+  cadrePhoto: 'ovale',
+  /* Coins en filigrane doré sur la carte du haut */
+  filigranesCoins: true,
+  /* Stylo qui écrit les prénoms */
+  stylo: false,
   filigrane: true,
-  ornements: { branche: 'photos/branche.png', ruban: 'photos/ruban.png' },
+  /* branche (coin de la carte et de l'enveloppe) : 'aucune', 'glycine', ou une image (ex. 'photos/branche.png')
+     ruban (sous l'enveloppe) : 'pompon' (pompon doré), 'aucune', ou une image (ex. 'photos/ruban.png') */
+  ornements: { branche: 'aucune', ruban: 'pompon' },
 
   /* Durée d’un aller-retour du reflet doré, en secondes (plus grand = plus lent et plus léger) */
   refletSecondes: 12,
+
+  /* Titres des sections (laisser '' pour masquer celui de la date ou le sous-titre) */
+  textes: {
+    sousTitre: 'Et maintenant, pour toujours.',
+    date: 'Notez-le bien',
+    programme: 'Le déroulé',
+    escales: 'Avant la prochaine',
+    bientot: 'Ne dites rien, on prépare la suite',
+    finPhrase: 'Les plus belles histoires se célèbrent ensemble.',
+    fin: 'On vous attend'
+  },
 
   /* Phrase sous la grande date ('' pour la masquer) */
   phraseDate: 'Une date à garder précieusement.',
@@ -120,7 +154,7 @@ window.CONFIG = {
     'grand-weekend-7q': {
       nom: 'Le grand week-end',
       dates: '6 · 7 · 8 août 2027',
-      intro: 'Vous faites partie de ceux qui comptent le plus. Nous aimerions vous avoir à nos côtés du premier « oui » au dernier croissant.',
+      intro: 'Vous faites partie de ceux qui comptent le plus. Nous aurions l’honneur de vous avoir à nos côtés tout au long de ce week-end, du premier « oui » jusqu’au dernier croissant.',
       moments: ['mairie', 'veillee', 'eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'ven', label: 'Nuit du vendredi 6 au samedi 7' },
@@ -130,7 +164,7 @@ window.CONFIG = {
     'noce-4m': {
       nom: 'Église, vin d’honneur & dîner',
       dates: '7 & 8 août 2027',
-      intro: 'Nous serions si heureux de partager avec vous la cérémonie, le vin d’honneur, le dîner… et le brunch du lendemain.',
+      intro: 'Nous aurions la joie de vous compter parmi nous pour la cérémonie, puis de lever nos verres et de danser avec vous jusqu’au bout de la nuit, avant un dernier brunch au château.',
       moments: ['eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'sam', label: 'Nuit du samedi 7 au dimanche 8' }
@@ -139,7 +173,7 @@ window.CONFIG = {
     'vin-honneur-2k': {
       nom: 'Église & vin d’honneur',
       dates: 'Samedi 7 août 2027',
-      intro: 'Venez nous entourer à l’église puis trinquer avec nous au château.',
+      intro: 'Nous serions heureux de vous voir à nos côtés à l’église, puis de trinquer ensemble dans le parc du château.',
       moments: ['eglise', 'vin'],
       nuits: []
     }

@@ -50,7 +50,9 @@
 }
 
 /* ---- Palette « vieux rose » (config : palette: 'vieux-rose') ---- */
-:root.pal-rose {
+:root[data-palette="vieux-rose"] {
+  --fleur1: #f2d3da; --fleur2: #dfaab7; --fleur3: #c5808f; --feuille: #9fb39a;
+  --volet-g: url("photos/volet-g.webp"); --volet-d: url("photos/volet-d.webp"); --fond-carte: url("photos/fond-carte.webp");
   --paper: #f4ebe5; --paper-2: #ecdcd4; --card: #fefaf6; --ink: #3a2e33; --muted: #85767b; --line: #e8d6cd;
   --accent: #9a5866; --blue: #9a5866; --blue-d: #7a4250; --blue-soft: #f2e2df;
   --rose: #a97a4c; --rose-soft: #f3e3d8;
@@ -58,6 +60,20 @@
   --door: #c39498; --door-2: #bd8c91; --base: #d7b0b1;
   --pen-a: #4e2a33; --pen-b: #9a5866; --pen-c: #3f2028;
   --sc1: #d6aeab; --sc2: #f7ebe7; --sc3: #e5c5c1; --sc4: #fcf5f2; --sc5: #c99a97; --sc-ink: #7a4250;
+}
+
+/* ---- Palette « bridgerton » : bleu poudré, glycine, rose et or sur papier crème, encre bleu nuit ---- */
+:root[data-palette="bridgerton"] {
+  --paper: #f5f0e8; --paper-2: #ebe3d6; --card: #fffdf8; --ink: #2b3150; --muted: #77768a; --line: #e4dac9;
+  --accent: #4a6a9c; --blue: #4a6a9c; --blue-d: #364f7c; --blue-soft: #e3eaf5;
+  --rose: #a8789a; --rose-soft: #efe4ef; --gold: #b48a3c;
+  --accent-rgb: 74,106,156; --soft-rgb: 227,234,245; --tape-rgb: 183,163,211; --shade-rgb: 40,50,80;
+  --door: #9fbadb; --door-2: #98b3d6; --base: #b9cde4;
+  --pen-a: #2b3150; --pen-b: #4a6a9c; --pen-c: #1e2440;
+  --sc1: #a9c0de; --sc2: #eef3fa; --sc3: #c6d5ea; --sc4: #f8fafd; --sc5: #9bb3d6; --sc-ink: #364f7c;
+  --dc-robe: #b9a4d6; --dc-costume: #4a6a9c;
+  --fleur1: #d6c8ec; --fleur2: #ab95d1; --fleur3: #8670b6; --feuille: #9fb39a;
+  --volet-g: url("photos/volet-g-bridgerton.webp"); --volet-d: url("photos/volet-d-bridgerton.webp"); --fond-carte: url("photos/fond-carte-bridgerton.webp");
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -181,7 +197,7 @@ h2 { font: italic 400 clamp(32px, 6.4vw, 46px)/1.08 var(--f-display); margin: 10
 .cal-seal .seal-photo { width: 100%; height: 100%; object-fit: contain; }
 .cal-g .wed.photo b { position: absolute; right: -9px; bottom: -9px; width: 20px; height: 20px; display: grid; place-items: center; font: 600 12px/1 var(--f-display); color: var(--ink); background: var(--card); border: 1px solid var(--gold); border-radius: 50%; text-shadow: none; opacity: 0; transition: opacity .3s .5s; }
 .cal.stamped .wed.photo b { opacity: 1; }
-.hero-seal { width: 78px; margin: 0 auto 16px; transform: rotate(-8deg); }
+.hero-seal { width: 56px; margin: 0 auto 12px; transform: rotate(-8deg); }
 .foot-seal { width: 64px; margin: 0 auto 12px; transform: rotate(6deg); }
 .hero-mono { display: block; width: min(250px, 62vw); height: auto; margin: -8px auto 4px; }
 .foot-mono { display: block; width: 150px; height: auto; margin: 0 auto 8px; }
@@ -486,10 +502,10 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .g-base { inset: 0; z-index: 0; isolation: isolate; }
 .door, .g-base, .gate .seal { will-change: transform; }
 /* Enveloppe vieux rose : papier, bords et liseré pré-calculés en images (beaucoup plus fluide sur téléphone) */
-.pal-rose .door.l .face::before { inset: -6.303% -17.647%; background: url("photos/volet-g.webp") 0 0 / 100% 100% no-repeat; filter: none; }
-.pal-rose .door.r .face::before { inset: -6.303% -17.647%; background: url("photos/volet-d.webp") 0 0 / 100% 100% no-repeat; filter: none; }
-.pal-rose .g-base::before { inset: -6.303% -8.824%; background: url("photos/fond-carte.webp") 0 0 / 100% 100% no-repeat; filter: none; }
-.pal-rose .door .face::after, .pal-rose .g-base::after { display: none; }
+.baked .door.l .face::before { inset: -6.303% -17.647%; background: var(--volet-g) 0 0 / 100% 100% no-repeat; filter: none; }
+.baked .door.r .face::before { inset: -6.303% -17.647%; background: var(--volet-d) 0 0 / 100% 100% no-repeat; filter: none; }
+.baked .g-base::before { inset: -6.303% -8.824%; background: var(--fond-carte) 0 0 / 100% 100% no-repeat; filter: none; }
+.baked .door .face::after, .baked .g-base::after { display: none; }
 /* sceau photographié + branches : proportions de l'image d'origine (sceau = 44 % de la largeur) */
 .gate.photo-seal .seal { width: 44%; transform: translate(-50%, -50%) rotate(-3deg); }
 .gate.photo-seal:hover .seal { transform: translate(-50%, -50%) rotate(2deg) scale(1.04); }
@@ -552,7 +568,10 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .bigdate { margin: 4px 0 6px; }
 .bigdate .num { display: block; font: 400 clamp(110px, 32vw, 190px)/.86 var(--f-display); letter-spacing: -.02em; }
 .bigdate .num small { font-size: .42em; vertical-align: .55em; margin: 0 .04em; }
-.bigdate .num.range { font-size: clamp(80px, 23vw, 150px); }
+.bigdate .num.range { font-size: clamp(78px, 22vw, 140px); }
+.bigdate .num.range3 { font-size: clamp(60px, 17vw, 112px); }
+.bigdate .num small.et { font: italic 400 .5em/1 var(--f-display); vertical-align: .32em; margin: 0 .1em; }
+.bigdate .num small.pt { font-size: .6em; vertical-align: .18em; margin: 0 .08em; }
 .bigdate .mois { display: block; font: 400 clamp(46px, 12vw, 66px)/1 var(--f-hand); color: var(--blue); margin-top: -.12em; }
 .bigdate .an { display: block; margin-top: 10px; font: 500 13px/1 var(--f-display); letter-spacing: .5em; color: var(--muted); }
 .foil {
@@ -729,6 +748,26 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 .cd-cell { box-shadow: 0 8px 12px -8px rgba(50,45,70,.22); }
 .gate .g-inner { box-shadow: 0 5px 10px -5px rgba(40,40,60,.22); }
 #scratchCv { will-change: transform; }
+
+/* ---- Style château : glycine, filigranes dorés, médaillon ---- */
+.glycine, .filigrane { display: block; width: 100%; height: auto; overflow: visible; }
+.deco.sprig-tl.gly { width: clamp(150px, 44vw, 230px); left: -28px; top: -26px; transform: none; z-index: 3; }
+.deco.sprig-tr.gly { width: clamp(130px, 38vw, 200px); right: -24px; top: -22px; left: auto; transform: scaleX(-1); z-index: 3; }
+.gate .ribbon-env.pompon { width: 17%; right: -12%; bottom: -6%; transform: rotate(-10deg); z-index: -1; }
+.pompon { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 4px 4px rgba(var(--shade-rgb),.25)); }
+.gate .sprig-env.gly { width: 62%; left: -12%; top: -6%; transform: none; }
+.fili { position: absolute; width: clamp(54px, 15vw, 78px); pointer-events: none; z-index: 1; opacity: .95; }
+.fili.tl { left: 6px; top: 6px; } .fili.tr { right: 6px; top: 6px; transform: scaleX(-1); }
+.fili.bl { left: 6px; bottom: 6px; transform: scaleY(-1); } .fili.br { right: 6px; bottom: 6px; transform: scale(-1, -1); }
+.hero-card > .in-border { inset: 16px; }
+.rule.orne { width: min(240px, 70%); height: auto; margin: 44px auto 0; color: var(--gold); }
+.date-h { margin: 6px 0 4px; }
+/* médaillon ovale doré pour la photo */
+.arch.ovale { width: min(82%, 300px); padding: 9px; border: 0; border-radius: 50%; position: relative;
+  background: linear-gradient(135deg, #8a6424, #e9cd84 22%, #fff3c8 36%, #b48a3c 52%, #f0d690 70%, #8a6424);
+  box-shadow: 0 10px 22px -10px rgba(var(--shade-rgb), .45), inset 0 0 0 1px rgba(255,255,255,.35); }
+.arch.ovale::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 1px dashed rgba(255, 246, 214, .7); pointer-events: none; }
+.arch.ovale img { border-radius: 50%; aspect-ratio: 4 / 5; border: 3px solid var(--card); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -766,13 +805,27 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   /* dress code : clé « dressCode » (ou l'ancienne « codeCouleur ») */
   const DC = C.dressCode || C.codeCouleur || { couleurs: [] }; C.codeCouleur = DC; DC.couleurs = DC.couleurs || [];
   const H = C.hebergement || {};
+  /* textes des sections (config.textes), avec valeurs par défaut */
+  const TX = Object.assign({ sousTitre: 'Et maintenant, pour toujours.', date: 'Notez-le bien', programme: 'Le déroulé', lieux: '', escales: 'Avant la prochaine',
+    bientot: 'Ne dites rien, on prépare la suite', finPhrase: 'Les plus belles histoires se célèbrent ensemble.', fin: 'On vous attend' }, C.textes || {});
   /* ornements : image (config.ornements) ou dessin intégré */
   if (DC.couleursBalade) { const cb = DC.couleursBalade; if (cb.robe) document.documentElement.style.setProperty('--dc-robe', cb.robe); if (cb.costume) document.documentElement.style.setProperty('--dc-costume', cb.costume); }
   if (C.refletSecondes) document.documentElement.style.setProperty('--reflet', (+C.refletSecondes || 12) + 's');
   const ORN = C.ornements || {};
-  const orn = k => ORN[k] ? `<img class="orn-img" src="${esc(ORN[k])}" alt="">` : (k === 'branche' ? S.sprig() : S.ribbon());
-  const ornCls = k => ORN[k] ? ' img' : '';
-  if (C.palette !== 'bleu') document.documentElement.classList.add('pal-rose');
+  const orn = k => ORN[k] === 'aucune' || ORN[k] === 'aucun' ? '' : ORN[k] === 'pompon' ? S.pompon() : ORN[k] === 'glycine' ? S.glycine(k === 'branche' ? 7 : 3) : ORN[k] ? `<img class="orn-img" src="${esc(ORN[k])}" alt="">` : (k === 'branche' ? S.sprig() : S.ribbon());
+  const ornCls = k => ORN[k] === 'pompon' ? ' pompon' : ORN[k] === 'glycine' ? ' gly' : ORN[k] ? ' img' : '';
+  /* palette : 'bridgerton', 'vieux-rose' ou 'bleu', puis retouches éventuelles (config.couleurs) */
+  const PAL = C.palette || 'bridgerton', root = document.documentElement;
+  if (PAL !== 'bleu') { root.dataset.palette = PAL; root.classList.add('baked'); }
+  const TOK = { fond: ['--paper'], fond2: ['--paper-2'], papier: ['--card'], texte: ['--ink'], texteDoux: ['--muted'], filets: ['--line'],
+    titres: ['--accent', '--blue'], titresFonce: ['--blue-d'], titresClair: ['--blue-soft'], accent: ['--rose'], or: ['--gold'],
+    enveloppe: ['--door', '--door-2'], fondEnveloppe: ['--base'], feuilles: ['--feuille'], robe: ['--dc-robe'], costume: ['--dc-costume'] };
+  const CO = C.couleurs || {};
+  Object.keys(CO).forEach(k => {
+    if (k === 'fleurs' && Array.isArray(CO.fleurs)) CO.fleurs.slice(0, 3).forEach((c, i) => root.style.setProperty('--fleur' + (i + 1), c));
+    else (TOK[k] || []).forEach(t => root.style.setProperty(t, CO[k]));
+  });
+  if (CO.enveloppe || CO.fondEnveloppe) root.classList.remove('baked'); /* enveloppe recolorée : rendu dessiné */
   /* filigrane : une petite tuile (monogrammes décalés et inclinés) dessinée une seule fois puis répétée en fond.
      (Un calque masqué plein écran recalculé à chaque image faisait saccader les animations.) */
   if (C.filigrane !== false && C.monogrammeLettres) {
@@ -814,7 +867,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   document.body.insertAdjacentHTML('afterbegin', S.defs + S.pageDefs);
 
   /* ---------------- rendu ---------------- */
-  const rule = () => `<svg class="rule" viewBox="0 0 120 18" aria-hidden="true"><path d="M4 9 H46 M74 9 H116" stroke="currentColor" stroke-width=".8"/><path d="M60 3 L64 9 L60 15 L56 9 Z" fill="currentColor"/><circle cx="50" cy="9" r="1.4" fill="currentColor"/><circle cx="70" cy="9" r="1.4" fill="currentColor"/></svg>`;
+  const rule = () => C.palette === 'bleu' ? ruleSimple() : S.ornement();
+  const ruleSimple = () => `<svg class="rule" viewBox="0 0 120 18" aria-hidden="true"><path d="M4 9 H46 M74 9 H116" stroke="currentColor" stroke-width=".8"/><path d="M60 3 L64 9 L60 15 L56 9 Z" fill="currentColor"/><circle cx="50" cy="9" r="1.4" fill="currentColor"/><circle cx="70" cy="9" r="1.4" fill="currentColor"/></svg>`;
   const soon = t => `<span class="soon">${esc(t || 'à venir')}</span>`;
   const lieuArt = (key, big) => {
     const L = C.lieux[key];
@@ -830,7 +884,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   function writeName(t, delay) {
     delay += NAME_DELAY;
     const dur = Math.max(.9, .16 * t.length);
-    return `<span class="w" style="--dl:${delay.toFixed(2)}s;--dur:${dur.toFixed(2)}s"><span class="t"><span class="ti">${esc(t)}</span></span><span class="pw">${PEN}</span></span>`;
+    return `<span class="w" style="--dl:${delay.toFixed(2)}s;--dur:${dur.toFixed(2)}s"><span class="t"><span class="ti">${esc(t)}</span></span>${C.stylo ? `<span class="pw">${PEN}</span>` : ''}</span>`;
   }
   function chars(t) { let i = 0; return [...t].map(c => c === ' ' ? ' ' : `<span class="ch" style="--i:${i++}">${esc(c)}</span>`).join(''); }
   /* ---------------- calendrier « réservez la date » ---------------- */
@@ -858,8 +912,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   function bigDate(F) {
     const ds = [...new Set(F.moments.map(k => dayNum(C.moments[k].jour)))].sort((x, y) => x - y);
     const d0 = new Date(C.dateMariage + 'T12:00:00'), p2 = n => String(n).padStart(2, '0');
-    const num = ds.length > 1 ? `${p2(ds[0])}<small>–</small>${p2(ds[ds.length - 1])}` : p2(ds[0] || d0.getDate());
-    return `<div class="bigdate"><span class="num foil${ds.length > 1 ? ' range' : ''}">${num}</span><span class="mois">${MOIS[d0.getMonth()].replace(/^./, c => c.toUpperCase())}</span><span class="an">${d0.getFullYear()}</span></div>`;
+    const num = ds.length > 1 ? ds.map(p2).join(ds.length === 2 ? '<small class="et">&amp;</small>' : '<small class="pt">·</small>') : p2(ds[0] || d0.getDate());
+    return `<div class="bigdate"><span class="num foil${ds.length > 2 ? ' range3' : ds.length > 1 ? ' range' : ''}">${num}</span><span class="mois">${MOIS[d0.getMonth()].replace(/^./, c => c.toUpperCase())}</span><span class="an">${d0.getFullYear()}</span></div>`;
   }
   function gcal(F) {
     const ds = F.moments.map(k => dayNum(C.moments[k].jour)), d0 = new Date(C.dateMariage + 'T12:00:00');
@@ -958,7 +1012,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     F.moments.forEach(k => { const m = C.moments[k]; let d = days.find(x => x.jour === m.jour); if (!d) days.push(d = { jour: m.jour, items: [] }); d.items.push(k); });
     const [a, b] = C.prenoms;
     const hero = (C.haut || 'photo') === 'photo' || state.style === 'placeholder'
-      ? `<figure class="arch"><img src="${esc(C.photoHero)}" alt="${esc(a)} et ${esc(b)}"></figure>`
+      ? `<figure class="arch${(C.cadrePhoto || 'ovale') === 'ovale' ? ' ovale' : ''}"><img src="${esc(C.photoHero)}" alt="${esc(a)} et ${esc(b)}"></figure>`
       : `<div class="hero-art">${lieuArt('chateau', true)}<span class="note" style="left:-2%;top:6%">le grand cèdre<br>(on trinque ici !)</span><span class="note" style="right:0;top:-4%;transform:rotate(5deg)">Griselles, Gâtinais</span></div>`;
 
     app.innerHTML = `
@@ -966,7 +1020,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       <div class="hero-card paper">
         <span class="in-border"></span>
         ${C.monogrammeLettres ? `<div class="emboss" aria-hidden="true" style="--m:url('${esc(C.monogrammeLettres)}')"><i class="e1"></i><i class="e2"></i><i class="e3"></i></div>` : ''}
-        <span class="deco sprig-tl${ornCls('branche')}">${orn('branche')}</span>
+        ${C.filigranesCoins !== false ? `<span class="fili tl">${S.filigrane()}</span><span class="fili tr">${S.filigrane()}</span><span class="fili bl">${S.filigrane()}</span><span class="fili br">${S.filigrane()}</span>` : ''}
+        <span class="deco sprig-tl${ornCls('branche')}">${orn('branche')}</span>${ORN.branche === 'glycine' ? `<span class="deco sprig-tr gly">${S.glycine(11)}</span>` : ''}
         <div class="hero-seal">${sealAt('haut')}</div>
         <div class="eyebrow">Nous nous marions</div>
         ${hero}
@@ -974,7 +1029,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         <p class="dates">${esc(F.dates)}</p>
         <p class="formule">${esc(F.nom)}</p>
       </div>
-      <p class="forever">Et maintenant, pour toujours.</p>
+      ${TX.sousTitre ? `<p class="forever">${esc(TX.sousTitre)}</p>` : ''}
       ${state.nom ? `<p class="greet">${esc(state.nom)},</p>` : ''}
       <p class="intro">${esc(F.intro)}</p>
     </header>
@@ -982,9 +1037,10 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     ${rule()}
     <section id="date" class="save">
       <div class="eyebrow">Réservez la date</div>
+      ${TX.date ? `<h2 class="date-h">${esc(TX.date)}</h2>` : ''}
       ${bigDate(F)}
       ${C.phraseDate === '' ? '' : `<p class="phrase">${esc(C.phraseDate || 'Une date à garder précieusement.')}</p>`}
-      <div class="cal-wrap"><span class="deco ribbon-tr${ornCls('ruban')}">${orn('ruban')}</span>${calendar(F)}</div>
+      <div class="cal-wrap">${calendar(F)}</div>
       <div class="countdown" id="cd" role="timer" aria-label="Compte à rebours">
         <div class="cd-lbl" id="cdLbl">${F.moments.includes('mairie') ? 'Avant le premier « oui »' : 'Chaque jour, un peu moins'}</div>
         <div class="cd-grid">
@@ -1003,7 +1059,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     ${rule()}
     <section id="programme">
       <div class="eyebrow">Le programme</div>
-      <h2>Notre week‑end, avec vous</h2>
+      <h2>${esc(TX.programme)}</h2>
       <div class="paper alt prog" style="--tilt:.5deg"><span class="in-border"></span>
       ${days.map(d => `<div class="day"><div class="day-h">${esc(d.jour)}</div>${d.items.map(k => {
         const m = C.moments[k], L = C.lieux[m.lieu];
@@ -1029,7 +1085,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     ${rule()}
     <section id="escales">
       <div class="eyebrow">Nos escales</div>
-      <h2>Avant la prochaine</h2>
+      <h2>${esc(TX.escales)}</h2>
       <div class="gallery-scroll" tabindex="0" aria-label="Photos de nos voyages"><div class="gallery">
         ${C.photos.map((p, i) => `<figure class="polaroid" style="--rot:${[-3, 2.5, -1.5, 3.5, -2.5, 1.5][i % 6]}deg"><img loading="lazy" src="${esc(p.src)}" alt="${esc(p.legende)}"><span>${esc(p.legende)}</span></figure>`).join('')}
       </div></div>
@@ -1039,7 +1095,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     ${rule()}
     <section id="bientot">
       <div class="eyebrow">Plus d’infos très bientôt</div>
-      <h2>Ne dites rien, on prépare la suite</h2>
+      <h2>${esc(TX.bientot)}</h2>
       <div class="soon-grid">
         ${DC.affichage === 'balade' ? `
         <div class="dc-card">
@@ -1098,7 +1154,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     <section class="finale">
       <img src="${esc(C.photoFin || C.photoHero)}" alt="">
-      <div class="txt"><div class="lead">Les plus belles histoires se célèbrent ensemble.</div><div class="script">On vous attend</div><div class="meta">${esc(a)} &amp; ${esc(b)} · ${esc(F.dates)}</div></div>
+      <div class="txt"><div class="lead">${esc(TX.finPhrase)}</div><div class="script">${esc(TX.fin)}</div><div class="meta">${esc(a)} &amp; ${esc(b)} · ${esc(F.dates)}</div></div>
     </section>
 
     <footer>
