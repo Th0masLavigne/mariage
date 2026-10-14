@@ -30,7 +30,7 @@ window.CONFIG = {
   sceaux: { enveloppe: 'photo', carte: 'image', haut: 'photo', bas: 'photo', calendrier: 'photo' },
   sceauImage: 'photos/sceau.webp',
   /* sceau de l'enveloppe en mode 'photo' (avec les branches dorées assorties) */
-  sceauEnveloppe: 'photos/sceau-enveloppe.webp',
+  sceauEnveloppe: 'photos/sceau-tl.webp',
 
   /* Dates utilisées pour le compte à rebours (format AAAA-MM-JJ) */
   dateCivil: '2027-08-06',
@@ -68,7 +68,18 @@ window.CONFIG = {
   filigrane: true,
   /* branche (coin de la carte et de l'enveloppe) : 'aucune', 'glycine', ou une image (ex. 'photos/branche.png')
      ruban (sous l'enveloppe) : 'pompon' (pompon doré), 'aucune', ou une image (ex. 'photos/ruban.png') */
-  ornements: { branche: 'aucune', ruban: 'pompon' },
+  ornements: {
+    branche: 'photos/branche-eucalyptus.webp',   // coin haut gauche de l'enveloppe
+    ruban: 'photos/pompon.webp',                  // sous l'enveloppe (ou 'photos/ruban-bleu.webp', 'pompon' dessiné, 'aucune')
+    coin: 'photos/angle-fleuri.webp'              // coin haut gauche de la carte d'accueil ('aucune' → filigrane doré)
+  },
+  /* Icônes illustrées du programme (photos/icones) et aquarelles des lieux (photos/lieux) */
+  icones: true,
+  illustrationsLieux: true,
+  /* Résumé des jours sous le calendrier */
+  calendrierResume: false,
+  /* Note sous les adresses ('' pour la masquer) */
+  lieuxNote: 'À noter : comptez environ 1h15 de route entre Suresnes et le Château de la Fontaine, et 8 minutes entre l’église d’Égreville et le château.',
 
   /* Durée d’un aller-retour du reflet doré, en secondes (plus grand = plus lent et plus léger) */
   refletSecondes: 12,
@@ -191,6 +202,29 @@ window.CONFIG = {
     titre: 'Dress code',
     /* sous-titre en mode balade (ex. « Tenue de cocktail chic ») */
     tenue: 'Chic, mais comme vous êtes',
+    /* illustration du mode balade ('' → couple dessiné) */
+    illustration: 'photos/dresscode.webp',
+    /* style une fois révélé : 'aquarelle' (invités en aquarelle qui marchent)
+                              'trait'     (croquis à l'encre, léger balancement)
+                              'simple'    (petit couple dessiné qui marche, version d'origine) */
+    style: 'aquarelle',
+    trait: { dessin: 'photos/invites-trait.webp', robe: 'photos/invites-robe.webp', costume: 'photos/invites-costume.webp' },
+    /* couleurs du croquis au trait (false = trait seul, mais le blanc est réservé aux mariés…) */
+    traitCouleurs: { robe: '#b2c4e2', costume: '#2e4a72' },
+    /* couleurs des invités en aquarelle affichées au départ (null → couleurs d'origine du dessin) */
+    couleurDefaut: { robe: '#b9a8e0', costume: '#2e4a72' },
+    /* afficher les pastilles pour que les invités essaient d'autres tons (false → aucune pastille) */
+    afficherPastilles: true,
+    /* pastilles proposées : chaque pastille recolore la robe et le costume */
+    couleursInvites: [
+      { nom: 'Lavande',     robe: '#b9a8e0', costume: '#2e4a72' },
+      { nom: 'Bleu poudré', robe: '#a9c0e3', costume: '#3a4f6e' },
+      { nom: 'Sauge',       robe: '#a9c4a3', costume: '#4a5a52' },
+      { nom: 'Champagne',   robe: '#e6d2a8', costume: '#6e8ca8' }
+    ],
+    /* invités qui marchent, une fois révélé (planche de 4 poses ; '' → silhouettes dessinées) */
+    marche: 'photos/invites-marche.webp',
+    messageAttente: 'Revenez gratter ! Le thème vestimentaire vous sera dévoilé ici très prochainement.',
     reveler: false,
     /* couleurs de la robe et du costume du couple (mode balade) */
     couleursBalade: { robe: '#c98d97', costume: '#6c7a99' },

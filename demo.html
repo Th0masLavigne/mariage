@@ -94,18 +94,30 @@ header p { margin: 0; color: var(--muted); max-width: 60ch; }
 <script>
 (function () {
   var STEPS = [
-    { t: 'L’enveloppe « Bridgerton »', s: 'Bleu poudré, sceau et pompon dorés',
-      p: 'Touchez l’enveloppe : les volets s’ouvrent, puis les prénoms s’écrivent sous votre portrait en médaillon doré, dans une carte aux coins en filigrane.',
-      c: "palette: 'bridgerton',\nornements: { branche: 'aucune', ruban: 'pompon' },\ncadrePhoto: 'ovale',\nfiligranesCoins: true,\nstylo: false,",
+    { t: 'L’enveloppe « Bridgerton »', s: 'Bleu poudré, branche, sceau et pompon',
+      p: 'Touchez le sceau ou le bouton : les volets s’ouvrent, puis les prénoms s’écrivent sous votre portrait en médaillon doré. Suivent la date, le déroulé illustré, les lieux, l’hébergement et la réponse.',
+      c: "palette: 'bridgerton',\nornements: {\n  branche: 'photos/branche-eucalyptus.webp',\n  ruban: 'photos/pompon.webp',\n  coin: 'photos/angle-fleuri.webp'\n},\ncadrePhoto: 'ovale',\nfiligranesCoins: true,\nstylo: false,",
       o: { f: 'noce-4m', wait: true } },
     { t: 'Dress code « balade », pas encore révélé', s: 'Votre réglage actuel',
       p: 'Grattez la zone nacrée : on découvre « Chut… pas encore ! » devant le couple flouté. Rien n’est dévoilé tant que reveler vaut false.',
       c: "dressCode: {\n  affichage: 'balade',\n  reveler: false,\n}",
       o: { f: 'noce-4m', dc: 'balade', rev: false, go: '#bientot' } },
-    { t: 'Dress code « balade », révélé', s: 'Le jour où vous êtes prêts',
-      p: 'Grattez, ou touchez « Révéler sans gratter » : le couple se dessine puis marche, avec la tenue en sous-titre et vos deux règles.',
+    { t: 'Dress code révélé, version aquarelle', s: 'Le jour où vous êtes prêts',
+      p: 'Grattez, ou touchez « Révéler sans gratter » : un couple d’invités en aquarelle marche sur place. Touchez une pastille pour changer la couleur de la robe et du costume.',
       c: "dressCode: {\n  affichage: 'balade',\n  reveler: true,\n  tenue: 'Chic, mais comme vous êtes',\n  texte: [ 'Pas de gilet…', 'Le blanc…' ],\n}",
-      o: { f: 'noce-4m', dc: 'balade', rev: true, go: '#bientot' } },
+      o: { f: 'noce-4m', dc: 'balade', rev: true, style: 'aquarelle', go: '#bientot' } },
+    { t: 'Aquarelle sans pastilles', s: 'Une seule tenue, imposée',
+      p: 'Même chose sans les pastilles : les invités voient seulement la couleur par défaut choisie dans « couleurDefaut ».',
+      c: "dressCode: {\n  style: 'aquarelle',\n  couleurDefaut: { robe: '#b9a8e0', costume: '#2e4a72' },\n  afficherPastilles: false,\n}",
+      o: { f: 'noce-4m', dc: 'balade', rev: true, style: 'aquarelle', pastilles: false, go: '#bientot' } },
+    { t: 'Dress code révélé, version au trait', s: 'Croquis à l’encre, mouvement doux',
+      p: 'Le croquis se trace de haut en bas, se colorie (couleurs réglées dans « traitCouleurs »), puis se balance doucement.',
+      c: "dressCode: {\n  reveler: true,\n  style: 'trait',\n  traitCouleurs: false,\n}",
+      o: { f: 'noce-4m', dc: 'balade', rev: true, style: 'trait', go: '#bientot' } },
+    { t: 'Dress code révélé, version simple', s: 'Le petit couple d’origine',
+      p: 'Pour comparer : le petit couple dessiné qui marche, celui de la toute première version.',
+      c: "dressCode: {\n  reveler: true,\n  style: 'simple',\n}",
+      o: { f: 'noce-4m', dc: 'balade', rev: true, style: 'simple', go: '#bientot' } },
     { t: 'Dress code « couleurs »', s: 'L’ancienne version, toujours là',
       p: 'Même zone à gratter, mais on découvre les tenues teintées et les pastilles. Touchez une couleur pour habiller le costume et la robe.',
       c: "dressCode: {\n  affichage: 'couleurs',\n  reveler: true,\n}",
@@ -127,7 +139,7 @@ header p { margin: 0; color: var(--muted); max-width: 60ch; }
       c: "palette: 'vieux-rose',",
       o: { f: 'grand-weekend-7q', pal: 'vieux-rose', wait: true } }
   ];
-  var OVERRIDE = "(function(){\n  var o = window.DEMO_OPT || {}, C = window.CONFIG;\n  C.rsvpUrl = '';\n  if (o.pal) C.palette = o.pal;\n  if (o.dc) C.dressCode.affichage = o.dc;\n  if (o.rev != null) C.dressCode.reveler = o.rev;\n  if (o.f && C.formules[o.f]) { var F = {}; F[o.f] = C.formules[o.f]; Object.keys(C.formules).forEach(function(k){ if (k !== o.f) F[k] = C.formules[k]; }); C.formules = F; }\n  document.addEventListener('DOMContentLoaded', function(){\n    var st = document.createElement('style'); st.textContent = '.demo-bar{display:none!important}'; document.head.appendChild(st);\n    if (!o.wait) setTimeout(function(){ var b = document.getElementById('openBtn'); if (b) b.click(); }, 900);\n    if (o.go) setTimeout(function(){ var t = document.querySelector(o.go); if (t) t.scrollIntoView({ behavior: 'smooth', block: o.block || 'start' }); }, 4300);\n  });\n})();\n";
+  var OVERRIDE = "(function(){\n  var o = window.DEMO_OPT || {}, C = window.CONFIG;\n  C.rsvpUrl = '';\n  if (o.pal) C.palette = o.pal;\n  if (o.dc) C.dressCode.affichage = o.dc;\n  if (o.rev != null) C.dressCode.reveler = o.rev;\n  if (o.style) C.dressCode.style = o.style;\n  if (o.pastilles != null) C.dressCode.afficherPastilles = o.pastilles;\n  if (o.f && C.formules[o.f]) { var F = {}; F[o.f] = C.formules[o.f]; Object.keys(C.formules).forEach(function(k){ if (k !== o.f) F[k] = C.formules[k]; }); C.formules = F; }\n  document.addEventListener('DOMContentLoaded', function(){\n    var st = document.createElement('style'); st.textContent = '.demo-bar{display:none!important}'; document.head.appendChild(st);\n    if (!o.wait) setTimeout(function(){ var b = document.getElementById('openBtn'); if (b) b.click(); }, 900);\n    if (o.go) setTimeout(function(){ var t = document.querySelector(o.go); if (t) t.scrollIntoView({ behavior: 'smooth', block: o.block || 'start' }); }, 4300);\n  });\n})();\n";
   var SITE = '', pending = null;
   /* Le faire-part : intégré à la page (artefact) ou lu à côté (GitHub Pages : index.html) */
   var data = document.getElementById('siteData');
