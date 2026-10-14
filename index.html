@@ -229,7 +229,7 @@ h2 { font: italic 400 clamp(32px, 6.4vw, 46px)/1.08 var(--f-display); margin: 10
 .btn-cal.ghost { background: #fff; color: var(--accent); border: 1.5px solid var(--line); box-shadow: none; }
 /* pétales de cerisier */
 #sakura { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-#sakura i { position: absolute; top: -40px; display: block; animation: sk-fall var(--d) linear infinite; animation-delay: var(--dl); opacity: var(--o); filter: var(--blur); }
+#sakura i { position: absolute; top: -40px; display: block; animation: sk-fall var(--d) linear infinite; animation-delay: var(--dl); opacity: var(--o); }
 #sakura u { display: block; width: 100%; height: 100%; background: var(--petal) center / contain no-repeat; animation: sk-tumble var(--sw) linear infinite; animation-delay: var(--dl); }
 /* chute avec dérive au vent (le pétale ondule de gauche à droite en descendant) */
 @keyframes sk-fall {
@@ -532,12 +532,16 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .arch img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 999px 999px 2px 2px / 50% 50% 2px 2px; }
 .names { font: 400 clamp(56px, 15vw, 92px)/1 var(--f-hand); color: var(--ink); letter-spacing: 0; }
 .names .w { position: relative; display: inline-block; padding: 0 .08em; }
-.names .w .t { display: inline-block; clip-path: inset(-20% 100% -30% 0); animation: write var(--dur, 1.6s) cubic-bezier(.45,.1,.4,1) forwards; animation-delay: var(--dl, .3s); }
+.names .w .t { display: inline-block; vertical-align: top; overflow: hidden; margin: -.25em -.2em -.35em; transform: translateX(-100%); animation: wr var(--dur, 1.6s) cubic-bezier(.45,.1,.4,1) forwards; animation-delay: var(--dl, .3s); }
+.names .w .ti { display: block; padding: .25em .2em .35em; transform: translateX(100%); animation: wr var(--dur, 1.6s) cubic-bezier(.45,.1,.4,1) forwards; animation-delay: var(--dl, .3s); }
+@keyframes wr { to { transform: translateX(0); } }
+.names .w .pw { position: absolute; left: .08em; right: .08em; bottom: -.15em; height: 1.1em; pointer-events: none; animation: penslide var(--dur, 1.6s) cubic-bezier(.45,.1,.4,1) forwards; animation-delay: var(--dl, .3s); }
+@keyframes penslide { to { transform: translateX(100%); } }
 .names .amp { display: inline-block; font-size: .62em; color: var(--rose); margin: 0 .12em; opacity: 0; animation: fadein .5s ease forwards; animation-delay: var(--dl); }
 @keyframes write { to { clip-path: inset(-20% -10% -30% 0); } }
 @keyframes fadein { to { opacity: 1; } }
-.pen { position: absolute; width: 1.1em; bottom: -.15em; left: 0; transform-origin: 6% 94%; opacity: 0; animation: penmove var(--dur, 1.6s) cubic-bezier(.45,.1,.4,1) forwards; animation-delay: var(--dl, .3s); pointer-events: none; }
-@keyframes penmove { 0% { left: 0; opacity: 1; transform: rotate(-4deg) translateY(0); } 25% { transform: rotate(6deg) translateY(-.08em); } 50% { transform: rotate(-3deg) translateY(.04em); } 75% { transform: rotate(5deg) translateY(-.06em); } 92% { opacity: 1; } 100% { left: 100%; opacity: 0; transform: rotate(0) translateY(-.2em); } }
+.pen { position: absolute; width: 1.1em; bottom: 0; left: 0; transform-origin: 6% 94%; opacity: 0; animation: penmove var(--dur, 1.6s) cubic-bezier(.45,.1,.4,1) forwards; animation-delay: var(--dl, .3s); pointer-events: none; }
+@keyframes penmove { 0% { opacity: 1; transform: rotate(-4deg) translateY(0); } 25% { transform: rotate(6deg) translateY(-.08em); } 50% { transform: rotate(-3deg) translateY(.04em); } 75% { transform: rotate(5deg) translateY(-.06em); } 92% { opacity: 1; } 100% { opacity: 0; transform: rotate(0) translateY(-.2em); } }
 .hero .dates { font: 500 clamp(13px, 3.4vw, 15px)/1.3 var(--f-display); letter-spacing: .3em; margin: 14px 0 0; color: var(--blue); background: none; -webkit-text-fill-color: currentColor; animation: none; filter: none; }
 .hero .formule { margin-top: 10px; font: italic 400 16px/1.3 var(--f-body); color: var(--muted); letter-spacing: .02em; }
 .forever { margin: 48px 0 0; font: italic 400 clamp(30px, 7vw, 44px)/1.1 var(--f-display); color: var(--blue); text-wrap: balance; }
@@ -708,11 +712,23 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
 /* ---- Fluidité : les éléments animés ont leur propre calque, pour ne pas redessiner
    les cartes en papier déchiré (filtres coûteux) à chaque image ---- */
-.names .w, .names .amp, .pen, .dc-walk, .cd-cell b, .bigdate .num, #sakura i, .petal, .soon { will-change: transform; }
+.names .w .t, .names .w .ti, .names .w .pw, .names .amp, .pen, .dc-walk, .cd-cell b, .bigdate .num, #sakura i, .petal, .soon { will-change: transform; }
 .cd-cell b { display: block; }
 /* reflets dorés continus, mais chacun sur son propre calque (seul le texte doré est redessiné) */
 .gold, .foil { will-change: transform; transform: translateZ(0); }
 .btn-open { animation-iteration-count: 4; }
+
+/* ---- Bords déchirés : masque image calculé une fois (le filtre SVG était recalculé
+   en logiciel par Safari/iPhone, d'où la frise qui apparaissait par morceaux) ---- */
+.paper::before, .g-inner::before, .cal .cal-in::before, .cd-cell::before, .gift-card::before, .rsvp::before, .dc-card::before {
+  filter: none !important;
+  -webkit-mask-box-image: url("photos/bord-papier.png") 48 / 34px round;
+  mask-border: url("photos/bord-papier.png") 48 / 34px round;
+}
+.paper, .cal .cal-in, .gift-card, .rsvp, .dc-card { box-shadow: 0 16px 26px -14px rgba(50,45,70,.26), 0 3px 5px -3px rgba(50,45,70,.14); }
+.cd-cell { box-shadow: 0 8px 12px -8px rgba(50,45,70,.22); }
+.gate .g-inner { box-shadow: 0 5px 10px -5px rgba(40,40,60,.22); }
+#scratchCv { will-change: transform; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -814,7 +830,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   function writeName(t, delay) {
     delay += NAME_DELAY;
     const dur = Math.max(.9, .16 * t.length);
-    return `<span class="w" style="--dl:${delay.toFixed(2)}s;--dur:${dur.toFixed(2)}s"><span class="t">${esc(t)}</span>${PEN}</span>`;
+    return `<span class="w" style="--dl:${delay.toFixed(2)}s;--dur:${dur.toFixed(2)}s"><span class="t"><span class="ti">${esc(t)}</span></span><span class="pw">${PEN}</span></span>`;
   }
   function chars(t) { let i = 0; return [...t].map(c => c === ' ' ? ' ' : `<span class="ch" style="--i:${i++}">${esc(c)}</span>`).join(''); }
   /* ---------------- calendrier « réservez la date » ---------------- */
@@ -1168,7 +1184,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     paint();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (!moves) paint(); });
     window.addEventListener('resize', () => { if (!moves && !done) paint(); });
-    const pos = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    let rect = null; const pos = e => { const r = rect || cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
     const reveal = () => { done = true; cv.classList.add('gone'); $('#scSkip').hidden = true; document.querySelectorAll('.couple.wait').forEach(el => { el.classList.remove('wait'); setTimeout(() => el.classList.add('on'), 250); }); };
     const mark = (x, y, rad) => {
       const W = cv.clientWidth, H = cv.clientHeight, cw = W / GX, ch = H / GY;
@@ -1193,9 +1209,9 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     let raf = 0;
     const scratchAt = p => { moves++; queue.push([last || p, p]); last = p; if (!raf) raf = requestAnimationFrame(flush); };
     let down = false;
-    cv.addEventListener('pointerdown', e => { if (done) return; down = true; last = null; cv.setPointerCapture(e.pointerId); scratchAt(pos(e)); });
+    cv.addEventListener('pointerdown', e => { if (done) return; down = true; last = null; rect = cv.getBoundingClientRect(); cv.setPointerCapture(e.pointerId); scratchAt(pos(e)); });
     cv.addEventListener('pointermove', e => { if (down && !done) scratchAt(pos(e)); });
-    ['pointerup', 'pointercancel'].forEach(t => cv.addEventListener(t, () => { down = false; last = null; }));
+    ['pointerup', 'pointercancel'].forEach(t => cv.addEventListener(t, () => { down = false; last = null; rect = null; }));
     $('#scSkip').addEventListener('click', reveal);
   }
 
@@ -1463,7 +1479,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       if (!ready) { ready = true; render(); }
       $('#app').classList.remove('paused');
       fitTitles(); setTimeout(fitTitles, 3100);
-      setTimeout(() => { $('#envelope').classList.add('gone'); scrollTo(0, 0); sakura(); }, 3000);
+      setTimeout(() => { $('#envelope').classList.add('gone'); scrollTo(0, 0); }, 3000);
+      setTimeout(sakura, 7000); /* pétales de fond : après l'écriture des prénoms */
     };
     $('#env').addEventListener('click', open);
     $('#openBtn').addEventListener('click', open);
