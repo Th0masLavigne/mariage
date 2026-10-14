@@ -307,5 +307,112 @@ window.CONFIG = {
     'On a dit non au « non »',
     'Dernière chance…'
   ],
-  nonFinal: 'Bon… non, hélas'
+  nonFinal: 'Bon… non, hélas',
+
+  /* =====================================================================
+     SITE PRATIQUE (site.html) — le « carnet » que les invités rouvrent
+     ---------------------------------------------------------------------
+     Lien : …/site.html?f=CODE  (le même code que le faire-part).
+     Sans code dans le lien : le code déjà utilisé sur ce téléphone est repris ;
+     sinon on montre la formule « formuleParDefaut » (la partie commune).
+     Chaque section :  actif: true  (affichée) · false (masquée)
+                       'jour-j' (affichée seulement à partir du jour du mariage)
+     Un texte vide '' → la section affiche « bientôt ».
+     Lieux, horaires, dress code, hébergement, liste : repris d’en haut.
+     ===================================================================== */
+  site: {
+    formuleParDefaut: 'vin-honneur-2k',
+    /* lien « Le carnet pratique » dans le faire-part : en bas de page et après la réponse (false → masqué) */
+    lienFairePart: true,
+    /* image du haut : 'chateau' (aquarelle), 'photo' (photoHero) ou 'monogramme' */
+    haut: 'chateau',
+    titre: 'Le carnet du mariage',
+    intro: 'Tout ce qu’il faut savoir pour nous rejoindre, mis à jour au fil des mois. Revenez de temps en temps : les nouveautés apparaissent ici.',
+    /* bandeau doré tout en haut ('' = aucun). Ex. 'Les horaires sont en ligne !' */
+    annonce: '',
+    /* adresse e-mail de contact (pied de page) — '' = masquée */
+    contact: '',
+
+    programme: { actif: true, titre: 'Le déroulé' },
+
+    venir: {
+      actif: true,
+      titre: 'Venir jusqu’à nous',
+      /* chaque info : un texte, ou '' pour « bientôt ». Ligne absente → masquée.
+         Possibles : voiture, parking, train, navette (ex. train: 'Gare de …, puis taxi').  */
+      voiture: 'Comptez environ 1h15 de route entre Suresnes et le château, et 8 minutes entre l’église d’Égreville et le château.',
+      parking: '',
+      /* covoiturage : lien vide → tableau d’annonces intégré (onglet « Covoiturage » du Sheet ;
+         pour retirer une annonce : effacer sa ligne ou écrire « non » dans la colonne visible).
+         lien rempli → simple bouton vers ce lien. null → pas de covoiturage. */
+      covoiturage: { texte: 'Vous avez des places dans votre voiture, ou vous en cherchez une ? Déposez une annonce, les autres invités vous contacteront.', lien: '' }
+    },
+
+    dormir: {
+      actif: true,
+      titre: 'Où dormir',
+      /* le château (texte « hebergement » plus haut) n’apparaît que pour les formules avec des nuits */
+      autour: 'Pour ceux qui préfèrent dormir à proximité, voici quelques adresses à quelques minutes.',
+      /* { nom, type: 'Hôtel' | 'Gîte' | 'Chambre d’hôtes', distance, texte, lien } */
+      adresses: [
+        // { nom: 'Le Relais du Gâtinais', type: 'Hôtel', distance: '10 min', texte: 'Demandez le tarif « mariage Lavigne ».', lien: 'https://…' },
+      ]
+    },
+
+    dressCode: { actif: true },
+
+    faq: {
+      actif: true,
+      titre: 'Vos questions',
+      /* r: '' → la question est masquée tant que la réponse n’est pas écrite */
+      questions: [
+        { q: 'Puis-je modifier ma réponse ?', r: 'Bien sûr : rouvrez le lien de votre faire-part, votre réponse s’affiche avec un bouton « Modifier ma réponse ».' },
+        { q: 'Quelle tenue prévoir ?', r: 'Tout est dans la rubrique « Dress code ».' },
+        { q: 'Les enfants sont-ils invités ?', r: '' },
+        { q: 'Peut-on prendre des photos pendant la cérémonie ?', r: '' },
+        { q: 'J’ai une allergie ou un régime particulier.', r: 'Indiquez-le dans votre réponse au faire-part, nous transmettrons au traiteur.' },
+        { q: 'Que faire en cas de pluie ?', r: '' }
+      ]
+    },
+
+    /* reprend la carte « Liste de mariage » (bientot[0]) : renseignez son lien quand elle est prête */
+    liste: { actif: true },
+
+    temoins: {
+      actif: true,
+      titre: 'Les témoins',
+      texte: 'Un discours, une surprise, une idée ? Passez par eux : on préfère ne rien savoir.',
+      /* { nom, role: 'Témoin de Tiphaine', tel: '06…', email: '…' } */
+      personnes: []
+    },
+
+    playlist: {
+      actif: true,
+      titre: 'La playlist',
+      texte: 'Une chanson qui vous fera danser ? Proposez-la, on la glissera dans la soirée.',
+      /* lien d’une playlist collaborative (Spotify, Deezer…) ; vide → petit formulaire (onglet « Chansons » du Sheet) */
+      lien: ''
+    },
+
+    /* --- Dépôt de photos (Google Drive, sans compte) -----------------
+       actif : true (visible), false (caché) ou 'jour-j' (visible à partir du 7 août).
+       url   : '' → la même adresse Apps Script que le RSVP (rsvpUrl).
+       album : lien de partage du dossier Drive (lecture) pour « Voir toutes les photos ».
+       tailleMax : photos réduites à cette largeur/hauteur (px) avant envoi.  */
+    photos: {
+      actif: true,
+      titre: 'Vos photos',
+      texte: 'Partagez vos plus beaux clichés du week-end : ils arrivent directement dans notre album.',
+      url: '',
+      album: '',
+      tailleMax: 2400,
+      videoMaxMo: 40
+    },
+
+    merci: {
+      actif: 'jour-j',
+      titre: 'Merci',
+      texte: ''
+    }
+  }
 };
