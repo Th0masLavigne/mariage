@@ -417,7 +417,7 @@ window.CONFIG = {
     temoins: {
       actif: true,
       titre: 'Les témoins',
-      texte: 'Un discours, une surprise, une idée ? Passez par eux : on préfère ne rien savoir.',
+      texte: '',
       /* une ligne par témoin ; tel et email facultatifs (affichés + boutons Appeler / SMS / E-mail).
          Pour activer un exemple : retirez les // en début de ligne et remplacez les valeurs. */
       personnes: [
