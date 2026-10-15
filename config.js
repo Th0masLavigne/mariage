@@ -155,11 +155,11 @@ window.CONFIG = {
      dessin : rings | moon | glasses | plate | croissant | bells          */
   moments: {
     mairie:  { jour: 'Vendredi 6 août',  heure: '', titre: 'Mariage civil',             lieu: 'mairie',  dessin: 'rings',     texte: 'Le « oui » officiel, si tout va bien.' },
-    veillee: { jour: 'Vendredi 6 août',  heure: '', titre: 'Soirée en petit comité',    lieu: 'chateau', dessin: 'moon',      texte: 'Direction le château pour une soirée intime.' },
-    eglise:  { jour: 'Samedi 7 août',    heure: '', titre: 'Cérémonie religieuse',      lieu: 'eglise',  dessin: 'bells',     texte: '' },
-    vin:     { jour: 'Samedi 7 août',    heure: '', titre: 'Vin d’honneur',             lieu: 'chateau', dessin: 'glasses',   texte: 'Sous le grand cèdre du parc.' },
-    diner:   { jour: 'Samedi 7 août',    heure: '', titre: 'Dîner & soirée dansante',   lieu: 'chateau', dessin: 'plate',     texte: '' },
-    brunch:  { jour: 'Dimanche 8 août',  heure: '', titre: 'Brunch',                    lieu: 'chateau', dessin: 'croissant', texte: 'Pour se remettre doucement.' }
+    veillee: { jour: 'Vendredi 6 août',  heure: '16:00', titre: 'Soirée en petit comité',    lieu: 'chateau', dessin: 'moon',      texte: 'Direction le château pour une soirée intime.' },
+    eglise:  { jour: 'Samedi 7 août',    heure: '15:00', titre: 'Cérémonie religieuse',      lieu: 'eglise',  dessin: 'bells',     texte: '' },
+    vin:     { jour: 'Samedi 7 août',    heure: '17:00', titre: 'Vin d’honneur',             lieu: 'chateau', dessin: 'glasses',   texte: 'Sous le grand cèdre du parc.' },
+    diner:   { jour: 'Samedi 7 août',    heure: '20:30', titre: 'Dîner & soirée dansante',   lieu: 'chateau', dessin: 'plate',     texte: '' },
+    brunch:  { jour: 'Dimanche 8 août',  heure: '11:00', titre: 'Brunch',                    lieu: 'chateau', dessin: 'croissant', texte: 'Pour se remettre doucement.' }
   },
 
   /* --- Les 3 faire-parts ----------------------------------------------
