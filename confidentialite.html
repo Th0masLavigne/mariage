@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Politique de confidentialité · Tiphaine &amp; Thomas</title>
+<!-- polices hébergées sur le site (pas de Google Fonts) -->
+<link rel="stylesheet" href="fonts/fonts.css">
+<!--
+  POLITIQUE DE CONFIDENTIALITÉ — les réglages (contact, accès, durées, date de mise à jour)
+  sont dans config.js → donnees. Le texte ci-dessous s’y adapte tout seul.
+-->
+<style>
+:root {
+  --paper: #f5f0e8; --paper-2: #ebe3d6; --card: #fffdf8; --ink: #2b3150; --muted: #77768a; --line: #e4dac9;
+  --blue: #4a6a9c; --rose: #a8789a; --gold: #b48a3c;
+  --f-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', Georgia, serif;
+  --f-body: 'EB Garamond', 'Garamond', Georgia, serif;
+  --f-hand: 'Parisienne', 'Snell Roundhand', cursive;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); font: 17.5px/1.6 var(--f-body);
+  background: radial-gradient(120% 90% at 50% 20%, var(--card) 0%, var(--paper) 60%, var(--paper-2) 100%), url("photos/grain-fond.png");
+  background-size: auto, 220px 220px; }
+.wrap { max-width: 760px; margin: 0 auto; padding: max(40px, env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) 80px max(18px, env(safe-area-inset-left, 0px)); }
+header { text-align: center; margin-bottom: 26px; }
+.eyebrow { font: 500 12.5px/1.2 var(--f-body); letter-spacing: .34em; text-transform: uppercase; color: var(--muted); }
+h1 { font: italic 400 clamp(34px, 7vw, 50px)/1.1 var(--f-display); color: var(--blue); margin: 10px 0 6px; text-wrap: balance; }
+.maj { color: var(--muted); font-style: italic; }
+.intro { max-width: 52ch; margin: 18px auto 0; font: italic 400 19px/1.5 var(--f-display); color: #4f4b5c; text-wrap: balance; }
+.paper { position: relative; isolation: isolate; padding: 28px 26px 24px; margin-top: 22px; }
+.paper::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--card) url("photos/grain-carte.png") 0 0 / 200px 200px;
+  -webkit-mask-box-image: url("photos/bord-papier.png") 48 fill / 34px round; mask-border: url("photos/bord-papier.png") 48 fill / 34px round; }
+.paper { box-shadow: 0 16px 26px -14px rgba(50,45,70,.26), 0 3px 5px -3px rgba(50,45,70,.14); }
+.paper > .in-border { position: absolute; inset: 12px; border: 1px solid var(--line); pointer-events: none; }
+h2 { font: italic 400 26px/1.2 var(--f-display); color: var(--blue); margin: 0 0 10px; }
+h2 .n { font: 400 15px/1 var(--f-display); color: var(--gold); letter-spacing: .1em; margin-right: 8px; font-style: normal; }
+h3 { font: 500 12.5px/1.3 var(--f-body); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin: 16px 0 4px; }
+p { margin: 0 0 8px; }
+ul { margin: 4px 0 8px; padding-left: 20px; }
+li { margin: 3px 0; }
+.t { display: grid; gap: 12px; }
+.t > div { border-top: 1px dashed var(--line); padding-top: 12px; }
+.t > div:first-child { border-top: 0; padding-top: 0; }
+.t b { font: italic 400 19px/1.3 var(--f-display); color: var(--ink); }
+.t .k { display: block; font-size: 14.5px; color: var(--muted); }
+a { color: var(--ink); text-decoration-color: #C5A059; text-underline-offset: 4px; }
+.back { display: inline-block; margin-top: 30px; padding: 13px 24px; border-radius: 99px; text-decoration: none; cursor: pointer;
+  background: linear-gradient(180deg, #FDFBF7 0%, #F3EFE6 100%); color: #1E2D4A; border: 1px solid #C5A059; outline: 1px solid rgba(197,160,89,.45); outline-offset: -4px;
+  box-shadow: 0 6px 20px rgba(30,45,74,.12); font: 500 12.5px/1 var(--f-display); letter-spacing: .14em; text-transform: uppercase; }
+footer { text-align: center; margin-top: 40px; }
+.sig { font: 400 36px/1.1 var(--f-hand); }
+@media (max-width: 480px) { .paper { padding: 24px 20px 20px; } body { font-size: 16.5px; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="config.js"></script>
+<script src="typo.js"></script>
+<script>
+'use strict';
+(function () {
+  const C = window.CONFIG || {}, D = C.donnees || {}, P = C.prenoms || ['', ''], S = C.site || {};
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const qui = D.responsables || `${P[0]} et ${P[1]}`;
+  const contact = D.contact || S.contact || '';
+  const ecrire = contact ? `en nous écrivant à <a href="mailto:${esc(contact)}">${esc(contact)}</a>` : 'en nous le disant directement, de vive voix ou par message';
+  const acces = D.acces || `nous deux (${P[0]} et ${P[1]})`;
+  const conserv = D.conservation || 'au plus tard six mois après le mariage';
+  const sec = (n, titre, html) => `<section class="paper"><span class="in-border"></span><h2><span class="n">${n}</span>${titre}</h2>${html}</section>`;
+  let n = 0; const N = () => String(++n).padStart(2, '0');
+
+  document.getElementById('app').innerHTML = `
+  <header>
+    <div class="eyebrow">Mariage de ${esc(P[0])} &amp; ${esc(P[1])}</div>
+    <h1>Politique de confidentialité</h1>
+    ${D.miseAJour ? `<div class="maj">Mise à jour : ${esc(D.miseAJour)}</div>` : ''}
+    <p class="intro">Ce faire-part et ce carnet sont faits maison, pour nos proches. Voici, en détail, ce que deviennent les informations que vous nous confiez.</p>
+  </header>
+
+  ${sec(N(), 'Qui sommes-nous', `
+    <p>Les responsables de ces informations sont ${esc(qui)}, les mariés. Pour toute question ou demande, vous pouvez nous joindre ${ecrire}.</p>
+    <p>Il s’agit d’un événement familial et privé : les pages ne sont pas référencées par les moteurs de recherche et s’ouvrent avec le lien personnel reçu avec votre faire-part.</p>`)}
+
+  ${sec(N(), 'Ce que nous recueillons, et pourquoi', `<div class="t">
+    <div><b>Votre réponse au faire-part</b><span class="k">Noms, présence, nombre d’adultes et d’enfants, moments choisis, couchage (nuits, nombre de personnes, chambre partagée), chanson, message ; e-mail, téléphone et adresse postale si vous les indiquez.</span>
+      Pour organiser l’accueil, les repas et les couchages, vous envoyer le faire-part papier et vous joindre en cas d’imprévu. Vous nous les transmettez volontairement en répondant ; les coordonnées sont facultatives.</div>
+    <div><b>Allergies et régimes alimentaires</b><span class="k">Facultatif. Une allergie est une information de santé.</span>
+      Uniquement pour préparer votre repas, et transmise au traiteur, avec votre accord explicite (case à cocher sous le champ, date de l’accord conservée).</div>
+    <div><b>Covoiturage</b><span class="k">Prénom, ville de départ, jour, nombre de places, moyen de contact, petit mot.</span>
+      Pour que les invités s’organisent entre eux. Ces informations sont visibles par les invités qui ont accès au carnet ; vous l’acceptez en cochant la case avant de publier, et vous pouvez retirer l’annonce à tout moment.</div>
+    <div><b>Liste de mariage</b><span class="k">Prénoms, cadeau choisi ou montant de la participation, petit mot.</span>
+      Pour suivre la liste et vous remercier. Seuls nous voyons ces informations ; les autres invités ne voient que l’avancement global, sans nom ni montant.</div>
+    <div><b>Photos</b><span class="k">Les photos envoyées et le prénom indiqué.</span>
+      Pour garder des souvenirs du mariage. Vous confirmez, avant l’envoi, que les personnes reconnaissables sont d’accord.</div>
+    <div><b>Playlist</b><span class="k">Le titre proposé, et votre prénom si vous l’indiquez.</span> Pour la soirée.</div>
+    <div><b>Témoins</b><span class="k">Prénom, rôle, téléphone et e-mail.</span> Affichés dans le carnet seulement avec leur accord, dont nous gardons la date.</div>
+  </div>
+  <p style="margin-top:12px">Nous ne vendons rien, ne transmettons rien à des fins publicitaires et ne faisons aucun profilage.</p>`)}
+
+  ${sec(N(), 'Qui y a accès', `<ul>
+    <li><b>Nous</b> : ${esc(acces)}.</li>
+    <li><b>Le traiteur</b> : le nombre de convives et les allergies ou régimes, sans vos coordonnées.</li>
+    <li><b>Les autres invités</b> : uniquement les annonces de covoiturage, et l’avancement global de la liste.</li>
+    <li><b>Nos outils</b>, qui stockent ou font transiter les informations pour notre compte :
+      <ul><li>Google (Google Sheets, Google Drive, Apps Script, et Gmail pour les e-mails de notification) ;</li>
+        <li>GitHub, qui héberge ces pages et, comme tout hébergeur, garde des journaux techniques contenant l’adresse IP des visiteurs.</li></ul></li></ul>`)}
+
+  ${sec(N(), 'Hors de l’Union européenne', `<p>Google et GitHub (groupe Microsoft) sont des entreprises américaines ; des données peuvent donc être traitées aux États-Unis. Ces transferts sont encadrés par le Data Privacy Framework UE–États-Unis et par les clauses contractuelles types de la Commission européenne.</p>`)}
+
+  ${sec(N(), 'Combien de temps', `<ul>
+    <li>Réponses, couchages, covoiturage, liste de mariage, suggestions de chansons et e-mails de notification : supprimés ${esc(conserv)}.</li>
+    <li>Adresses postales : conservées ${esc(D.adresses || 'jusqu’à l’envoi de nos remerciements')}.</li>
+    <li>Photos : ${esc(D.photos || 'nous les gardons comme souvenirs')}.</li>
+    <li>Accord des témoins et accords donnés par case à cocher : conservés le temps de l’information concernée.</li></ul>`)}
+
+  ${sec(N(), 'Sur votre téléphone ou ordinateur', `
+    <p>Pour vous permettre de retrouver et de modifier votre réponse, la page garde dans la mémoire de votre navigateur (« stockage local ») : votre réponse, un identifiant tiré au hasard, le code de votre faire-part, et les éléments nécessaires pour retirer vos annonces ou participations. Ces informations restent sur votre appareil ; vous pouvez les effacer en supprimant les données du site dans les réglages de votre navigateur.</p>
+    <p>Pas de cookie, pas de mesure d’audience, pas de publicité, pas de bouton de réseau social. Les polices de caractères sont hébergées sur le site lui-même.</p>`)}
+
+  ${sec(N(), 'Sécurité', `<p>Le tableau et le dossier de photos sont privés, partagés avec les seules personnes citées plus haut. Les pages sont servies en connexion chiffrée (HTTPS). Le code des pages est public sur GitHub, mais il ne contient aucune réponse d’invité ; seules les coordonnées des témoins y figurent, avec leur accord.</p>`)}
+
+  ${sec(N(), 'Vos droits', `
+    <p>Vous pouvez à tout moment demander à consulter, corriger ou supprimer vos informations, vous opposer à leur utilisation, en limiter l’usage, en recevoir une copie, ou retirer un accord donné (pour une allergie, une annonce, une photo…). Il suffit de nous le demander ${ecrire} ; nous répondons au plus tard dans un mois.</p>
+    <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez aussi vous adresser à la CNIL (<a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener">cnil.fr</a>).</p>`)}
+
+  ${sec(N(), 'Enfants', `<p>Pour les enfants, nous ne demandons que leur nombre. Les photos d’enfants ne doivent être envoyées qu’avec l’accord de leurs parents.</p>`)}
+
+  ${sec(N(), 'Changements', `<p>Si cette page évolue, la date de mise à jour en haut de page change. En cas de changement important, nous vous préviendrons.</p>`)}
+
+  <footer>
+    <div class="sig">${esc(P[0])} &amp; ${esc(P[1])}</div>
+    <a class="back" href="./" onclick="if (history.length > 1) { history.back(); return false; }">← Retour</a>
+  </footer>`;
+})();
+</script>
+</body>
+</html>

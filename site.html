@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Tiphaine &amp; Thomas · Le carnet</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400;1,6..96,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Parisienne&display=swap">
+<!-- polices hébergées sur le site (pas de Google Fonts : aucune adresse IP transmise à Google) -->
+<link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="dresscode.css">
 <!--
   SITE PRATIQUE — ne pas modifier ici : tout se règle dans config.js (bloc « site »).
@@ -250,6 +249,8 @@ section > .grid.places { text-align: center; }
 .hp { position: absolute; left: -9999px; }
 
 /* dépôt de photos */
+.consent { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; font: italic 400 14.5px/1.45 var(--f-body) !important; letter-spacing: 0 !important; text-transform: none !important; color: #55516a !important; text-align: left; }
+.consent input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: #1E2D4A; }
 .form .drop { font: 400 15px/1.4 var(--f-body); letter-spacing: 0; text-transform: none; color: var(--muted); }
 .drop { position: relative; display: grid; place-items: center; gap: 6px; margin-top: 6px; padding: 26px 16px; border: 1.5px dashed var(--gold); border-radius: 14px; background: rgba(255,255,255,.55); cursor: pointer; text-align: center; transition: background .2s; }
 .drop:hover, .drop.over { background: rgba(var(--soft-rgb),.6); }
@@ -346,6 +347,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
 <script src="sketches.js"></script>
 <script src="dresscode.js"></script>
 <script src="typo.js"></script>
+<script src="donnees.js"></script>
 <script>
 'use strict';
 (function () {
@@ -501,7 +503,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         <label>Pour vous joindre<input type="text" id="cvContact" name="contact" maxlength="80" required placeholder="06… ou e-mail"></label>
         <label>Un mot (facultatif)<input type="text" id="cvMot" name="message" maxlength="140" placeholder="Départ vers 13h, retour dimanche…"></label>
         <input class="hp" name="website" tabindex="-1" aria-hidden="true">
-        <p class="note" style="margin:0">Votre prénom, votre ville et votre contact seront visibles par les autres invités. Vous pourrez retirer l’annonce depuis ce téléphone.</p>
+        <label class="consent"><input type="checkbox" id="cvOk" name="ok"> J’accepte que mon prénom, ma ville de départ et mon contact soient visibles par les invités du carnet. Je pourrai retirer l’annonce à tout moment depuis ce téléphone. ${window.Donnees ? `<button class="dn-link" type="button" data-donnees>Vos données</button>` : ''}</label>
         <button class="btn cta" type="submit">Publier</button>
       </form>
       <p class="msg" id="cvMsg" aria-live="polite"></p>
@@ -569,7 +571,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   }
 
   /* --- Témoins --- */
-  if (on(SI.temoins)) { const T = SI.temoins, P = T.personnes || [];
+  /* témoins : seulement ceux qui ont donné leur accord (consentement daté dans config.js) */
+  if (on(SI.temoins)) { const T = SI.temoins, P = (T.personnes || []).filter(p => p && p.nom && String(p.consentement || '').trim());
     sections.push({ id: 'temoins', menu: 'Témoins', html: `
     ${head('Surprises & discours', T.titre || 'Les témoins')}
     <p class="lead">${esc(T.texte || '')}</p>
@@ -602,6 +605,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       <p class="lead" style="margin:0 auto">${esc(PH.texte || '')}</p>
       <form class="form" id="photoForm">
         <label>Votre prénom<input type="text" name="nom" maxlength="80" value="${esc(store.get('photoNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Pour savoir qui remercier"></label>
+        <label class="consent"><input type="checkbox" id="phOk" ${store.get('photoOk') ? 'checked' : ''}> Les personnes reconnaissables sur mes photos sont d’accord pour qu’elles vous soient envoyées (pas de photo de quelqu’un qui ne le souhaite pas, ni d’enfant sans l’accord de ses parents).</label>
         <label class="drop" id="drop"><input type="file" id="photoInput" accept="image/*,video/*" multiple>
           <b>Choisir des photos</b><span>ou les glisser ici · vidéos jusqu’à ${esc(PH.videoMaxMo || 40)} Mo</span></label>
         <div class="bar" hidden><i></i></div>
@@ -670,6 +674,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     <div class="eyebrow">Avec toute notre impatience</div>
     <div class="sig">${esc(a)} &amp; ${esc(b)}</div>
     <div class="links">${perso ? `<a href="${esc(lienFP)}">Revoir le faire-part</a>` : ''}${SI.contact ? `<a href="mailto:${esc(SI.contact)}">Nous écrire</a>` : ''}</div>
+    <div style="margin-top:18px">${window.Donnees ? Donnees.lien() : ''}</div>
   </footer>`;
 
   /* ---------- compte à rebours (heure du 1er moment, sinon heureParDefaut) ---------- */
@@ -718,6 +723,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     $('#cvAdd').addEventListener('click', () => { form.hidden = !form.hidden; if (!form.hidden) $('#cvDepart').focus(); });
     form.addEventListener('submit', async e => {
       e.preventDefault(); if (form.website.value) return;
+      if (!form.ok.checked) { msg.textContent = 'Cochez la case pour accepter que l’annonce soit visible.'; return; }
       const btn = form.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Publication…';
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), cle = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
       const a = { action: 'covoiturage', id, cle, code, type: form.type.value, nom: form.nom.value.trim(), depart: form.depart.value.trim(), jour: form.jour.value, places: form.places.value, contact: form.contact.value.trim(), message: form.message.value.trim() };
@@ -874,7 +880,9 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     const b64 = blob => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(blob); });
     let busy = false;
     async function send(files) {
-      if (busy || !files.length) return; busy = true;
+      if (busy || !files.length) return;
+      if (!$('#phOk').checked) { msg.textContent = 'Cochez d’abord la case sur l’accord des personnes photographiées.'; input.value = ''; return; }
+      store.set('photoOk', true); busy = true;
       const qui = pf.nom.value.trim(); store.set('photoNom', qui);
       files = [...files]; let ok = 0, done = 0;
       list.innerHTML = files.map((f, i) => `<li id="pf${i}"><span>${esc(f.name)}</span><span>en attente</span></li>`).join('');

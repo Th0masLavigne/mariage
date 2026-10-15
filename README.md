@@ -10,6 +10,9 @@ faire-part/
 ├── sketches.js         croquis SVG des lieux (château, église + halle d’Égreville, mairie de Suresnes)
 ├── dresscode.js/.css   la carte dress code (grattage, invités en aquarelle), partagée faire-part + carnet
 ├── typo.js             espaces insécables avant ? ! : ; (faire-part + carnet)
+├── donnees.js          note « Vos données » (lien en bas des pages et sous le formulaire de réponse)
+├── confidentialite.html politique de confidentialité complète (réglages : config.js → donnees)
+├── fonts/              polices hébergées sur le site (plus de Google Fonts)
 ├── agenda/*.ics        fichiers « Ajouter au calendrier » (iPhone, Mac, Outlook), un par faire-part
 ├── liens.html          liens personnalisés (faire-part + carnet), démo et aperçus
 ├── photos/             vos photos (galerie « Nos escales »)
@@ -154,3 +157,25 @@ puis *Gérer les déploiements → Nouvelle version*.
 Les photos sont réduites dans le téléphone (2400 px, ≈ 1 Mo) avant l’envoi, rangées par prénom ; vidéos jusqu’à
 `videoMaxMo` (40 Mo). Les chansons proposées sans lien de playlist arrivent dans l’onglet **Chansons** du Sheet
 (même mise à jour du script).
+
+## Vos données (note d’information)
+Un lien « Vos données » en bas du faire-part et du carnet, et une ligne sous le bouton d’envoi de la réponse, ouvrent une
+note simple : ce qui est recueilli, pourquoi, où (Sheet et Drive privés), ce que voient les autres invités, ce que garde le
+téléphone, la durée de conservation et comment demander une correction ou une suppression.
+Réglages dans `config.js` → `donnees` (adresse de contact, qui a accès, durée de conservation).
+Pensez à vraiment supprimer l’onglet RSVP, Covoiturage, Liste et le dossier photos à la date annoncée
+(gardez à part, si vous le souhaitez, les adresses pour les remerciements).
+
+## Politique de confidentialité
+`confidentialite.html` détaille tout (responsables, données et finalités, accès, transferts, durées, stockage local,
+droits, CNIL). Elle se règle dans `config.js` → `donnees` (`responsables`, `contact`, `acces`, `conservation`, `adresses`,
+`photos`, `miseAJour`) ; changez `miseAJour` à chaque modification importante.
+Accords recueillis : case « allergie / régime » dans la réponse (date dans la colonne `consentement_regime`),
+case avant de publier une annonce de covoiturage, case avant d’envoyer des photos.
+**Témoins** : leurs coordonnées sont dans `config.js`, donc publiques sur GitHub. Un témoin n’est affiché que si
+`consentement` contient la date de son accord (commentaire à côté de chaque ligne).
+**Polices** : hébergées dans `fonts/` (licence SIL OFL) ; aucune requête vers Google Fonts.
+**Suppression** : dans l’appli d’organisation, Réglages → « Données des invités » : délai en mois après le mariage
+(18 par défaut) ou date précise. Un mois avant, un encadré apparaît sur l’accueil (« Plus tard » le masque un mois),
+puis, à la date, un bouton efface RSVP, Covoiturage, Liste et Chansons. Si vous changez le délai, changez aussi le texte
+annoncé aux invités : `config.js` → `donnees.conservation`.

@@ -26,14 +26,14 @@ jobs:
       - name: Versionner les fichiers (anti-cache)
         run: |
           V="${GITHUB_SHA::8}"
-          sed -i -E "s/(config|sketches|dresscode|typo)\.(js|css)(\?v=[^\"]*)?\"/\1.\2?v=$V\"/g" index.html site.html
+          sed -i -E "s/(config|sketches|dresscode|typo|donnees)\.(js|css)(\?v=[^\"]*)?\"/\1.\2?v=$V\"/g" index.html site.html confidentialite.html
           sed -i -E "s#'(photos/[^'?]+)'#'\1?v=$V'#g" config.js
           grep -n "js?v=" index.html site.html
 
       - name: Préparer le dossier publié
         run: |
           mkdir -p _site
-          cp -r index.html site.html demo.html liens.html config.js sketches.js dresscode.js dresscode.css typo.js photos agenda _site/
+          cp -r index.html site.html confidentialite.html demo.html liens.html config.js sketches.js dresscode.js dresscode.css typo.js donnees.js fonts photos agenda _site/
           ls -R _site | head -40
 
       - uses: actions/configure-pages@v5

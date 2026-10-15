@@ -16,7 +16,7 @@ const NOTIFY = 'lavignethomas@hotmail.fr, tiphaine.thomas91@gmail.com';
 const SHEET = 'RSVP';
 const COLS = ['id', 'recu_le', 'formule', 'nom', 'presence', 'adultes', 'enfants', 'moments',
   'couchage', 'nuits', 'nb_couchage', 'partage', 'estimation_eur', 'regime', 'chanson',
-  'message', 'email', 'telephone', 'adresse', 'cp', 'ville', 'pays', 'lien_nom', 'code', 'modifs'];
+  'message', 'email', 'telephone', 'adresse', 'cp', 'ville', 'pays', 'lien_nom', 'code', 'modifs', 'consentement_regime'];
 
 function doGet(e) {
   /* carnet pratique : liste des annonces de covoiturage */

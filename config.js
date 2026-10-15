@@ -282,24 +282,56 @@ window.CONFIG = {
 
   /* --- Nos escales (galerie photos) ---------------------------------- */
   photos: [
-    { src: 'photos/bruges.jpg',        legende: 'Bruges' },
-    { src: 'photos/prague.jpg',        legende: 'Prague' },
-    { src: 'photos/halong.jpg',        legende: 'Baie d’Along' },
-    { src: 'photos/milos.jpg',         legende: 'Milos' },
-    { src: 'photos/paris-2024.jpg',    legende: 'Paris 2024' },
-    { src: 'photos/ski.jpg',           legende: 'Poudreuse' },
-    { src: 'photos/tour-eiffel.jpg',   legende: 'Paris by night' },
-    { src: 'photos/cours-cuisine.jpg', legende: 'Rouleaux maison' },
-    { src: 'photos/festival.jpg',      legende: 'Festival' },
-    { src: 'photos/seine.jpg',         legende: 'Bords de Seine' },
-    { src: 'photos/mer-du-nord.jpg',   legende: 'Mer du Nord' },
-    { src: 'photos/cyclades.jpg',      legende: 'Cyclades' },
+    /* Ordre pensé pour la galerie : formats alternés (un paysage toutes les 2-3 photos),
+       couleurs qui s’enchaînent en douceur, jamais deux fois le même lieu à la suite. */
+    { src: 'photos/fiances.jpeg',      legende: 'Fiancés !' },
+    { src: 'photos/fecheray.jpeg',     legende: 'Suresnes' },     
+    { src: 'photos/hoian.jpeg',        legende: 'Hội An' },
+    { src: 'photos/arzon.jpeg',        legende: 'Arzon' },
     { src: 'photos/diplome.jpg',       legende: 'Diplômés !' },
-    { src: 'photos/bruges-diner.jpg',  legende: 'Dîner au bord du canal' }
+    { src: 'photos/ski.jpg',           legende: 'Poudreuse' },       
+    { src: 'photos/st_raph.jpeg',      legende: 'Saint-Raphaël' },
+    { src: 'photos/prague.jpg',        legende: 'Prague' },
+    { src: 'photos/cham.jpeg',         legende: 'Ile Cham' },             // ?
+    { src: 'photos/paris2.jpeg',       legende: 'Paris' },
+    { src: 'photos/milos.jpg',         legende: 'Milos' },
+    { src: 'photos/lanha.jpeg',        legende: 'Baie de Lan Hạ' },
+    { src: 'photos/tour-eiffel.jpg',   legende: 'Paris by night' },
+    { src: 'photos/coupdur.jpeg',      legende: 'SOS' },             // ?
+    { src: 'photos/anniv.jpeg',        legende: 'Châtelet' },
+    { src: 'photos/alpe_dhuez.jpeg',   legende: 'Alpe d’Huez' },
+    { src: 'photos/cours-cuisine.jpg', legende: 'Rouleaux maison' },
+    { src: 'photos/paris-2024.jpg',    legende: 'Paris 2024' },
+    { src: 'photos/versailles2.jpeg',  legende: 'Versailles' },
+    { src: 'photos/caobang2.jpeg',     legende: 'Cao Bằng' },
+    { src: 'photos/grandpalais.jpeg',  legende: 'Grand Palais' },
+    { src: 'photos/chambord.jpeg',     legende: 'Chambord' },
+    { src: 'photos/danang.jpeg',       legende: 'Đà Nẵng' },
+    { src: 'photos/paris.jpeg',        legende: 'Paris' },
+    { src: 'photos/lioran.jpeg',       legende: 'Le Lioran' },
+    { src: 'photos/angeleye.jpeg',     legende: 'Angel Eye' },            // ?
+    { src: 'photos/seine.jpg',         legende: 'Bords de Seine' },
+    { src: 'photos/cyclades.jpg',      legende: 'Cyclades' },
+    { src: 'photos/lanha2.jpeg',       legende: 'Baie de Lan Hạ' },
+    { src: 'photos/solidays.jpeg',     legende: 'Solidays' },
+    { src: 'photos/milos.jpeg',        legende: 'Milos' },
+    { src: 'photos/halong.jpg',        legende: 'Baie d’Along' },
+
+    /* --- Non retenues (décommentez une ligne pour la remettre) --- */
+    // { src: 'photos/bruges.jpg',        legende: 'Bruges' },
+    // { src: 'photos/festival.jpg',      legende: 'Festival' },
+    // { src: 'photos/mer-du-nord.jpg',   legende: 'Mer du Nord' },
+    // { src: 'photos/bruges-diner.jpg',  legende: 'Dîner au bord du canal' },
+    // { src: 'photos/caobang.jpeg',      legende: 'Cao Bằng' },
+    // { src: 'photos/croisiere.jpeg',    legende: 'Croisière' },
+    // { src: 'photos/diplomes.jpeg',     legende: 'Diplômés' },
+    // { src: 'photos/grandpalais2.jpeg', legende: 'Grand Palais' },
+    // { src: 'photos/lanha3.jpeg',       legende: 'Baie de Lan Hạ' },
+    // { src: 'photos/versailles1.jpeg',  legende: 'Versailles' },
   ],
   photoHero: 'photos/bateau-nb.jpg',
   /* Grande photo de fin « On vous attend » */
-  photoFin: 'photos/halong.jpg',
+  photoFin: 'photos/caobang.jpeg',
 
   /* --- Le bouton « Non » qui s’enfuit --------------------------------- */
   fuite: [
@@ -310,6 +342,21 @@ window.CONFIG = {
     'Dernière chance…'
   ],
   nonFinal: 'Bon… non, hélas',
+
+  /* --- Vos données (lien « Vos données » du faire-part et du carnet) ----
+     contact      : adresse e-mail pour les demandes (vide → celle de site.contact, sinon « dites-le-nous »)
+     acces        : qui a accès au Sheet / Drive (vide → « nous deux (Tiphaine et Thomas) »)
+     conservation : « Vos données sont supprimées … »                                          */
+  donnees: {
+    contact: '',
+    acces: 'nous deux (Tiphaine et Thomas) et nos parents',
+    conservation: 'au plus tard un an et demi après le mariage',
+    /* pour la politique de confidentialité complète (confidentialite.html) */
+    responsables: '',           // ex. 'Tiphaine X et Thomas Lavigne' ; vide → les prénoms
+    adresses: 'jusqu’à l’envoi de nos remerciements, et au plus tard un an et demi après le mariage',
+    photos: 'nous gardons les photos comme souvenirs ; le dossier partagé est fermé trois mois après le mariage',
+    miseAJour: '15 octobre 2026'
+  },
 
   /* =====================================================================
      SITE PRATIQUE (site.html) — le « carnet » que les invités rouvrent
@@ -423,13 +470,19 @@ window.CONFIG = {
       titre: 'Les témoins',
       texte: '',
       /* une ligne par témoin ; tel et email facultatifs (affichés + boutons Appeler / SMS / E-mail).
-         Pour activer un exemple : retirez les // en début de ligne et remplacez les valeurs. */
+         Le dépôt GitHub est public : ces coordonnées sont visibles par tous.
+         consentement : date à laquelle le témoin a accepté que ses coordonnées soient publiées.
+         Tant que consentement est vide, le témoin N’EST PAS affiché dans le carnet.            */
       personnes: [
-        // { nom: 'Claire Martin', role: 'Témoin de Tiphaine', tel: '06 12 34 56 78', email: 'claire@exemple.fr' },
-        { nom: 'Bastien',   role: 'Témoin de Thomas',   tel: '07 87 77 08 23', email: 'bastien.sauty@gmail.com' },
-        { nom: 'Antoine',   role: 'Témoin de Thomas',   email: 'antoine.hp122@simplelogin.com' },
-        { nom: 'Clarisse',   role: 'Témoin de Tiphaine',   tel: '06 XX XX XX XX', email: 'clarisse@exemple.fr' },
-        { nom: 'Dominique',   role: 'Témoin de Tiphaine',   tel: '06 XX XX XX XX', email: 'dominique@exemple.fr' },
+        // { nom: 'Claire Martin', role: 'Témoin de Tiphaine', tel: '06 12 34 56 78', email: 'claire@exemple.fr', consentement: 'AAAA-MM-JJ' },
+        /* Bastien : consentement donné le 15/10/2026 */
+        { nom: 'Bastien',   role: 'Témoin de Thomas',   tel: '07 87 77 08 23', email: 'bastien.sauty@gmail.com', consentement: '2026-10-15' },
+        /* Antoine : consentement donné le 15/10/2026 */
+        { nom: 'Antoine',   role: 'Témoin de Thomas',   email: 'antoine.hp122@simplelogin.com', consentement: '2026-10-15' },
+        /* Clarisse : consentement pas encore demandé → non affichée */
+        { nom: 'Clarisse',   role: 'Témoin de Tiphaine',   tel: '06 XX XX XX XX', email: 'clarisse@exemple.fr', consentement: '' },
+        /* Dominique : consentement pas encore demandé → non affichée */
+        { nom: 'Dominique',   role: 'Témoin de Tiphaine',   tel: '06 XX XX XX XX', email: 'dominique@exemple.fr', consentement: '' },
       ]
     },
 
