@@ -344,7 +344,7 @@ window.CONFIG = {
       /* chaque info : un texte, ou '' pour « bientôt ». Ligne absente → masquée.
          Possibles : voiture, parking, train, navette (ex. train: 'Gare de …, puis taxi').  */
       voiture: 'Comptez environ 1h15 de route entre Suresnes et le château, et 8 minutes entre l’église d’Égreville et le château.',
-      parking: '',
+      parking: 'Un grand parking est disponible sur place, à l’entrée du château.',
       /* covoiturage : lien vide → tableau d’annonces intégré (onglet « Covoiturage » du Sheet ;
          pour retirer une annonce : effacer sa ligne ou écrire « non » dans la colonne visible).
          lien rempli → simple bouton vers ce lien. null → pas de covoiturage. */
@@ -359,6 +359,10 @@ window.CONFIG = {
       autour: 'Pour ceux qui préfèrent dormir à proximité, voici quelques adresses à quelques minutes.',
       /* { nom, type: 'Hôtel' | 'Gîte' | 'Chambre d’hôtes', distance, texte, lien } */
       adresses: [
+        {'nom': 'Les Blins', type: 'Gîte', distance: '20 min', texte: '', lien: 'https://312319.weebnb.com/en_GB/bnb/bnb-1-1' },
+        {'nom': 'Le moulin de Tosset', type: 'Gîte', distance: '4 min', texte: '', lien: 'https://www.tourismeloiret.com/fr/diffusio/locations-vacances/le-moulin-tosset-griselles_TFOHLOCEN045V50F8S5' },
+        {'nom': 'Le Victor Noir', type: 'Gîte', distance: '25 min', texte: '', lien: 'https://www.airbnb.fr/rooms/1196100088622387492?source_impression_id=p3_1792065276_P35-sicrRBwfstt0&check_in=2027-08-08&guests=1&adults=1' },
+        {'nom': "L'Atelier du Flot Mesnil", type: 'Gîte', distance: '18 min', texte: '', lien: 'https://www.gites-de-france.com/fr/centre-val-de-loire/loiret/latelier-du-flot-mesnil-h45g029556' },
         // { nom: 'Le Relais du Gâtinais', type: 'Hôtel', distance: '10 min', texte: 'Demandez le tarif « mariage Lavigne ».', lien: 'https://…' },
       ]
     },
@@ -373,7 +377,7 @@ window.CONFIG = {
         { q: 'Puis-je modifier ma réponse ?', r: 'Bien sûr : rouvrez le lien de votre faire-part, votre réponse s’affiche avec un bouton « Modifier ma réponse ».' },
         { q: 'Quelle tenue prévoir ?', r: 'Tout est dans la rubrique « Dress code ».' },
         { q: 'Les enfants sont-ils invités ?', r: '' },
-        { q: 'Peut-on prendre des photos pendant la cérémonie ?', r: '' },
+        { q: 'Peut-on prendre des photos pendant la cérémonie ?', r: 'Vous êtes libres de prendre des photos pendant la cérémonie, à condition de ne pas perturber les invités.' },
         { q: 'J’ai une allergie ou un régime particulier.', r: 'Indiquez-le dans votre réponse au faire-part, nous transmettrons au traiteur.' },
         { q: 'Que faire en cas de pluie ?', r: '' }
       ]
