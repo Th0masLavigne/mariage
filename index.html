@@ -618,13 +618,16 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .done .big { font: italic 400 clamp(32px, 7vw, 46px)/1.1 var(--f-display); color: var(--blue); }
 
 /* --- Final : grande photo --- */
-.finale { position: relative; margin: 70px -20px 0; min-height: min(92vh, 760px); display: grid; align-items: end; overflow: hidden; color: #fff; text-align: center; }
-.finale img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.finale::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,22,40,0) 30%, rgba(20,22,40,.25) 55%, rgba(20,22,40,.7) 100%); }
-.finale .txt { position: relative; z-index: 1; padding: 0 20px 64px; }
+.finale { position: relative; margin: 70px -20px 0; min-height: min(92vh, 760px); display: grid; align-items: start; overflow: hidden; color: #fff; text-align: center; }
+/* texte posé dans le ciel, en haut : les visages restent dégagés en bas de la photo */
+.finale img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; }
+.finale::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,22,40,.55) 0%, rgba(20,22,40,.28) 30%, rgba(20,22,40,0) 52%, rgba(20,22,40,0) 82%, rgba(20,22,40,.25) 100%); }
+.finale .txt { position: relative; z-index: 1; padding: clamp(26px, 5vh, 52px) 24px 0; }
 .finale .lead { font: italic 400 clamp(22px, 5vw, 30px)/1.25 var(--f-display); text-wrap: balance; text-shadow: 0 1px 12px rgba(0,0,0,.35); }
-.finale .script { font: 400 clamp(64px, 18vw, 110px)/1 var(--f-hand); text-shadow: 0 2px 14px rgba(0,0,0,.35); margin-top: 6px; }
-.finale .meta { margin-top: 10px; font: 500 12px/1.4 var(--f-display); letter-spacing: .34em; text-transform: uppercase; opacity: .9; }
+.finale .script { font: 400 clamp(60px, 16vw, 104px)/.95 var(--f-hand); text-shadow: 0 2px 14px rgba(0,0,0,.35); margin-top: 6px; }
+.finale .meta { margin-top: 12px; font: 500 12px/1.4 var(--f-display); letter-spacing: .3em; text-transform: uppercase; text-shadow: 0 1px 8px rgba(0,0,0,.45); }
+.finale .meta span { display: inline-block; white-space: nowrap; }
+@media (max-width: 600px) { .finale .meta span { display: block; } .finale .meta .sep { display: none; } }
 footer { padding-top: 40px; }
 footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 .site-link { display: inline-block; margin-top: 18px; padding: 13px 22px; border-radius: 99px; position: relative; overflow: hidden; text-decoration: none;
@@ -761,6 +764,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 /* dress code illustré, animé (léger balancement, paillettes) */
    /* photo de fin encadrée */
 .finale { margin: 70px 0 0; border: 10px solid var(--card); border-radius: 2px; min-height: min(80vh, 640px); box-shadow: 0 18px 36px -16px rgba(30,45,74,.35); }
+/* sur ordinateur : cadre presque carré pour voir la photo en entier, texte un peu plus compact */
+@media (min-width: 601px) { .finale { min-height: 0; aspect-ratio: 1; } .finale .script { font-size: clamp(60px, 10vw, 96px); } .finale .lead { font-size: clamp(22px, 3vw, 28px); } }
 .finale::before { content: ''; position: absolute; inset: 6px; border: 1px solid rgba(197,160,89,.85); z-index: 2; pointer-events: none; }
 
 /* ---- Dress code : carte comme la maquette (titre au-dessus, arche dorée double, aquarelle, texte) ---- */
@@ -1190,7 +1195,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     <section class="finale">
       <img src="${esc(C.photoFin || C.photoHero)}" alt="">
-      <div class="txt"><div class="lead">${esc(TX.finPhrase)}</div><div class="script">${esc(TX.fin)}</div><div class="meta">${esc(a)} &amp; ${esc(b)} · ${esc(F.dates)}</div></div>
+      <div class="txt"><div class="lead">${esc(TX.finPhrase)}</div><div class="script">${esc(TX.fin)}</div><div class="meta"><span>${esc(a)} &amp; ${esc(b)}</span><span class="sep">&nbsp;·&nbsp;</span><span>${esc(F.dates)}</span></div></div>
     </section>
 
     <footer>
