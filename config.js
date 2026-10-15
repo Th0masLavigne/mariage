@@ -423,7 +423,9 @@ window.CONFIG = {
       personnes: [
         // { nom: 'Claire Martin', role: 'Témoin de Tiphaine', tel: '06 12 34 56 78', email: 'claire@exemple.fr' },
         { nom: 'Bastien',   role: 'Témoin de Thomas',   tel: '07 87 77 08 23', email: 'bastien.sauty@gmail.com' },
-        { nom: 'Antoine',   role: 'Témoin de Thomas',   tel: '06 XX XX XX XX', email: 'antoine@exemple.fr' },
+        { nom: 'Antoine',   role: 'Témoin de Thomas',   tel: '06 XX XX XX XX', email: 'antoine.hp122@simplelogin.com' },
+        { nom: 'Clarisse',   role: 'Témoin de Tiphaine',   tel: '06 XX XX XX XX', email: 'clarisse@exemple.fr' },
+        { nom: 'Dominique',   role: 'Témoin de Tiphaine',   tel: '06 XX XX XX XX', email: 'dominique@exemple.fr' },
       ]
     },
 
