@@ -480,9 +480,9 @@ window.CONFIG = {
         /* Antoine : consentement donné le 15/10/2026 */
         { nom: 'Antoine',   role: 'Témoin de Thomas',   email: 'antoine.hp122@simplelogin.com', consentement: '2026-10-15' },
         /* Clarisse : consentement pas encore demandé → non affichée */
-        { nom: 'Clarisse',   role: 'Témoin de Tiphaine',   tel: '06 XX XX XX XX', email: 'clarisse@exemple.fr', consentement: '' },
+        { nom: 'Clarisse',   role: 'Témoin de Tiphaine',   tel: '06 69 64 67 95', email: 'clarisse6129@gmail.com', consentement: '2026-10-16' },
         /* Dominique : consentement pas encore demandé → non affichée */
-        { nom: 'Dominique',   role: 'Témoin de Tiphaine',   tel: '06 XX XX XX XX', email: 'dominique@exemple.fr', consentement: '' },
+        { nom: 'Dominique',   role: 'Témoin de Tiphaine',   tel: '06 43 62 54 79', email: '', consentement: '2026-10-16' },
       ]
     },
 
