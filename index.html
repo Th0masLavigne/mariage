@@ -1180,7 +1180,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
           <div class="gift-body">
             ${t.accroche ? `<p class="gift-lead">${esc(t.accroche)}</p>` : ''}
             <div class="sc-title">${esc(t.titre)}${t.lien ? '' : '<span class="gold-stamp">Bientôt</span>'}</div>
-            <p>${esc(t.texte || 'Pour ceux qui le souhaitent, une liste sera là pour vous aider. Le lien arrive très vite.')}</p>
+            <p>${esc(t.texte || (t.lien ? 'Pour ceux qui le souhaitent, nous avons préparé une liste : vous y trouverez quelques idées et les façons de participer.' : 'Pour ceux qui le souhaitent, une liste sera là pour vous aider. Le lien arrive très vite.'))}</p>
             ${t.lien ? `<a class="btn-cal" href="${esc(t.lien)}"${/^https?:/.test(t.lien) ? ' target="_blank" rel="noopener"' : ''}>Voir la liste ${/^https?:/.test(t.lien) ? '↗' : '→'}</a>` : ''}</div>
         </div>`).join('')}
       </div>
