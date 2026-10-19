@@ -154,6 +154,8 @@ section > .grid.places { text-align: center; }
 .moment h3 { font: italic 400 25px/1.15 var(--f-display); color: var(--blue); }
 .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-top: 6px; font-size: 15.5px; }
 .time { font: 600 15px/1 var(--f-display); color: var(--rose); letter-spacing: .06em; }
+.opt { font-weight: 400; font-style: italic; color: var(--muted); text-transform: none; letter-spacing: 0; }
+.accueil { font-style: italic; color: var(--muted); font-size: 14.5px; }
 .moment p { margin: 6px 0 0; color: var(--muted); font-size: 16.5px; }
 
 /* ---------- Lieux ---------- */
@@ -447,7 +449,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     const L = C.lieux.chateau;
     const q = new URLSearchParams({ action: 'TEMPLATE', text: `Mariage de ${C.prenoms[0]} & ${C.prenoms[1]}`,
       dates: `${ymd(Math.min(...ds))}/${ymd(Math.max(...ds) + 1)}`,
-      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre} (${C.lieux[m.lieu].nom})`; }).join('\n'),
+      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre}${m.accueil ? ' (accueil dès ' + m.accueil + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
       location: `${L.nom}, ${L.adresse}` });
     return 'https://calendar.google.com/calendar/render?' + q.toString();
   }
@@ -458,7 +460,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     <div class="paper alt" style="--tilt:.4deg"><span class="in-border"></span>
       ${days.map(d => `<div class="day"><div class="day-h">${esc(d.jour)}</div>${d.items.map(k => { const m = C.moments[k], L = C.lieux[m.lieu];
         return `<div class="moment">${ico(m.dessin)}<div><h3>${esc(m.titre)}</h3>
-          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon('horaire à venir')}${ext(L.maps, esc(L.nom))}</div>
+          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon('horaire à venir')}${m.accueil ? `<span class="accueil">accueil dès ${esc(m.accueil)}</span>` : ''}${ext(L.maps, esc(L.nom))}</div>
           ${m.texte ? `<p>${esc(m.texte)}</p>` : ''}</div></div>`; }).join('')}</div>`).join('')}
     </div>
     <div class="btns">
@@ -561,9 +563,10 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* bloc « comment nous faire parvenir votre participation » */
   function payHtml(inPanel) {
     const P = LI.paiement || {};
-    if (!P.texte && !P.iban && !P.lydia && !P.paypal && !P.urne) return '';
+    if (!P.texte && !P.iban && !P.lydia && !P.paypal && !P.urne && !P.cagnotte) return '';
     return `<div class="${inPanel ? 'pay-in' : 'paper alt pay carte'}"${inPanel ? '' : ' style="--tilt:-.3deg"'}>${inPanel ? '' : '<span class="in-border"></span><h3>Pour participer</h3>'}
       ${P.texte ? `<p>${esc(P.texte)}</p>` : ''}
+      ${P.cagnotte ? `<div class="links" style="justify-content:center"><a class="btn" href="${esc(P.cagnotte)}" target="_blank" rel="noopener">Participer à la cagnotte ↗</a></div>` : `<p class="note" style="text-align:center;margin:10px 0">${soon('bientôt')} Le bouton vers notre cagnotte apparaîtra ici dès sa création.</p>`}
       ${P.iban ? `<div class="iban"><span>${P.titulaire ? esc(P.titulaire) + '<br>' : ''}<b>${esc(P.iban)}</b></span><button class="copy" type="button" data-copy="${esc(String(P.iban).replace(/\s+/g, ''))}">Copier l’IBAN</button></div>` : ''}
       ${P.lydia || P.paypal ? `<div class="links">${P.lydia ? ext(P.lydia, 'Lydia') : ''}${P.paypal ? ext(P.paypal, 'PayPal') : ''}</div>` : ''}
       ${P.urne ? `<p class="urne">${esc(P.urne)}</p>` : ''}
@@ -785,7 +788,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       bg.innerHTML = `<div class="paper lp" role="dialog" aria-modal="true" aria-labelledby="lpT"><span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
         <div class="eyebrow">${part ? 'Participer' : 'Offrir'}</div><p class="lp-t" id="lpT">${esc(g.titre)}</p>
         <form class="form" id="lpForm" autocomplete="on">
-          <label>Vos prénoms<input type="text" id="lpNom" name="nom" maxlength="80" required value="${esc(store.get('listeNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Claire & Paul"></label>
+          <label>Vos prénoms <span class="opt">(facultatif)</span><input type="text" id="lpNom" name="nom" maxlength="80" value="${esc(store.get('listeNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Claire & Paul"></label>
+          <p class="note" style="margin:-6px 0 0">Laissez vide pour participer anonymement : nous ne saurons pas de qui elle vient.</p>
           ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="50"></label>
             <div class="chips">${[30, 50, 100, 150].map(v => `<button type="button" data-v="${v}">${v} €</button>`).join('')}</div>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est vous.</p>`}
           <label>Un petit mot (facultatif)<input type="text" id="lpMot" name="message" maxlength="200"></label>
@@ -809,7 +813,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         if (part && montant < 1) { msg.textContent = 'Indiquez un montant.'; f.montant.focus(); return; }
         const btn = f.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Envoi…';
         const id = 'l_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), cle = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-        const row = { action: 'liste', id, cle, code, cadeau: g.id, titre: g.titre, type: part ? 'participation' : 'cadeau', objectif: +g.objectif || '', nom: f.nom.value.trim(), montant, message: f.message.value.trim() };
+        const anon = !f.nom.value.trim();
+        const row = { action: 'liste', id, cle, code: anon ? '' : code, cadeau: g.id, titre: g.titre, type: part ? 'participation' : 'cadeau', objectif: +g.objectif || '', nom: f.nom.value.trim(), montant, message: f.message.value.trim() };
         try {
           let r;
           if (DEMO_) { if (!part && demoEtat()[g.id] && demoEtat()[g.id].offert) r = { ok: false, error: 'deja' }; else { demoRows.push(row); r = { ok: true }; } }
@@ -817,7 +822,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
           if (!r.ok) throw new Error(r.error || '');
           const m = mine(); m[id] = { cle, cadeau: g.id }; store.set('liste', m); store.set('listeNom', row.nom);
           bg.querySelector('.lp').innerHTML = `<span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
-            <div class="merci-l">Merci ${esc(row.nom)} !</div>
+            <div class="merci-l">Merci${row.nom ? ' ' + esc(row.nom) : ''} !</div>
             <p class="lead" style="margin:0 auto">${part ? `Votre participation de <b>${eur(montant)}</b> à « ${esc(g.titre)} » est notée.` : `C’est noté : vous nous offrez « ${esc(g.titre)} ».`}${DEMO_ ? ' (aperçu : rien n’a été envoyé)' : ''}</p>
             ${payHtml(true)}
             <button class="btn" type="button" data-close>Fermer</button>`;

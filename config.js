@@ -152,11 +152,12 @@ window.CONFIG = {
 
   /* --- Les moments du week-end ----------------------------------------
      heure : '' tant qu’on ne sait pas → « horaire à venir »
+     accueil : facultatif, heure d’arrivée des invités (affichée « accueil dès … » à côté de l’heure)
      dessin : rings | moon | glasses | plate | croissant | bells          */
   moments: {
     mairie:  { jour: 'Vendredi 6 août',  heure: '', titre: 'Mariage civil',             lieu: 'mairie',  dessin: 'rings',     texte: 'Le « oui » officiel, si tout va bien.' },
     veillee: { jour: 'Vendredi 6 août',  heure: '16:00', titre: 'Soirée en petit comité',    lieu: 'chateau', dessin: 'moon',      texte: 'Direction le château pour une soirée intime.' },
-    eglise:  { jour: 'Samedi 7 août',    heure: '15:00', titre: 'Cérémonie religieuse',      lieu: 'eglise',  dessin: 'bells',     texte: '' },
+    eglise:  { jour: 'Samedi 7 août',    heure: '14:30', accueil: '14:00', titre: 'Cérémonie religieuse', lieu: 'eglise',  dessin: 'bells',     texte: 'L’église nous accueille dès 14h00 : venez tranquillement vous installer, la cérémonie commence à 14h30.' },
     vin:     { jour: 'Samedi 7 août',    heure: '17:00', titre: 'Vin d’honneur',             lieu: 'chateau', dessin: 'glasses',   texte: 'Sous le grand cèdre du parc.' },
     diner:   { jour: 'Samedi 7 août',    heure: '20:30', titre: 'Dîner & soirée dansante',   lieu: 'chateau', dessin: 'plate',     texte: '' },
     brunch:  { jour: 'Dimanche 8 août',  heure: '11:00', titre: 'Brunch',                    lieu: 'chateau', dessin: 'croissant', texte: 'Pour se remettre doucement.' }
@@ -455,7 +456,10 @@ window.CONFIG = {
       /* Comment faire parvenir sa participation (affiché sous la liste et après chaque participation).
          Laissez vide ce que vous n’utilisez pas.                                                      */
       paiement: {
-        texte: 'Par virement (RIB sur demande) ou par Wero avec Thomas, en indiquant « Liste + votre prénom » en libellé. Pour un objet, vous pouvez aussi l’apporter le jour J ou nous le faire livrer.',
+        texte: 'Le plus simple : notre cagnotte en ligne, où vous pouvez participer en toute discrétion. Si vous préférez un virement, n’hésitez pas à nous demander notre RIB. Pour un objet, vous pouvez aussi l’apporter le jour J ou nous le faire livrer.',
+        /* lien de la cagnotte en ligne (bouton « Participer à la cagnotte ») ; '' tant qu’elle n’est pas créée */
+        // https://www.onparticipe.fr/cagnottes/c/mariage
+        cagnotte: '',
         /* urne le jour J (affichée sous la liste et dans la fenêtre « Participer ») ; '' pour la masquer */
         urne: 'Une urne sera aussi à votre disposition le jour J, pour participer de façon anonyme.',
         titulaire: '',

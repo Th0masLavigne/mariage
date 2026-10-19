@@ -261,7 +261,9 @@ function listeEtat_() {
 }
 
 function liste_(d) {
-  if (d.website || !d.id || !d.cadeau || !String(d.nom || '').trim()) return { ok: false };
+  if (d.website || !d.id || !d.cadeau) return { ok: false };
+  /* prénom facultatif : participation anonyme */
+  d.nom = String(d.nom || '').trim() || 'Anonyme';
   const type = d.type === 'cadeau' ? 'cadeau' : 'participation';
   const montant = Math.max(0, Math.min(100000, Math.round(Number(d.montant) || 0)));
   if (type === 'participation' && montant < 1) return { ok: false, error: 'montant' };

@@ -281,6 +281,7 @@ h2 { font: italic 400 clamp(32px, 6.4vw, 46px)/1.08 var(--f-display); margin: 10
 .moment h3 { font: 600 25px/1.15 var(--f-display); margin: 0; }
 .moment .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-top: 6px; font-size: 15px; }
 .moment .time { font: 500 14px/1 var(--f-mono); color: var(--rose); }
+.moment .accueil { font-style: italic; color: var(--muted); font-size: 14px; }
 .moment p { margin: 6px 0 0; color: var(--muted); }
 .moment .doodle-wrap { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50%; background: var(--paper-2); }
 
@@ -988,7 +989,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const q = new URLSearchParams({
       action: 'TEMPLATE', text: `Mariage de ${C.prenoms[0]} & ${C.prenoms[1]}`,
       dates: `${ymd(Math.min(...ds))}/${ymd(Math.max(...ds) + 1)}`,
-      details: F.moments.map(k => `${C.moments[k].jour} : ${C.moments[k].titre} (${C.lieux[C.moments[k].lieu].nom})`).join('\n') + '\nHoraires à venir.',
+      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre}${m.accueil ? ' (accueil dès ' + m.accueil + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
       location: `${L.nom}, ${L.adresse}`
     });
     return 'https:/' + '/calendar.google.com/calendar/render?' + q.toString();
@@ -1131,7 +1132,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         const m = C.moments[k], L = C.lieux[m.lieu];
         return `<div class="moment"><div class="doodle-wrap">${ico(m.dessin)}</div><div class="body">
           <h3>${esc(m.titre)}</h3>
-          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon('horaire à venir')}<a href="${esc(L.maps)}" target="_blank" rel="noopener">${esc(L.nom)}</a></div>
+          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon('horaire à venir')}${m.accueil ? `<span class="accueil">accueil dès ${esc(m.accueil)}</span>` : ''}<a href="${esc(L.maps)}" target="_blank" rel="noopener">${esc(L.nom)}</a></div>
           ${m.texte ? `<p>${esc(m.texte)}</p>` : ''}</div></div>`;
       }).join('')}</div>`).join('')}
       </div>
