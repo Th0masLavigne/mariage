@@ -86,7 +86,7 @@ window.CONFIG = {
 
   /* Titres des sections (laisser '' pour masquer celui de la date ou le sous-titre) */
   textes: {
-    sousTitre: 'Un "oui" pour la vie.',
+    sousTitre: 'Un « oui » pour la vie.',
     date: 'Notez-le bien',
     programme: 'Le déroulé',
     escales: 'Avant la prochaine',
@@ -173,7 +173,7 @@ window.CONFIG = {
     'grand-weekend-7q': {
       nom: 'Save the date',
       dates: '6 · 7 · 8 août 2027',
-      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nVous faites partie de ceux qui comptent le plus.\nNous serions heureux de vous avoir à nos côtés, du premier « oui » au dernier croissant.',
+      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés, du premier « oui » au dernier croissant.',
       moments: ['mairie', 'veillee', 'eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'ven', label: 'Nuit du vendredi 6 au samedi 7' },
@@ -183,7 +183,7 @@ window.CONFIG = {
     'noce-4m': {
       nom: 'Save the date',
       dates: '7 & 8 août 2027',
-      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nVous faites partie de ceux qui comptent le plus.\nNous serions heureux de vous avoir à nos côtés, de notre entrée dans l’église jusqu’au dernier croissant.',
+      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés au vin d’honneur, au dîner et au brunch du lendemain.',
       moments: ['eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'sam', label: 'Nuit du samedi 7 au dimanche 8' }
@@ -192,7 +192,7 @@ window.CONFIG = {
     'vin-honneur-2k': {
       nom: 'Save the date',
       dates: 'Samedi 7 août 2027',
-      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nVous faites partie de ceux qui comptent le plus.\nNous serions heureux de vous avoir à nos côtés tout au long de cet après-midi.',
+      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés au vin d’honneur.',
       moments: ['eglise', 'vin'],
       nuits: []
     }
