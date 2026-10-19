@@ -170,9 +170,9 @@ window.CONFIG = {
      nuits : nuits où l’on peut dormir sur place (60 €/pers./nuit).      */
   formules: {
     'grand-weekend-7q': {
-      nom: 'Rejoignez-nous !',
+      nom: 'Save the date!',
       dates: '6 · 7 · 8 août 2027',
-      intro: 'Vous faites partie de ceux qui comptent le plus. Nous avons le plaisie de vous inviter à notre mariage.',
+      intro: 'Nous avons la joie de vous inviter à notre mariage, et à tout le week-end qui l’entoure : du « oui » à la mairie le vendredi jusqu’au brunch du dimanche. Votre présence nous comblerait de joie.',
       moments: ['mairie', 'veillee', 'eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'ven', label: 'Nuit du vendredi 6 au samedi 7' },
@@ -180,18 +180,18 @@ window.CONFIG = {
       ]
     },
     'noce-4m': {
-      nom: 'Rejoignez-nous !',
+      nom: 'Save the date!',
       dates: '7 & 8 août 2027',
-      intro: 'Vous faites partie de ceux qui comptent le plus. Nous avons le plaisie de vous inviter à notre mariage.',
+      intro: 'Nous avons la joie de vous inviter à notre mariage : à la cérémonie à l’église, puis au vin d’honneur et au dîner au château, où nous ferons la fête jusqu’au bout de la nuit… avant de nous retrouver pour le brunch du dimanche.',
       moments: ['eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'sam', label: 'Nuit du samedi 7 au dimanche 8' }
       ]
     },
     'vin-honneur-2k': {
-      nom: 'Rejoignez-nous !',
+      nom: 'Save the date!',
       dates: 'Samedi 7 août 2027',
-      intro: 'Vous faites partie de ceux qui comptent le plus. Nous avons le plaisie de vous inviter à notre mariage.',
+      intro: 'Nous avons la joie de vous inviter à la cérémonie religieuse de notre mariage, puis au vin d’honneur, pour lever notre verre avec vous dans le parc du château.',
       moments: ['eglise', 'vin'],
       nuits: []
     }
