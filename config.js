@@ -172,7 +172,7 @@ window.CONFIG = {
     'grand-weekend-7q': {
       nom: 'Rejoignez-nous !',
       dates: '6 · 7 · 8 août 2027',
-      intro: 'Vous faites partie de ceux qui comptent le plus. Nous aurions l’honneur de vous avoir à nos côtés tout au long de ce week-end, du premier « oui » jusqu’au dernier croissant.',
+      intro: 'Vous faites partie de ceux qui comptent le plus. Nous avons le plaisie de vous inviter à notre mariage.',
       moments: ['mairie', 'veillee', 'eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'ven', label: 'Nuit du vendredi 6 au samedi 7' },
@@ -182,7 +182,7 @@ window.CONFIG = {
     'noce-4m': {
       nom: 'Rejoignez-nous !',
       dates: '7 & 8 août 2027',
-      intro: 'Nous aurions la joie de vous compter parmi nous pour la cérémonie, puis de lever nos verres et de danser avec vous jusqu’au bout de la nuit, avant un dernier brunch au château.',
+      intro: 'Vous faites partie de ceux qui comptent le plus. Nous avons le plaisie de vous inviter à notre mariage.',
       moments: ['eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'sam', label: 'Nuit du samedi 7 au dimanche 8' }
@@ -191,7 +191,7 @@ window.CONFIG = {
     'vin-honneur-2k': {
       nom: 'Rejoignez-nous !',
       dates: 'Samedi 7 août 2027',
-      intro: 'Nous serions heureux de vous voir à nos côtés à l’église, puis de trinquer ensemble dans le parc du château.',
+      intro: 'Vous faites partie de ceux qui comptent le plus. Nous avons le plaisie de vous inviter à notre mariage.',
       moments: ['eglise', 'vin'],
       nuits: []
     }
