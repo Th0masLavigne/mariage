@@ -170,7 +170,7 @@ window.CONFIG = {
      nuits : nuits où l’on peut dormir sur place (60 €/pers./nuit).      */
   formules: {
     'grand-weekend-7q': {
-      nom: 'Le grand week-end',
+      nom: 'Rejoignez-nous !',
       dates: '6 · 7 · 8 août 2027',
       intro: 'Vous faites partie de ceux qui comptent le plus. Nous aurions l’honneur de vous avoir à nos côtés tout au long de ce week-end, du premier « oui » jusqu’au dernier croissant.',
       moments: ['mairie', 'veillee', 'eglise', 'vin', 'diner', 'brunch'],
@@ -180,7 +180,7 @@ window.CONFIG = {
       ]
     },
     'noce-4m': {
-      nom: 'Église, vin d’honneur & dîner',
+      nom: 'Rejoignez-nous !',
       dates: '7 & 8 août 2027',
       intro: 'Nous aurions la joie de vous compter parmi nous pour la cérémonie, puis de lever nos verres et de danser avec vous jusqu’au bout de la nuit, avant un dernier brunch au château.',
       moments: ['eglise', 'vin', 'diner', 'brunch'],
@@ -189,7 +189,7 @@ window.CONFIG = {
       ]
     },
     'vin-honneur-2k': {
-      nom: 'Église & vin d’honneur',
+      nom: 'Rejoignez-nous !',
       dates: 'Samedi 7 août 2027',
       intro: 'Nous serions heureux de vous voir à nos côtés à l’église, puis de trinquer ensemble dans le parc du château.',
       moments: ['eglise', 'vin'],
