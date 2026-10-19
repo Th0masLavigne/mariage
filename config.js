@@ -86,7 +86,7 @@ window.CONFIG = {
 
   /* Titres des sections (laisser '' pour masquer celui de la date ou le sous-titre) */
   textes: {
-    sousTitre: 'Et maintenant, pour toujours.',
+    sousTitre: 'Un "oui" pour la vie.',
     date: 'Notez-le bien',
     programme: 'Le déroulé',
     escales: 'Avant la prochaine',
@@ -168,11 +168,12 @@ window.CONFIG = {
        https://VOTRE-NOM.github.io/mariage/?f=grand-weekend-7q
      Changez les codes si vous voulez qu’ils soient moins devinables.
      nuits : nuits où l’on peut dormir sur place (60 €/pers./nuit).      */
+  /* intro : « \n » = retour à la ligne */
   formules: {
     'grand-weekend-7q': {
-      nom: 'Save the date!',
+      nom: 'Save the date',
       dates: '6 · 7 · 8 août 2027',
-      intro: 'Nous avons la joie de vous inviter à notre mariage, et à tout le week-end qui l’entoure : du « oui » à la mairie le vendredi jusqu’au brunch du dimanche. Votre présence nous comblerait de joie.',
+      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nVous faites partie de ceux qui comptent le plus.\nNous serions heureux de vous avoir à nos côtés, du premier « oui » au dernier croissant.',
       moments: ['mairie', 'veillee', 'eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'ven', label: 'Nuit du vendredi 6 au samedi 7' },
@@ -180,18 +181,18 @@ window.CONFIG = {
       ]
     },
     'noce-4m': {
-      nom: 'Save the date!',
+      nom: 'Save the date',
       dates: '7 & 8 août 2027',
-      intro: 'Nous avons la joie de vous inviter à notre mariage : à la cérémonie à l’église, puis au vin d’honneur et au dîner au château, où nous ferons la fête jusqu’au bout de la nuit… avant de nous retrouver pour le brunch du dimanche.',
+      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nVous faites partie de ceux qui comptent le plus.\nNous serions heureux de vous avoir à nos côtés, de notre entrée dans l’église jusqu’au dernier croissant.',
       moments: ['eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'sam', label: 'Nuit du samedi 7 au dimanche 8' }
       ]
     },
     'vin-honneur-2k': {
-      nom: 'Save the date!',
+      nom: 'Save the date',
       dates: 'Samedi 7 août 2027',
-      intro: 'Nous avons la joie de vous inviter à la cérémonie religieuse de notre mariage, puis au vin d’honneur, pour lever notre verre avec vous dans le parc du château.',
+      intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nVous faites partie de ceux qui comptent le plus.\nNous serions heureux de vous avoir à nos côtés tout au long de cet après-midi.',
       moments: ['eglise', 'vin'],
       nuits: []
     }
