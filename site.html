@@ -790,8 +790,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         <form class="form" id="lpForm" autocomplete="on">
           <label>Vos prénoms <span class="opt">(facultatif)</span><input type="text" id="lpNom" name="nom" maxlength="80" value="${esc(store.get('listeNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Claire & Paul"></label>
           <p class="note" style="margin:-6px 0 0">Laissez vide pour participer anonymement : nous ne saurons pas de qui elle vient.</p>
-          ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="50"></label>
-            <div class="chips">${[30, 50, 100, 150].map(v => `<button type="button" data-v="${v}">${v} €</button>`).join('')}</div>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est vous.</p>`}
+          ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="Le montant de votre choix"></label>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est vous.</p>`}
           <label>Un petit mot (facultatif)<input type="text" id="lpMot" name="message" maxlength="200"></label>
           ${part && (LI.paiement || {}).urne ? `<p class="urne" style="margin:0">${esc(LI.paiement.urne)}</p>` : ''}
           <input class="hp" name="website" tabindex="-1" aria-hidden="true">
@@ -804,8 +803,6 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       document.addEventListener('keydown', esc_);
       bg.addEventListener('click', e => { if (e.target === bg || e.target.closest('.close')) close(); });
       const f = bg.querySelector('form'), msg = bg.querySelector('#lpMsg');
-      bg.querySelectorAll('.chips button').forEach(b => b.addEventListener('click', () => { f.montant.value = b.dataset.v; bg.querySelectorAll('.chips button').forEach(x => x.classList.toggle('on', x === b)); }));
-      if (f.montant) f.montant.addEventListener('input', () => bg.querySelectorAll('.chips button').forEach(x => x.classList.toggle('on', x.dataset.v === f.montant.value)));
       setTimeout(() => (f.nom.value ? (f.montant || f.message) : f.nom).focus(), 50);
       f.addEventListener('submit', async e => {
         e.preventDefault(); if (f.website.value) return;
