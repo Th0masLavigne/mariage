@@ -525,7 +525,9 @@ canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; 
 .hero .formule { margin-top: 10px; font: italic 400 16px/1.3 var(--f-body); color: var(--muted); letter-spacing: .02em; }
 .forever { margin: 48px 0 0; font: italic 400 clamp(30px, 7vw, 44px)/1.1 var(--f-display); color: var(--blue); text-wrap: balance; }
 .greet { font: 400 36px/1.2 var(--f-hand); color: var(--rose); margin: 14px 0 0; }
-.intro { font: 400 clamp(18px, 3.6vw, 20px)/1.6 var(--f-body); color: #4f4b5c; }
+.intro { font: 400 clamp(18px, 3.6vw, 20px)/1.6 var(--f-body); color: #4f4b5c; text-wrap: balance; }
+/* 1re ligne de l’intro (avant le 1er « \n ») : la phrase d’invitation, mise en valeur */
+.intro .invite { display: block; margin: 0 0 8px; font: italic 400 clamp(23px, 5vw, 29px)/1.3 var(--f-display); color: var(--blue); }
 
 /* --- Grande date en feuille d'or --- */
 .bigdate { margin: 4px 0 6px; }
@@ -1098,7 +1100,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       </div>
       ${TX.sousTitre ? `<p class="forever">${esc(TX.sousTitre)}</p>` : ''}
       ${state.nom ? `<p class="greet">${esc(nomInvites(state.nom))},</p>` : ''}
-      <p class="intro">${esc(F.intro)}</p>
+      <p class="intro">${(([l0, ...rest]) => `<span class="invite">${esc(l0)}</span>` + esc(rest.join('\n')))(String(F.intro || '').split('\n'))}</p>
     </header>
 
     ${rule()}
