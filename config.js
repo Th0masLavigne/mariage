@@ -457,7 +457,7 @@ window.CONFIG = {
       /* Comment faire parvenir sa participation (affiché sous la liste et après chaque participation).
          Laissez vide ce que vous n’utilisez pas.                                                      */
       paiement: {
-        texte: 'Le plus simple : notre cagnotte en ligne. Pour un objet, vous pouvez aussi l’apporter le jour J ou nous le faire livrer.',
+        texte: 'Le plus simple : notre cagnotte en ligne.',
         /* lien de la cagnotte en ligne (bouton « Participer à la cagnotte ») ; '' tant qu’elle n’est pas créée */
         // https://www.onparticipe.fr/cagnottes/c/mariage
         cagnotte: '',
