@@ -449,10 +449,10 @@ window.CONFIG = {
       accroche: 'Votre présence est notre plus beau cadeau.',
       texte: 'Si vous souhaitez malgré tout nous gâter, voici quelques idées. Vous pouvez participer à hauteur de ce que vous voulez.',
       cadeaux: [
-        { id: 'voyage', type: 'participation', titre: 'Notre voyage de noces', texte: 'Deux semaines en Asie.', objectif: 3000, image: '' },
-        { id: 'cuisine', type: 'participation', titre: 'Une batterie de cuisine en inox', texte: 'Pour les dîners entre amis.', objectif: 600 },
+        // { id: 'voyage', type: 'participation', titre: 'Notre voyage de noces', texte: 'Deux semaines en Asie.', objectif: 3000, image: '' },
+        // { id: 'cuisine', type: 'participation', titre: 'Une batterie de cuisine en inox', texte: 'Pour les dîners entre amis.', objectif: 600 },
         // { id: 'cocotte', type: 'cadeau', titre: 'Une cocotte en fonte', texte: 'Ronde, 24 cm, bleu nuit.', prix: 220, lien: 'https://…' },
-        { id: 'libre', type: 'participation', titre: 'Participation libre', texte: 'Pour la suite de nos aventures.' },
+        // { id: 'libre', type: 'participation', titre: 'Participation libre', texte: 'Pour la suite de nos aventures.' },
       ],
       /* Comment faire parvenir sa participation (affiché sous la liste et après chaque participation).
          Laissez vide ce que vous n’utilisez pas.                                                      */
