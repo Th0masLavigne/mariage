@@ -40,9 +40,9 @@
 </div>
 <script>
   const C = window.CONFIG, $ = s => document.querySelector(s);
+  const lib = k => C.formules[k].libelle || C.formules[k].nom;
   $('#base').value = location.href.replace(/liens\.html.*$/, '');
   $('#f').innerHTML = Object.keys(C.formules).map(k => `<option value="${k}">${lib(k)} · ${k}</option>`).join('');
-  const lib = k => C.formules[k].libelle || C.formules[k].nom;
   const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const cell = u => `<td class="u">${esc(u)}<button data-u="${esc(u)}">Copier</button></td>`;
   function draw() {
