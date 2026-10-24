@@ -209,7 +209,8 @@ window.CONFIG = {
                  'balade'   → croquis animé d’un couple qui marche + texte
      reveler   : false → en grattant : « Chut… pas encore ! »
                  true  → en grattant : le dress code.
-     texte     : une phrase, ou une liste [ '…', '…' ] (une ligne par règle). */
+     texte     : une phrase, ou une liste [ '…', '…' ] (une ligne par règle).
+                 Affichées une fois gratté, que le dress code soit révélé ou non. */
   dressCode: {
     affichage: 'balade',
     titre: 'Dress code',
@@ -243,7 +244,7 @@ window.CONFIG = {
     couleursBalade: { robe: '#c98d97', costume: '#6c7a99' },
     texte: [
       'Pas de gilet pour ces messieurs : il est réservé au marié.',
-      'Le blanc et les tons clairs apparentés sont réservés aux mariés.'
+      'Le blanc et les couleurs apparentées sont réservés aux mariés.'
     ],
     /* Dress code illustré (affiché une fois révélé) */
     eux: 'Costume clair',

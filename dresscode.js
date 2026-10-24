@@ -135,7 +135,7 @@
             <div class="scratch dc-scratch" id="scratch">
               <div class="scratch-under">${DC.reveler
                 ? `<div class="dc-walk dc-guests">${DC.style === 'trait' && DC.trait ? traitHtml() : DC.style !== 'simple' && DC.marche ? spriteHtml() : S.couple().replace('class="sk draw couple"', 'class="sk draw couple wait"')}</div>${DC.tenue ? `<div class="nope">${esc(DC.tenue)}</div>` : ''}${dcText()}`
-                : `<div class="dc-walk dc-mystere">${DC.illustration ? `<div class="dc-illu"><img src="${esc(DC.illustration)}" alt=""><i></i><i></i><i></i><i></i><i></i></div>` : S.couple().replace('class="sk draw couple"', 'class="sk couple"')}</div><div class="nope">Chut… pas encore !</div><p>${esc(DC.messageAttente || 'Revenez gratter ! Le thème vestimentaire vous sera dévoilé ici très prochainement.')}</p>`}</div>
+                : `<div class="dc-walk dc-mystere">${DC.illustration ? `<div class="dc-illu"><img src="${esc(DC.illustration)}" alt=""><i></i><i></i><i></i><i></i><i></i></div>` : S.couple().replace('class="sk draw couple"', 'class="sk couple"')}</div><div class="nope">Chut… pas encore !</div><p>${esc(DC.messageAttente || 'Revenez gratter ! Le thème vestimentaire vous sera dévoilé ici très prochainement.')}</p>${dcText()}`}</div>
               <canvas id="scratchCv" aria-hidden="true"></canvas>
             </div>
           </div>
@@ -151,7 +151,7 @@
                  <div class="palette${C.codeCouleur.couleurs.length > 1 ? ' pick' : ''}" id="palette">${C.codeCouleur.couleurs.map((c, i) => C.codeCouleur.couleurs.length > 1
                    ? `<button type="button" data-hex="${esc(c.hex)}" class="${i === 0 ? 'on' : ''}" aria-pressed="${i === 0}"><i style="--c:${esc(c.hex)}"></i>${esc(c.nom)}</button>`
                    : `<span><i style="--c:${esc(c.hex)}"></i>${esc(c.nom)}</span>`).join('')}</div>${dcText()}`
-              : `<div class="nope">Chut… pas encore !</div><p>Le dress code sera révélé très bientôt. Revenez gratter !</p><div class="palette blur">${C.codeCouleur.couleurs.map(c => `<span><i style="--c:${esc(c.hex)}"></i></span>`).join('')}</div>`}</div>
+              : `<div class="nope">Chut… pas encore !</div><p>Le dress code sera révélé très bientôt. Revenez gratter !</p><div class="palette blur">${C.codeCouleur.couleurs.map(c => `<span><i style="--c:${esc(c.hex)}"></i></span>`).join('')}</div>${dcText()}`}</div>
             <canvas id="scratchCv" aria-hidden="true"></canvas>
           </div>
           <button class="linkbtn sc-skip" id="scSkip" type="button">Révéler sans gratter</button>
