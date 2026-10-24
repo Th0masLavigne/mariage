@@ -167,10 +167,13 @@ window.CONFIG = {
      La clé (ex. 'grand-weekend-7q') est le code mis dans le lien :
        https://VOTRE-NOM.github.io/mariage/?f=grand-weekend-7q
      Changez les codes si vous voulez qu’ils soient moins devinables.
+     libelle : nom interne (générateur de liens, Sheet, e-mails), jamais montré aux invités.
+     nom     : titre affiché sur le faire-part.
      nuits : nuits où l’on peut dormir sur place (60 €/pers./nuit).      */
   /* intro : « \n » = retour à la ligne */
   formules: {
     'grand-weekend-7q': {
+      libelle: 'Grand week-end (ven → dim)',
       nom: 'Save the date',
       dates: '6 · 7 · 8 août 2027',
       intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés, du premier « oui » au dernier croissant.',
@@ -181,6 +184,7 @@ window.CONFIG = {
       ]
     },
     'noce-4m': {
+      libelle: 'Noce (sam + brunch)',
       nom: 'Save the date',
       dates: '7 & 8 août 2027',
       intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés au vin d’honneur, au dîner et au brunch du lendemain.',
@@ -190,6 +194,7 @@ window.CONFIG = {
       ]
     },
     'vin-honneur-2k': {
+      libelle: 'Vin d’honneur (sam)',
       nom: 'Save the date',
       dates: 'Samedi 7 août 2027',
       intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés au vin d’honneur.',

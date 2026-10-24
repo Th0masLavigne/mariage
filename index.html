@@ -1402,7 +1402,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       store.set('id', id);
       const oui = R.presence === 'Oui';
       const payload = {
-        id: id + '_' + state.code, formule: F.nom, code: state.code, lien_nom: state.nom,
+        id: id + '_' + state.code, formule: F.libelle || F.nom, code: state.code, lien_nom: state.nom,
         nom: R.nom, presence: R.presence,
         adultes: oui ? R.adultes : 0, enfants: oui ? R.enfants : 0,
         moments: oui ? (F.moments.length > 2 ? R.moments : F.moments).map(k => C.moments[k].titre).join(', ') : '',

@@ -31,6 +31,7 @@
   <label for="base">Adresse du site</label><input id="base">
   <label for="f">Faire-part</label><select id="f"></select>
   <label for="names">Noms (un par ligne)</label><textarea id="names" placeholder="Mamie Jo&#10;Claire & Paul"></textarea>
+  <p id="choix" style="margin:22px 0 0;color:var(--ink);font-weight:700"></p>
   <div class="tw"><table><thead><tr><th>Nom</th><th>Faire-part</th><th>Carnet pratique</th></tr></thead><tbody id="out"></tbody></table></div>
 
   <h2>Liens utiles</h2>
@@ -40,17 +41,19 @@
 <script>
   const C = window.CONFIG, $ = s => document.querySelector(s);
   $('#base').value = location.href.replace(/liens\.html.*$/, '');
-  $('#f').innerHTML = Object.keys(C.formules).map(k => `<option value="${k}">${C.formules[k].nom}</option>`).join('');
+  $('#f').innerHTML = Object.keys(C.formules).map(k => `<option value="${k}">${lib(k)} · ${k}</option>`).join('');
+  const lib = k => C.formules[k].libelle || C.formules[k].nom;
   const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const cell = u => `<td class="u">${esc(u)}<button data-u="${esc(u)}">Copier</button></td>`;
   function draw() {
     const base = $('#base').value.trim(), f = $('#f').value;
     const names = ['', ...$('#names').value.split('\n').map(s => s.trim()).filter(Boolean)];
     const q = n => '?f=' + encodeURIComponent(f) + (n ? '&n=' + encodeURIComponent(n) : '');
+    $('#choix').textContent = `Liens pour : ${lib(f)} (${C.formules[f].dates}) · code ${f}`;
     $('#out').innerHTML = names.map(n => `<tr><td>${n ? esc(n) : '<i>lien générique</i>'}</td>${cell(base + q(n))}${cell(base + 'site.html' + q(n))}</tr>`).join('');
     const rows = [['Démo des options du faire-part', base + 'demo.html']];
     Object.keys(C.formules).forEach(k => {
-      const nm = C.formules[k].nom;
+      const nm = lib(k);
       rows.push([`Faire-part « ${nm} »`, base + '?f=' + encodeURIComponent(k)]);
       rows.push([`Carnet « ${nm} »`, base + 'site.html?f=' + encodeURIComponent(k)]);
       rows.push([`Aperçu faire-part « ${nm} » (sans envoi)`, base + '?f=' + encodeURIComponent(k) + '&demo']);
