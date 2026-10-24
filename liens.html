@@ -9,7 +9,7 @@
 <style>
   :root { --paper: #f6f4ec; --ink: #26322b; --cedar: #4f6b4a; --line: #d6d0bd; --muted: #6f786d; color-scheme: light; }
   body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 system-ui, sans-serif; }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 18px 80px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 18px 80px; }
   h1 { font: italic 500 34px/1.1 Georgia, serif; margin: 0 0 6px; }
   p { color: var(--muted); }
   label { display: block; font-weight: 700; margin-top: 18px; }
@@ -19,6 +19,12 @@
   td, th { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
   td.u { font: 12px/1.4 ui-monospace, monospace; word-break: break-all; }
   td.u button { display: block; margin-top: 6px; }
+  td.u .bt { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  td.u .bt button { margin: 0; font: 600 13px/1.2 system-ui, sans-serif; }
+  button.sec { background: #fff; color: var(--cedar); box-shadow: inset 0 0 0 1.5px var(--cedar); }
+  th small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  th.c0, td.c0 { background: #eef2ea; } th.c1, td.c1 { background: #f6efe3; } th.c2, td.c2 { background: #eef0f4; }
+  td.u a { color: var(--ink); }
   h2 { font: italic 500 26px/1.1 Georgia, serif; margin: 40px 0 4px; }
   button { border: 0; background: var(--cedar); color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font: inherit; }
   .tw { overflow-x: auto; }
@@ -27,12 +33,10 @@
 <body>
 <div class="wrap">
   <h1>Liens personnalisés</h1>
-  <p>Pour les mariés uniquement. Choisissez le faire-part, collez un nom par ligne (ex. « Mamie Jo », « Claire &amp; Paul ») : chaque lien ouvrira l’enveloppe « Pour Claire &amp; Paul », et le lien du carnet pratique reprend le même nom. Sans nom, le lien générique fonctionne aussi.</p>
+  <p>Pour les mariés uniquement. Collez un nom par ligne (ex. « Mamie Jo », « Claire &amp; Paul ») : chaque lien ouvrira l’enveloppe « Pour Claire &amp; Paul », et le lien du carnet pratique reprend le même nom. Sans nom, le lien générique fonctionne aussi.</p>
   <label for="base">Adresse du site</label><input id="base">
-  <label for="f">Faire-part</label><select id="f"></select>
   <label for="names">Noms (un par ligne)</label><textarea id="names" placeholder="Mamie Jo&#10;Claire & Paul"></textarea>
-  <p id="choix" style="margin:22px 0 0;color:var(--ink);font-weight:700"></p>
-  <div class="tw"><table><thead><tr><th>Nom</th><th>Faire-part</th><th>Carnet pratique</th></tr></thead><tbody id="out"></tbody></table></div>
+  <div class="tw"><table><thead id="outh"></thead><tbody id="out"></tbody></table></div>
 
   <h2>Liens utiles</h2>
   <p>Pour vous : aperçus sans envoi (rien n’arrive dans le Sheet) et liens génériques de chaque formule.</p>
@@ -42,15 +46,17 @@
   const C = window.CONFIG, $ = s => document.querySelector(s);
   const lib = k => C.formules[k].libelle || C.formules[k].nom;
   $('#base').value = location.href.replace(/liens\.html.*$/, '');
-  $('#f').innerHTML = Object.keys(C.formules).map(k => `<option value="${k}">${lib(k)} · ${k}</option>`).join('');
   const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const cell = u => `<td class="u">${esc(u)}<button data-u="${esc(u)}">Copier</button></td>`;
   function draw() {
-    const base = $('#base').value.trim(), f = $('#f').value;
+    const base = $('#base').value.trim(), K = Object.keys(C.formules);
     const names = ['', ...$('#names').value.split('\n').map(s => s.trim()).filter(Boolean)];
-    const q = n => '?f=' + encodeURIComponent(f) + (n ? '&n=' + encodeURIComponent(n) : '');
-    $('#choix').textContent = `Liens pour : ${lib(f)} (${C.formules[f].dates}) · code ${f}`;
-    $('#out').innerHTML = names.map(n => `<tr><td>${n ? esc(n) : '<i>lien générique</i>'}</td>${cell(base + q(n))}${cell(base + 'site.html' + q(n))}</tr>`).join('');
+    const q = (f, n) => '?f=' + encodeURIComponent(f) + (n ? '&n=' + encodeURIComponent(n) : '');
+    $('#outh').innerHTML = `<tr><th>Nom</th>${K.map((k, i) => `<th class="c${i}">${esc(lib(k))}<small>${esc(C.formules[k].dates)}</small></th>`).join('')}</tr>`;
+    $('#out').innerHTML = names.map(n => `<tr><td>${n ? esc(n) : '<i>lien générique</i>'}</td>${K.map((k, i) => {
+      const fp = base + q(k, n), ca = base + 'site.html' + q(k, n);
+      return `<td class="u c${i}"><a href="${esc(fp)}" target="_blank" rel="noopener">${esc(q(k, n))}</a><span class="bt"><button data-u="${esc(fp)}">Faire-part</button><button class="sec" data-u="${esc(ca)}">Carnet</button></span></td>`;
+    }).join('')}</tr>`).join('');
     const rows = [['Démo des options du faire-part', base + 'demo.html']];
     Object.keys(C.formules).forEach(k => {
       const nm = lib(k);
@@ -65,7 +71,7 @@
   document.addEventListener('input', draw);
   document.addEventListener('click', e => {
     const b = e.target.closest('button[data-u]'); if (!b) return;
-    navigator.clipboard.writeText(b.dataset.u).then(() => { b.textContent = 'Copié'; setTimeout(() => b.textContent = 'Copier', 1200); }, () => {});
+    navigator.clipboard.writeText(b.dataset.u).then(() => { const t = b.dataset.t || (b.dataset.t = b.textContent); b.textContent = 'Copié ✓'; setTimeout(() => b.textContent = t, 1200); }, () => {});
   });
   draw();
 </script>
