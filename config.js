@@ -244,7 +244,7 @@ window.CONFIG = {
     couleursBalade: { robe: '#c98d97', costume: '#6c7a99' },
     texte: [
       'Pas de gilet pour ces messieurs : il est réservé au marié.',
-      'Le blanc et les couleurs apparentées sont réservés aux mariés.'
+      'Le blanc et les tons clairs apparentées sont réservés aux mariés.'
     ],
     /* Dress code illustré (affiché une fois révélé) */
     eux: 'Costume clair',
