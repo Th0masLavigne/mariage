@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Générateur de liens</title>
 <script src="config.js"></script>
+<script src="tutoiement.js"></script>
 <style>
   :root { --paper: #f6f4ec; --ink: #26322b; --cedar: #4f6b4a; --line: #d6d0bd; --muted: #6f786d; color-scheme: light; }
   body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 system-ui, sans-serif; }
@@ -28,12 +29,13 @@
   h2 { font: italic 500 26px/1.1 Georgia, serif; margin: 40px 0 4px; }
   button { border: 0; background: var(--cedar); color: #fff; padding: 8px 12px; border-radius: 8px; cursor: pointer; font: inherit; }
   .tw { overflow-x: auto; }
+  td small.tu { display: block; color: var(--muted); font-size: 12px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Liens personnalisés</h1>
-  <p>Pour les mariés uniquement. Collez un nom par ligne (ex. « Mamie Jo », « Claire &amp; Paul ») : chaque lien ouvrira l’enveloppe « Pour Claire &amp; Paul », et le lien du carnet pratique reprend le même nom. Sans nom, le lien générique fonctionne aussi.</p>
+  <p>Pour les mariés uniquement. Collez un nom par ligne (ex. « Mamie Jo », « Claire &amp; Paul ») : chaque lien ouvrira l’enveloppe « Pour Claire &amp; Paul », et le lien du carnet pratique reprend le même nom. Sans nom, le lien générique fonctionne aussi. Un nom sans « & » (ex. « Lucas Bodile ») = une seule personne : le faire-part la tutoie et ne propose pas de compter adultes et enfants ; « Claire &amp; Paul » ou « Famille Martin » = plusieurs : « vous ».</p>
   <label for="base">Adresse du site</label><input id="base">
   <label for="names">Noms (un par ligne)</label><textarea id="names" placeholder="Mamie Jo&#10;Claire & Paul"></textarea>
   <div class="tw"><table><thead id="outh"></thead><tbody id="out"></tbody></table></div>
@@ -53,7 +55,7 @@
     const names = ['', ...$('#names').value.split('\n').map(s => s.trim()).filter(Boolean)];
     const q = (f, n) => '?f=' + encodeURIComponent(f) + (n ? '&n=' + encodeURIComponent(n) : '');
     $('#outh').innerHTML = `<tr><th>Nom</th>${K.map((k, i) => `<th class="c${i}">${esc(lib(k))}<small>${esc(C.formules[k].dates)}</small></th>`).join('')}</tr>`;
-    $('#out').innerHTML = names.map(n => `<tr><td>${n ? esc(n) : '<i>lien générique</i>'}</td>${K.map((k, i) => {
+    $('#out').innerHTML = names.map(n => `<tr><td>${n ? esc(n) + ` <small class="tu">${Tutoiement.seul(n) ? 'seul·e · « tu »' : 'à plusieurs · « vous »'}</small>` : '<i>lien générique</i>'}</td>${K.map((k, i) => {
       const fp = base + q(k, n), ca = base + 'site.html' + q(k, n);
       return `<td class="u c${i}"><a href="${esc(fp)}" target="_blank" rel="noopener">${esc(q(k, n))}</a><span class="bt"><button data-u="${esc(fp)}">Faire-part</button><button class="sec" data-u="${esc(ca)}">Carnet</button></span></td>`;
     }).join('')}</tr>`).join('');

@@ -350,6 +350,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
 <script src="dresscode.js"></script>
 <script src="typo.js"></script>
 <script src="donnees.js"></script>
+<script src="tutoiement.js"></script>
 <script>
 'use strict';
 (function () {
@@ -371,7 +372,10 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   else if (valid(store.get('code'))) code = store.get('code');
   else { perso = false; code = valid(SI.formuleParDefaut) ? SI.formuleParDefaut : Object.keys(C.formules).pop(); }
   const F = C.formules[code];
-  const nom = params.get('n') || '';
+  /* nom de l’invité : celui du lien, sinon celui du faire-part déjà ouvert sur ce téléphone (même formule) */
+  const nom = params.get('n') || (perso ? store.get('nom') || '' : '');
+  /* tutoiement : invitation pour une seule personne → « tu » (tutoiement.js) */
+  const TU = Tutoiement.init(nom, params), T = Tutoiement.T;
   const lienFP = './?f=' + encodeURIComponent(code) + (nom ? '&n=' + encodeURIComponent(nom) : '');
 
   /* ---------- palette, retouches, filigrane (comme le faire-part) ---------- */
@@ -502,7 +506,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
           <label>Jour<select id="cvJour" name="jour">${days.map(d => `<option>${esc(d.jour)}</option>`).join('')}${days.length > 1 ? '<option>Tout le week-end</option>' : ''}</select></label>
           <label>Places<input type="number" id="cvPlaces" name="places" min="1" max="8" value="1" required></label>
         </div>
-        <label>Pour vous joindre<input type="text" id="cvContact" name="contact" maxlength="80" required placeholder="06… ou e-mail"></label>
+        <label>${T('Pour vous joindre', 'Pour te joindre')}<input type="text" id="cvContact" name="contact" maxlength="80" required placeholder="06… ou e-mail"></label>
         <label>Un mot (facultatif)<input type="text" id="cvMot" name="message" maxlength="140" placeholder="Départ vers 13h, retour dimanche…"></label>
         <input class="hp" name="website" tabindex="-1" aria-hidden="true">
         <label class="consent"><input type="checkbox" id="cvOk" name="ok"> J’accepte que mon prénom, ma ville de départ et mon contact soient visibles par les invités du carnet. Je pourrai retirer l’annonce à tout moment depuis ce téléphone. ${window.Donnees ? `<button class="dn-link" type="button" data-donnees>Vos données</button>` : ''}</label>
@@ -537,7 +541,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* --- FAQ --- */
   if (on(SI.faq)) { const Q = (SI.faq.questions || []).filter(x => x.q && x.r);
     sections.push({ id: 'questions', menu: 'Questions', html: `
-    ${head('Bon à savoir', SI.faq.titre || 'Vos questions')}
+    ${head('Bon à savoir', SI.faq.titre || T('Vos questions', 'Tes questions'))}
     ${Q.length ? `<div class="faq">${Q.map(x => `<details><summary>${esc(x.q)}</summary><p>${esc(x.r)}</p></details>`).join('')}</div>` : soon()}` }); }
 
   /* --- Liste de mariage : cadeaux et participations (config.js → site.liste) --- */
@@ -592,8 +596,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       ${ico('bells')}<p class="lead" style="margin:4px auto 0">${esc(PL.texte || '')}</p>
       ${PL.lien ? `<a class="btn" href="${esc(PL.lien)}" target="_blank" rel="noopener">Ouvrir la playlist</a>` : `
       <form class="form" id="chansonForm" autocomplete="off">
-        <label>Votre chanson<input type="text" name="chanson" maxlength="140" placeholder="Titre — artiste" required></label>
-        <label>Votre prénom<input type="text" name="nom" maxlength="80" value="${esc(nom || (store.get('rsvp.' + code) || {}).nom || '')}"></label>
+        <label>${T('Votre', 'Ta')} chanson<input type="text" name="chanson" maxlength="140" placeholder="Titre — artiste" required></label>
+        <label>${T('Votre', 'Ton')} prénom<input type="text" name="nom" maxlength="80" value="${esc(nom || (store.get('rsvp.' + code) || {}).nom || '')}"></label>
         <input class="hp" name="website" tabindex="-1" aria-hidden="true">
         <button class="btn cta" type="submit">Proposer</button>
         <p class="msg" id="chansonMsg" aria-live="polite"></p>
@@ -603,11 +607,11 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* --- Photos --- */
   if (on(SI.photos)) { const PH = SI.photos;
     sections.push({ id: 'photos', menu: 'Photos', html: `
-    ${head('Souvenirs', PH.titre || 'Vos photos')}
+    ${head('Souvenirs', PH.titre || T('Vos photos', 'Tes photos'))}
     <div class="paper carte" style="--tilt:.3deg"><span class="in-border"></span>
       <p class="lead" style="margin:0 auto">${esc(PH.texte || '')}</p>
       <form class="form" id="photoForm">
-        <label>Votre prénom<input type="text" name="nom" maxlength="80" value="${esc(store.get('photoNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Pour savoir qui remercier"></label>
+        <label>${T('Votre', 'Ton')} prénom<input type="text" name="nom" maxlength="80" value="${esc(store.get('photoNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Pour savoir qui remercier"></label>
         <label class="consent"><input type="checkbox" id="phOk" ${store.get('photoOk') ? 'checked' : ''}> Les personnes reconnaissables sur mes photos sont d’accord pour qu’elles vous soient envoyées (pas de photo de quelqu’un qui ne le souhaite pas, ni d’enfant sans l’accord de ses parents).</label>
         <label class="drop" id="drop"><input type="file" id="photoInput" accept="image/*,video/*" multiple>
           <b>Choisir des photos</b><span>ou les glisser ici · vidéos jusqu’à ${esc(PH.videoMaxMo || 40)} Mo</span></label>
@@ -636,11 +640,11 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   const coin = (C.ornements || {}).coin;
   const R = store.get('rsvp.' + code);
   const statut = R ? `<div class="paper statut alt"><span class="in-border"></span>
-      <div class="big">${R.presence === 'Oui' ? 'Vous serez des nôtres' : 'Vous allez nous manquer'}</div>
+      <div class="big">${R.presence === 'Oui' ? T('Vous serez des nôtres', 'Tu seras des nôtres') : T('Vous allez nous manquer', 'Tu vas nous manquer')}</div>
       <p>Réponse envoyée${R.date ? ' le ' + new Date(R.date).toLocaleDateString('fr-FR') : ''}${R.nom ? ' par ' + esc(R.nom) : ''}.</p>
       <a class="btn ghost" href="${esc(lienFP)}">Modifier ma réponse</a></div>`
     : perso ? `<div class="paper statut alt"><span class="in-border"></span>
-      <div class="big">Serez-vous des nôtres ?</div>
+      <div class="big">${T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?')}</div>
       ${C.repondreAvant ? `<p>Réponse souhaitée avant le ${esc(C.repondreAvant)}.</p>` : ''}
       <a class="btn cta" href="${esc(lienFP)}">Répondre au faire-part</a></div>` : '';
 
@@ -714,19 +718,19 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       cvBox.innerHTML = list.length ? list.map(x => `<div class="cv"><div class="cv-top"><span class="tag ${x.type === 'cherche' ? 'cherche' : ''}">${x.type === 'cherche' ? 'Cherche' : 'Propose'} ${esc(x.places)} place${+x.places > 1 ? 's' : ''}</span><b>${esc(x.nom)}</b></div>
         <div class="meta2">Départ : ${esc(x.depart)} · ${esc(x.jour)}</div>${x.message ? `<div class="meta2">${esc(x.message)}</div>` : ''}
         <div class="contact">${esc(x.contact)}</div>${mine()[x.id] ? `<button class="retirer" type="button" data-id="${esc(x.id)}">Retirer mon annonce</button>` : ''}</div>`).join('')
-        : '<p class="note" style="text-align:center">Pas encore d’annonce : lancez-vous !</p>';
+        : `<p class="note" style="text-align:center">Pas encore d’annonce : ${T('lancez-vous', 'lance-toi')} !</p>`;
     };
     const load = async () => {
       if (DEMO_) return show(demoList);
       try { const r = await (await fetch(URL_ + '?action=covoiturage')).json(); show(r.annonces || []); }
-      catch (e) { cvBox.innerHTML = '<p class="note" style="text-align:center">Les annonces n’ont pas pu être chargées. Réessayez un peu plus tard.</p>'; }
+      catch (e) { cvBox.innerHTML = `<p class="note" style="text-align:center">Les annonces n’ont pas pu être chargées. ${T('Réessayez', 'Réessaie')} un peu plus tard.</p>`; }
     };
     load();
     const form = $('#cvForm'), msg = $('#cvMsg');
     $('#cvAdd').addEventListener('click', () => { form.hidden = !form.hidden; if (!form.hidden) $('#cvDepart').focus(); });
     form.addEventListener('submit', async e => {
       e.preventDefault(); if (form.website.value) return;
-      if (!form.ok.checked) { msg.textContent = 'Cochez la case pour accepter que l’annonce soit visible.'; return; }
+      if (!form.ok.checked) { msg.textContent = T('Cochez', 'Coche') + ' la case pour accepter que l’annonce soit visible.'; return; }
       const btn = form.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Publication…';
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), cle = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
       const a = { action: 'covoiturage', id, cle, code, type: form.type.value, nom: form.nom.value.trim(), depart: form.depart.value.trim(), jour: form.jour.value, places: form.places.value, contact: form.contact.value.trim(), message: form.message.value.trim() };
@@ -736,7 +740,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         const m = mine(); m[id] = cle; store.set('cv', m);
         form.hidden = true; form.depart.value = ''; form.message.value = '';
         msg.textContent = 'Annonce publiée' + (DEMO_ ? ' (aperçu : rien n’a été envoyé)' : '') + '.'; load();
-      } catch (x) { msg.textContent = 'La publication n’a pas abouti, réessayez un peu plus tard.'; }
+      } catch (x) { msg.textContent = 'La publication n’a pas abouti, ' + T('réessayez', 'réessaie') + ' un peu plus tard.'; }
       btn.disabled = false;
     });
     cvBox.addEventListener('click', async e => {
@@ -762,7 +766,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         const e = etat[g.id] || { total: 0, nb: 0, offert: false }, box = $(`[data-etat="${g.id}"]`), act = $(`[data-act="${g.id}"]`);
         const myRows = Object.keys(M).filter(k => M[k].cadeau === g.id);
         if (g.type === 'cadeau') {
-          box.innerHTML = `${g.prix ? `<b>≈ ${eur(+g.prix)}</b>` : ''}${e.offert ? `<div class="offert">${myRows.length ? 'Vous l’offrez, merci !' : 'Déjà offert, merci !'}</div>` : ''}`;
+          box.innerHTML = `${g.prix ? `<b>≈ ${eur(+g.prix)}</b>` : ''}${e.offert ? `<div class="offert">${myRows.length ? T('Vous l’offrez, merci !', 'Tu l’offres, merci !') : 'Déjà offert, merci !'}</div>` : ''}`;
           act.innerHTML = (e.offert ? '' : `<button class="btn cta" type="button" data-give="${esc(g.id)}">Je m’en occupe</button>`)
             + (g.lien ? ext(g.lien, 'Voir l’article') : '')
             + (myRows.length ? `<span class="mine"><button type="button" data-undo="${esc(myRows[0])}">Annuler, finalement je ne l’offre pas</button></span>` : '');
@@ -771,7 +775,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
           box.innerHTML = obj ? `<div class="jauge" role="progressbar" aria-valuemin="0" aria-valuemax="${obj}" aria-valuenow="${Math.round(e.total)}"><i style="width:${pc}%"></i></div><b>${eur(e.total)}</b> sur ${eur(obj)}${e.total >= obj ? '<div class="offert">Objectif atteint, merci !</div>' : ''}`
             : (e.nb ? `${e.nb} participation${e.nb > 1 ? 's' : ''}, merci !` : '');
           act.innerHTML = `<button class="btn cta" type="button" data-give="${esc(g.id)}">Participer</button>`
-            + (myRows.length ? `<span class="mine">Merci pour votre participation · <button type="button" data-undo="${esc(myRows[myRows.length - 1])}">l’annuler</button></span>` : '');
+            + (myRows.length ? `<span class="mine">Merci pour ${T('votre', 'ta')} participation · <button type="button" data-undo="${esc(myRows[myRows.length - 1])}">l’annuler</button></span>` : '');
         }
       });
     }
@@ -788,9 +792,9 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       bg.innerHTML = `<div class="paper lp" role="dialog" aria-modal="true" aria-labelledby="lpT"><span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
         <div class="eyebrow">${part ? 'Participer' : 'Offrir'}</div><p class="lp-t" id="lpT">${esc(g.titre)}</p>
         <form class="form" id="lpForm" autocomplete="on">
-          <label>Vos prénoms <span class="opt">(facultatif)</span><input type="text" id="lpNom" name="nom" maxlength="80" value="${esc(store.get('listeNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Claire & Paul"></label>
-          <p class="note" style="margin:-6px 0 0">Laissez vide pour participer anonymement : nous ne saurons pas de qui elle vient.</p>
-          ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="Le montant de votre choix"></label>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est vous.</p>`}
+          <label>${T('Vos prénoms', 'Ton prénom')} <span class="opt">(facultatif)</span><input type="text" id="lpNom" name="nom" maxlength="80" value="${esc(store.get('listeNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="${T('Claire & Paul', 'Claire')}"></label>
+          <p class="note" style="margin:-6px 0 0">${T('Laissez', 'Laisse')} vide pour participer anonymement : nous ne saurons pas de qui elle vient.</p>
+          ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="Le montant de ${T('votre', 'ton')} choix"></label>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est ${T('vous', 'toi')}.</p>`}
           <label>Un petit mot (facultatif)<input type="text" id="lpMot" name="message" maxlength="200"></label>
           ${part && (LI.paiement || {}).urne ? `<p class="urne" style="margin:0">${esc(LI.paiement.urne)}</p>` : ''}
           <input class="hp" name="website" tabindex="-1" aria-hidden="true">
@@ -807,7 +811,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       f.addEventListener('submit', async e => {
         e.preventDefault(); if (f.website.value) return;
         const montant = part ? Math.round(+f.montant.value || 0) : (+g.prix || 0);
-        if (part && montant < 1) { msg.textContent = 'Indiquez un montant.'; f.montant.focus(); return; }
+        if (part && montant < 1) { msg.textContent = T('Indiquez', 'Indique') + ' un montant.'; f.montant.focus(); return; }
         const btn = f.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Envoi…';
         const id = 'l_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), cle = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
         const anon = !f.nom.value.trim();
@@ -820,14 +824,14 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
           const m = mine(); m[id] = { cle, cadeau: g.id }; store.set('liste', m); store.set('listeNom', row.nom);
           bg.querySelector('.lp').innerHTML = `<span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
             <div class="merci-l">Merci${row.nom ? ' ' + esc(row.nom) : ''} !</div>
-            <p class="lead" style="margin:0 auto">${part ? `Votre participation de <b>${eur(montant)}</b> à « ${esc(g.titre)} » est notée.` : `C’est noté : vous nous offrez « ${esc(g.titre)} ».`}${DEMO_ ? ' (aperçu : rien n’a été envoyé)' : ''}</p>
+            <p class="lead" style="margin:0 auto">${part ? `${T('Votre', 'Ta')} participation de <b>${eur(montant)}</b> à « ${esc(g.titre)} » est notée.` : `C’est noté : ${T('vous nous offrez', 'tu nous offres')} « ${esc(g.titre)} ».`}${DEMO_ ? ' (aperçu : rien n’a été envoyé)' : ''}</p>
             ${payHtml(true)}
             <button class="btn" type="button" data-close>Fermer</button>`;
           bg.querySelector('[data-close]').addEventListener('click', close);
           load();
         } catch (x) {
           btn.disabled = false;
-          msg.textContent = x.message === 'deja' ? 'Quelqu’un vient juste de le réserver ! Choisissez une autre idée.' : 'L’envoi n’a pas abouti, réessayez un peu plus tard.';
+          msg.textContent = x.message === 'deja' ? 'Quelqu’un vient juste de le réserver ! ' + T('Choisissez', 'Choisis') + ' une autre idée.' : 'L’envoi n’a pas abouti, ' + T('réessayez', 'réessaie') + ' un peu plus tard.';
           if (x.message === 'deja') load();
         }
       });
@@ -859,7 +863,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       const r = await post({ action: 'chanson', chanson: cf.chanson.value.trim(), nom: cf.nom.value.trim(), code });
       if (!r.ok) throw 0;
       msg.textContent = 'Merci ! On la garde précieusement' + (r.demo ? ' (aperçu : rien n’a été envoyé)' : '') + '.'; cf.chanson.value = '';
-    } catch (x) { msg.textContent = 'L’envoi n’a pas abouti, réessayez un peu plus tard.'; }
+    } catch (x) { msg.textContent = 'L’envoi n’a pas abouti, ' + T('réessayez', 'réessaie') + ' un peu plus tard.'; }
     btn.disabled = false;
   });
 

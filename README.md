@@ -28,6 +28,7 @@ faire-part/
 | Église & vin d’honneur | `…/?f=vin-honneur-2k` | Église, vin d’honneur | — |
 
 Options d’URL : `&n=Mamie%20Jo` (enveloppe personnalisée, nom pré-rempli) · `&style=placeholder` ou `&style=sketch` · `&demo` (aperçu sans envoi).
+**Tu ou vous ?** Un nom sans « & » (`&n=Lucas%20Bodile`) = une seule personne : le faire-part et le carnet la **tutoient** (« Seras-tu des nôtres ? », « J’aimerais dormir au château ») et ne proposent pas de compter adultes / enfants. Avec « & », « et », « + », ou « Famille … » / « Les … » → « vous ». Forcer : `&tu` ou `&vous`. Les textes de `config.js` ont une variante `…Tu` (`introTu`, `finTu`, `texteTu`, `rTu`…) ; le générateur `liens.html` indique « tu » ou « vous » sous chaque nom. Les pages « Vos données » / confidentialité restent au « vous ».
 Les codes se changent dans `config.js` (clés de `formules`). **Après envoi des faire-parts, ne plus changer un code** : les liens déjà envoyés casseraient.
 
 ## Mise en route (≈ 20 min, une seule fois)

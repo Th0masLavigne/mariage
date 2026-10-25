@@ -837,6 +837,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 <script src="dresscode.js"></script>
 <script src="typo.js"></script>
 <script src="donnees.js"></script>
+<script src="tutoiement.js"></script>
 </head>
 <body>
 <!--BODY-->
@@ -864,11 +865,14 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 'use strict';
 (function () {
   const C = window.CONFIG, S = window.SKETCH;
+  /* tutoiement : lien ?n=… adressé à une seule personne → « tu » (tutoiement.js) ; à appliquer avant de lire la config */
+  const TU = Tutoiement.init((() => { try { return new URLSearchParams(location.search).get('n'); } catch (e) { return ''; } })(),
+    (() => { try { return new URLSearchParams(location.search); } catch (e) { return null; } })()), T = Tutoiement.T;
   /* dress code : clé « dressCode » (ou l'ancienne « codeCouleur ») */
   const DC = C.dressCode || C.codeCouleur || { couleurs: [] }; C.codeCouleur = DC; DC.couleurs = DC.couleurs || [];
   const H = C.hebergement || {};
   /* « Tiphaine et Thomas », « Tiphaine & Thomas », « Tiphaine + Thomas » → « Tiphaine & Thomas » */
-  const nomInvites = n => String(n).trim().replace(/\s*(?:&|\+|,|\bet\b)\s*/gi, ' & ').replace(/\s+/g, ' ');
+  const nomInvites = Tutoiement.nomInvites;
   /* textes des sections (config.textes), avec valeurs par défaut */
   const TX = Object.assign({ sousTitre: 'Et maintenant, pour toujours.', date: 'Notez-le bien', programme: 'Le déroulé', lieux: '', escales: 'Avant la prochaine',
     bientot: 'Ne dites rien, on prépare la suite', finPhrase: 'Les plus belles histoires se célèbrent ensemble.', fin: 'On vous attend' }, C.textes || {});
@@ -927,6 +931,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     style: params.get('style') || C.style,
     nom: params.get('n') || ''
   };
+  if (state.nom && !DEMO) store.set('nom', state.nom); /* le carnet (site.html) s’en sert quand il est rouvert sans le lien */
   document.body.insertAdjacentHTML('afterbegin', S.defs + S.pageDefs);
   /* carnet pratique (site.html) : lien avec le code de l'invité ; « carnet » = la liste de mariage du carnet */
   const carnetUrl = h => `site.html?f=${encodeURIComponent(state.code)}${state.nom ? '&n=' + encodeURIComponent(state.nom) : ''}${h || ''}`;
@@ -1191,7 +1196,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
           <div class="gift-body">
             ${t.accroche ? `<p class="gift-lead">${esc(t.accroche)}</p>` : ''}
             <div class="sc-title">${esc(t.titre)}${t.lien ? '' : '<span class="gold-stamp">Bientôt</span>'}</div>
-            <p>${esc(t.texte || (t.lien ? 'Pour ceux qui le souhaitent, nous avons préparé une liste : vous y trouverez quelques idées et les façons de participer.' : 'Pour ceux qui le souhaitent, une liste sera là pour vous aider. Le lien arrive très vite.'))}</p>
+            <p>${esc(t.texte || (t.lien ? T('Pour ceux qui le souhaitent, nous avons préparé une liste : vous y trouverez quelques idées et les façons de participer.', 'Si tu le souhaites, nous avons préparé une liste : tu y trouveras quelques idées et les façons de participer.') : T('Pour ceux qui le souhaitent, une liste sera là pour vous aider. Le lien arrive très vite.', 'Si tu le souhaites, une liste sera là pour t’aider. Le lien arrive très vite.')))}</p>
             ${t.lien ? `<a class="btn-cal" href="${esc(t.lien)}"${/^https?:/.test(t.lien) ? ' target="_blank" rel="noopener"' : ''}>Voir la liste ${/^https?:/.test(t.lien) ? '↗' : '→'}</a>` : ''}</div>
         </div>`).join('')}
       </div>
@@ -1204,7 +1209,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       <div class="gallery-scroll" tabindex="0" aria-label="Photos de nos voyages"><div class="gallery">
         ${C.photos.map((p, i) => `<figure class="polaroid" style="--rot:${[-3, 2.5, -1.5, 3.5, -2.5, 1.5][i % 6]}deg"><img loading="lazy" src="${esc(p.src)}" alt="${esc(p.legende)}"><span>${esc(p.legende)}</span></figure>`).join('')}
       </div></div>
-      <div class="hint">faites défiler →</div>
+      <div class="hint">${T('faites', 'fais')} défiler →</div>
     </section>
 
     <section class="finale">
@@ -1255,8 +1260,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   /* Coordonnées : faire-part papier et contact en cas d'imprévu */
   const coordsHtml = R => `
           <div class="coords">
-            <h3>Vos coordonnées</h3>
-            <p>Pour vous envoyer le faire-part papier et vous joindre en cas d’imprévu.</p>
+            <h3>${T('Vos', 'Tes')} coordonnées</h3>
+            <p>${T('Pour vous envoyer le faire-part papier et vous joindre en cas d’imprévu.', 'Pour t’envoyer le faire-part papier et te joindre en cas d’imprévu.')}</p>
             <label class="fld"><span>Téléphone</span><input id="telephone" type="tel" inputmode="tel" value="${esc(R.telephone)}" placeholder="06 12 34 56 78" autocomplete="tel"></label>
             <label class="fld"><span>Adresse postale</span><input id="adresse" type="text" value="${esc(R.adresse)}" placeholder="12 rue des Lilas, bât. B" autocomplete="street-address"></label>
             <div class="row3">
@@ -1277,17 +1282,19 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       nuits: F.nuits.map(n => n.id), nb_couchage: 1, partage: false, chanson: '', message: '', email: '', telephone: '', adresse: '', cp: '', ville: '', pays: 'France'
     }, draft || {});
     let tries = 0;
+    const OUI_TXT = T('On sera là !', 'Je serai là !');
+    if (TU) { R.adultes = 1; R.enfants = 0; R.nb_couchage = 1; } /* invitation pour une personne : pas de compteur */
 
     box.innerHTML = `
       <div class="eyebrow">Répondez s’il vous plaît</div>
-      <h2>Serez-vous des nôtres ?</h2>
+      <h2>${T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?')}</h2>
       ${C.repondreAvant ? `<p class="deadline">Réponse souhaitée avant le ${esc(C.repondreAvant)}</p>` : ''}
-      ${draft && draft.presence ? '<p class="step-note"><b>Vous n’aviez pas terminé.</b> Votre réponse n’a pas encore été validée : vérifiez-la, puis appuyez sur le bouton en bas du formulaire.</p>' : ''}
+      ${draft && draft.presence ? T('<p class="step-note"><b>Vous n’aviez pas terminé.</b> Votre réponse n’a pas encore été validée : vérifiez-la, puis appuyez sur le bouton en bas du formulaire.</p>', '<p class="step-note"><b>Tu n’avais pas terminé.</b> Ta réponse n’a pas encore été validée : vérifie-la, puis appuie sur le bouton en bas du formulaire.</p>') : ''}
       <form id="f" novalidate>
         <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <label class="fld"><span>Vos prénoms et noms</span><input id="nom" type="text" required placeholder="ex. Claire & Paul Martin" value="${esc(R.nom)}" autocomplete="name"></label>
+        <label class="fld"><span>${T('Vos prénoms et noms', 'Ton prénom et ton nom')}</span><input id="nom" type="text" required placeholder="${T('ex. Claire & Paul Martin', 'ex. Claire Martin')}" value="${esc(R.nom)}" autocomplete="name"></label>
         <div class="choice-zone" id="zone">
-          <button type="button" class="yes" id="yes">On sera là !</button>
+          <button type="button" class="yes" id="yes">${OUI_TXT}</button>
           <button type="button" class="no" id="no">Non</button>
           <div class="taunt" id="taunt" aria-live="polite"></div>
         </div>
@@ -1323,7 +1330,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       yes.style.setProperty('--grow', (1 + tries * 0.1).toFixed(2));
       taunt.textContent = ['Raté !', 'Presque…', 'Trop lent !', 'Hop !', 'Encore raté'][tries - 1] || '';
       if (tries >= C.fuite.length) {
-        setTimeout(() => { no.textContent = C.nonFinal; taunt.textContent = 'D’accord, d’accord… vous pouvez cliquer.'; }, 700);
+        setTimeout(() => { no.textContent = C.nonFinal; taunt.textContent = T('D’accord, d’accord… vous pouvez cliquer.', 'D’accord, d’accord… tu peux cliquer.'); }, 700);
       }
     }
     const canFlee = () => tries < C.fuite.length && R.presence !== 'Non';
@@ -1338,7 +1345,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     function choose(p, silent) {
       R.presence = p;
       yes.classList.toggle('sel', p === 'Oui'); no.classList.toggle('sel', p === 'Non');
-      if (p === 'Non') { taunt.textContent = 'On vous embrassera quand même.'; }
+      if (p === 'Non') { taunt.textContent = T('On vous embrassera quand même.', 'On t’embrassera quand même.'); }
       else if (!silent) taunt.textContent = 'Youpi ! Plus qu’une étape ↓';
       pending = true;
       renderDetails();
@@ -1355,39 +1362,39 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       const d = $('#details');
       if (R.presence === 'Non') {
         d.innerHTML = `<div class="more">
-          <p class="step-note"><b>Ce n’est pas encore envoyé.</b> Laissez-nous un mot si vous le souhaitez, puis appuyez sur « Envoyer ma réponse » en bas.</p>
-          <label class="fld"><span>Un petit mot pour nous ?</span><textarea id="message" placeholder="Nous penserons fort à vous…">${esc(R.message)}</textarea></label>
+          <p class="step-note"><b>Ce n’est pas encore envoyé.</b> ${T('Laissez-nous un mot si vous le souhaitez, puis appuyez', 'Laisse-nous un mot si tu le souhaites, puis appuie')} sur « Envoyer ma réponse » en bas.</p>
+          <label class="fld"><span>Un petit mot pour nous ?</span><textarea id="message" placeholder="${T('Nous penserons fort à vous…', 'Nous penserons fort à toi…')}">${esc(R.message)}</textarea></label>
           <label class="fld"><span>E-mail</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
           ${coordsHtml(R)}
-          <button class="submit" type="submit">Envoyer ma réponse</button><p class="submit-hint">Votre réponse n’est validée qu’après ce clic.</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
+          <button class="submit" type="submit">Envoyer ma réponse</button><p class="submit-hint">${T('Votre', 'Ta')} réponse n’est validée qu’après ce clic.</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
       } else {
         const multi = F.moments.length > 2;
         d.innerHTML = `<div class="more">
-          <p class="step-note"><b>Presque fini !</b> Complétez les détails ci-dessous, puis appuyez sur « Confirmer notre venue » tout en bas : votre réponse n’est validée qu’à ce moment-là.</p>
-          <div class="row2">
+          <p class="step-note"><b>Presque fini !</b> ${T('Complétez les détails ci-dessous, puis appuyez sur « Confirmer notre venue » tout en bas : votre réponse', 'Complète les détails ci-dessous, puis appuie sur « Confirmer ma venue » tout en bas : ta réponse')} n’est validée qu’à ce moment-là.</p>
+          ${TU ? '' : `<div class="row2">
             <div class="fld"><span>Adultes</span>${stepper('adultes', R.adultes, 1)}</div>
             <div class="fld"><span>Enfants</span>${stepper('enfants', R.enfants, 0)}</div>
-          </div>
-          ${multi ? `<div class="fld"><span>Vous serez là pour…</span><div class="checks">${F.moments.map(k => { const m = C.moments[k]; return `
+          </div>`}
+          ${multi ? `<div class="fld"><span>${T('Vous serez là pour…', 'Tu seras là pour…')}</span><div class="checks">${F.moments.map(k => { const m = C.moments[k]; return `
             <label class="chk"><input type="checkbox" name="mom" value="${k}" ${R.moments.includes(k) ? 'checked' : ''}>${esc(m.titre)}<small>${esc(m.jour)}</small></label>`; }).join('')}</div></div>` : ''}
           ${F.nuits.length ? `<div class="sleep">
             <h3>Dormir sur place ?</h3>
             <p>${C.prixNuit} € par nuit et par personne, dans la limite des places au château. Plus d’informations à venir. Chambres partagées possibles.</p>
-            <label class="chk" style="margin-top:12px"><input type="checkbox" id="couchage" ${R.couchage ? 'checked' : ''}>Oui, nous aimerions dormir au château</label>
+            <label class="chk" style="margin-top:12px"><input type="checkbox" id="couchage" ${R.couchage ? 'checked' : ''}>${T('Oui, nous aimerions dormir au château', 'Oui, j’aimerais dormir au château')}</label>
             <div id="sleepMore" ${R.couchage ? '' : 'hidden'}>
               <div class="checks" style="margin-top:10px">${F.nuits.map(n => `<label class="chk"><input type="checkbox" name="nuit" value="${n.id}" ${R.nuits.includes(n.id) ? 'checked' : ''}>${esc(n.label)}</label>`).join('')}</div>
-              <div class="fld"><span>Nombre de personnes</span>${stepper('nb_couchage', R.nb_couchage, 1)}</div>
-              <label class="chk" style="margin-top:12px"><input type="checkbox" id="partage" ${R.partage ? 'checked' : ''}>Partager une chambre ne nous dérange pas</label>
+              ${TU ? '' : `<div class="fld"><span>Nombre de personnes</span>${stepper('nb_couchage', R.nb_couchage, 1)}</div>`}
+              <label class="chk" style="margin-top:12px"><input type="checkbox" id="partage" ${R.partage ? 'checked' : ''}>${T('Partager une chambre ne nous dérange pas', 'Partager une chambre ne me dérange pas')}</label>
               <div class="estimate" id="estimate"></div>
             </div>
           </div>` : ''}
           <label class="fld"><span>Allergies ou régime particulier (facultatif)</span><input id="regime" type="text" value="${esc(R.regime)}" placeholder="végétarien, sans gluten…"></label>
           <label class="consent"><input type="checkbox" id="regimeOk" ${R.regimeOk ? 'checked' : ''}> Si je signale une allergie ou un régime, j’accepte que cette information serve uniquement à préparer mon repas et soit transmise au traiteur.</label>
-          <label class="fld"><span>La chanson qui vous fera danser</span><input id="chanson" type="text" value="${esc(R.chanson)}" placeholder="Titre – artiste"></label>
+          <label class="fld"><span>La chanson qui ${T('vous', 'te')} fera danser</span><input id="chanson" type="text" value="${esc(R.chanson)}" placeholder="Titre – artiste"></label>
           <label class="fld"><span>Un mot pour les mariés</span><textarea id="message" placeholder="Conseils, blagues, déclarations…">${esc(R.message)}</textarea></label>
           <label class="fld"><span>E-mail (pour recevoir les infos à venir)</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
           ${coordsHtml(R)}
-          <button class="submit" type="submit">Confirmer notre venue</button><p class="submit-hint">Votre réponse n’est validée qu’après ce clic.</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
+          <button class="submit" type="submit">${T('Confirmer notre venue', 'Confirmer ma venue')}</button><p class="submit-hint">${T('Votre', 'Ta')} réponse n’est validée qu’après ce clic.</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
         d.querySelectorAll('.stepper').forEach(st => st.addEventListener('click', e => {
           const btn = e.target.closest('button'); if (!btn) return;
           const id = st.dataset.st, out = $('#' + id);
@@ -1484,10 +1491,10 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       e.preventDefault();
       const err = $('#err'); err.textContent = '';
       collect();
-      if (!R.nom) { err.textContent = 'Indiquez vos prénoms et noms pour qu’on sache qui répond.'; $('#nom').focus(); return; }
-      if (!R.presence) { err.textContent = 'Choisissez « On sera là ! » ou « Non ».'; return; }
-      if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = 'Cochez au moins un moment.'; return; }
-      if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = 'Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.'; $('#regimeOk').focus(); return; }
+      if (!R.nom) { err.textContent = T('Indiquez vos prénoms et noms pour qu’on sache qui répond.', 'Indique ton prénom et ton nom pour qu’on sache qui répond.'); $('#nom').focus(); return; }
+      if (!R.presence) { err.textContent = T('Choisissez', 'Choisis') + ' « ' + OUI_TXT + ' » ou « Non ».'; return; }
+      if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = T('Cochez', 'Coche') + ' au moins un moment.'; return; }
+      if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = T('Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.', 'Coche la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laisse le champ vide.'); $('#regimeOk').focus(); return; }
       const robot = !!$('[name=website]').value; /* champ piège : l’autoremplissage Android peut le remplir, on envoie quand même en signalant */
       const btn = e.target.querySelector('.submit'); btn.disabled = true; btn.textContent = 'Envoi…';
       sending = true;
@@ -1504,7 +1511,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         renderDone(F, saved);
       } catch (x) {
         sending = false; btn.disabled = false; btn.textContent = 'Réessayer';
-        err.textContent = 'L’envoi n’a pas abouti. Vérifiez votre connexion puis réessayez.';
+        err.textContent = T('L’envoi n’a pas abouti. Vérifiez votre connexion puis réessayez.', 'L’envoi n’a pas abouti. Vérifie ta connexion puis réessaie.');
       }
     });
   }
@@ -1524,7 +1531,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     exitAt = Date.now();
     const bar = document.createElement('div');
     bar.id = 'exitBar'; bar.className = 'exit-bar'; bar.setAttribute('role', 'alert');
-    bar.innerHTML = '<span><b>Votre réponse n’est pas encore envoyée.</b> Il reste à la valider en bas du formulaire.</span><button type="button" class="exit-go">Terminer ma réponse ↓</button><button type="button" class="exit-x" aria-label="Fermer">×</button>';
+    bar.innerHTML = '<span><b>' + T('Votre', 'Ta') + ' réponse n’est pas encore envoyée.</b> Il reste à la valider en bas du formulaire.</span><button type="button" class="exit-go">Terminer ma réponse ↓</button><button type="button" class="exit-x" aria-label="Fermer">×</button>';
     document.body.appendChild(bar);
     bar.querySelector('.exit-x').addEventListener('click', hideExit);
     bar.querySelector('.exit-go').addEventListener('click', () => {
@@ -1538,8 +1545,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const box = $('#rsvpBox'), oui = R.presence === 'Oui';
     box.innerHTML = `<div class="done">
       ${S.doodle(oui ? 'glasses' : 'heart')}
-      <div class="big">${oui ? 'C’est noté, on trinquera ensemble !' : 'Vous allez nous manquer.'}</div>
-      <p>${oui ? 'Merci ' + esc(R.nom) + ' ! Nous vous enverrons les horaires, le code couleur et les infos pratiques très bientôt.' : 'Merci de nous avoir répondu, ' + esc(R.nom) + '. On lèvera un verre à votre santé.'}</p>
+      <div class="big">${oui ? 'C’est noté, on trinquera ensemble !' : T('Vous allez nous manquer.', 'Tu vas nous manquer.')}</div>
+      <p>${oui ? 'Merci ' + esc(R.nom) + T(' ! Nous vous enverrons', ' ! Nous t’enverrons') + ' les horaires, le code couleur et les infos pratiques très bientôt.' : 'Merci de nous avoir répondu, ' + esc(R.nom) + T('. On lèvera un verre à votre santé.', '. On lèvera un verre à ta santé.')}</p>
       ${already ? `<p class="deadline" style="margin:14px 0 0">Réponse envoyée${R.date ? ' le ' + new Date(R.date).toLocaleDateString('fr-FR') : ''}${DEMO ? ' (aperçu : rien n’a été envoyé)' : ''}</p>` : (DEMO ? '<p class="deadline" style="margin:14px 0 0">Mode aperçu : rien n’a été envoyé.</p>' : '')}
       ${C.site && C.site.lienFairePart ? `<a class="site-link" href="${carnetUrl()}">Le carnet pratique : accès, hébergement, covoiturage →</a><br>` : ''}
       ${oui && lienListe((C.bientot[0] || {}).lien) ? `<a class="site-link" href="${esc(lienListe(C.bientot[0].lien))}">Notre liste de mariage →</a><br>` : ''}
@@ -1582,7 +1589,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const F = C.formules[state.code];
     $('#envSeal').innerHTML = sealAt('enveloppe');
     $('#env').classList.toggle('photo-seal', ((C.sceaux || {}).enveloppe === 'photo'));
-    $('#envLetter').innerHTML = `${C.monogrammeLettres && ((C.sceaux || {}).carte || 'image') === 'image' ? `<img class="l-mono" src="${esc(C.monogrammeLettres)}" alt="">` : ''}<span class="l-eye">Vous êtes invités</span><span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-orn">${S.ornement()}</span><span class="l-date gold">${esc(F.dates)}</span><span class="l-place">${esc(C.lieux.chateau.nom)}</span>${C.illustrationsLieux !== false ? `<img class="l-chateau" src="${AS('photos/lieux/chateau.webp')}" alt="">` : ''}<span class="fili tl">${S.filigrane()}</span><span class="fili tr">${S.filigrane()}</span><span class="fili bl">${S.filigrane()}</span><span class="fili br">${S.filigrane()}</span>`;
+    $('#envLetter').innerHTML = `${C.monogrammeLettres && ((C.sceaux || {}).carte || 'image') === 'image' ? `<img class="l-mono" src="${esc(C.monogrammeLettres)}" alt="">` : ''}<span class="l-eye">${T('Vous êtes invités', 'Nous t’invitons')}</span><span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-orn">${S.ornement()}</span><span class="l-date gold">${esc(F.dates)}</span><span class="l-place">${esc(C.lieux.chateau.nom)}</span>${C.illustrationsLieux !== false ? `<img class="l-chateau" src="${AS('photos/lieux/chateau.webp')}" alt="">` : ''}<span class="fili tl">${S.filigrane()}</span><span class="fili tr">${S.filigrane()}</span><span class="fili bl">${S.filigrane()}</span><span class="fili br">${S.filigrane()}</span>`;
     const br = C.palette !== 'bleu' ? '<img class="branch" src="photos/branche-or.webp" alt="">' : S.branch(false);
     $('#doorL').innerHTML = br; $('#doorR').innerHTML = br;
     $('#envSprig').innerHTML = orn('branche'); $('#envSprig').className = 'sprig-env' + ornCls('branche'); $('#envRibbon').innerHTML = orn('ruban'); $('#envRibbon').className = 'ribbon-env' + ornCls('ruban');

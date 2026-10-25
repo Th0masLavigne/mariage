@@ -84,6 +84,13 @@ window.CONFIG = {
   /* Durée d’un aller-retour du reflet doré, en secondes (plus grand = plus lent et plus léger) */
   refletSecondes: 12,
 
+  /* --- Tutoiement ------------------------------------------------------
+     Un lien personnalisé pour UNE personne (nom sans « & », ex. ?n=Lucas Bodile Chouette)
+     tutoie l’invité ; à plusieurs (?n=Claire & Paul) ou sans nom → « vous ».
+     Toute clé terminée par « Tu » (finTu, introTu, texteTu, rTu…) remplace, pour les
+     invités tutoyés, la clé du même nom. Pas de version « Tu » → le texte normal est gardé.
+     Forcer dans un lien : ajouter &tu ou &vous.                                        */
+
   /* Titres des sections (laisser '' pour masquer celui de la date ou le sous-titre) */
   textes: {
     sousTitre: 'Un « oui » pour la vie.',
@@ -91,8 +98,10 @@ window.CONFIG = {
     programme: 'Le déroulé',
     escales: 'Avant la prochaine',
     bientot: 'Ne dites rien, on prépare la suite',
+    bientotTu: 'Ne dis rien, on prépare la suite',
     finPhrase: 'Les plus belles histoires se célèbrent ensemble.',
-    fin: 'On vous attend'
+    fin: 'On vous attend',
+    finTu: 'On t’attend'
   },
 
   /* Phrase au-dessus de l'enveloppe fermée ('' pour la masquer).
@@ -177,6 +186,7 @@ window.CONFIG = {
       nom: 'Save the date',
       dates: '6 · 7 · 8 août 2027',
       intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés, du premier « oui » au dernier croissant.',
+      introTu: 'Nous avons l’immense joie de t’inviter à notre mariage.\nNous serions heureux de t’avoir à nos côtés, du premier « oui » au dernier croissant.',
       moments: ['mairie', 'veillee', 'eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'ven', label: 'Nuit du vendredi 6 au samedi 7' },
@@ -188,6 +198,7 @@ window.CONFIG = {
       nom: 'Save the date',
       dates: '7 & 8 août 2027',
       intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés au vin d’honneur, au dîner et au brunch du lendemain.',
+      introTu: 'Nous avons l’immense joie de t’inviter à notre mariage.\nNous serions heureux de t’avoir à nos côtés au vin d’honneur, au dîner et au brunch du lendemain.',
       moments: ['eglise', 'vin', 'diner', 'brunch'],
       nuits: [
         { id: 'sam', label: 'Nuit du samedi 7 au dimanche 8' }
@@ -198,6 +209,7 @@ window.CONFIG = {
       nom: 'Save the date',
       dates: 'Samedi 7 août 2027',
       intro: 'Nous avons l’immense joie de vous inviter à notre mariage.\nNous serions heureux de vous avoir à nos côtés au vin d’honneur.',
+      introTu: 'Nous avons l’immense joie de t’inviter à notre mariage.\nNous serions heureux de t’avoir à nos côtés au vin d’honneur.',
       moments: ['eglise', 'vin'],
       nuits: []
     }
@@ -239,6 +251,7 @@ window.CONFIG = {
     /* invités qui marchent, une fois révélé (planche de 4 poses ; '' → silhouettes dessinées) */
     marche: 'photos/invites-marche.webp',
     messageAttente: 'Revenez gratter ! Le thème vestimentaire vous sera dévoilé ici très prochainement.',
+    messageAttenteTu: 'Reviens gratter ! Le thème vestimentaire te sera dévoilé ici très prochainement.',
     reveler: true,
     /* couleurs de la robe et du costume du couple (mode balade) */
     couleursBalade: { robe: '#c98d97', costume: '#6c7a99' },
@@ -281,7 +294,7 @@ window.CONFIG = {
   bientot: [
     /* lien : 'carnet' → mène à la liste du carnet dès qu’elle contient des cadeaux (site.liste) ;
        ou une adresse https://… vers une liste externe ; '' → tampon « Bientôt ».                  */
-    { accroche: 'Votre présence est notre plus beau cadeau.', titre: 'Liste de mariage', texte: '', lien: 'carnet' }
+    { accroche: 'Votre présence est notre plus beau cadeau.', accrocheTu: 'Ta présence est notre plus beau cadeau.', titre: 'Liste de mariage', texte: '', lien: 'carnet' }
   ],
 
   /* Pétales de cerisier qui tombent en fond (true / false) */
@@ -350,6 +363,13 @@ window.CONFIG = {
     'On a dit non au « non »',
     'Dernière chance…'
   ],
+  fuiteTu: [
+    'Tu le penses vraiment ?',
+    'Il y aura du champagne…',
+    'Et un brunch !',
+    'On a dit non au « non »',
+    'Dernière chance…'
+  ],
   nonFinal: 'Bon… non, hélas',
 
   /* --- Vos données (lien « Vos données » du faire-part et du carnet) ----
@@ -387,8 +407,10 @@ window.CONFIG = {
     haut: 'chateau',
     titre: 'Le carnet du mariage',
     intro: 'Tout ce qu’il faut savoir pour nous rejoindre, mis à jour au fil des mois. Revenez de temps en temps : les nouveautés apparaissent ici.',
+    introTu: 'Tout ce qu’il faut savoir pour nous rejoindre, mis à jour au fil des mois. Reviens de temps en temps : les nouveautés apparaissent ici.',
     /* bandeau doré tout en haut ('' = aucun). Ex. 'Les horaires sont en ligne !' */
-    annonce: 'Cette page sera mise a jour au fil des mois : revenez de temps en temps !',
+    annonce: 'Cette page sera mise à jour au fil des mois : revenez de temps en temps !',
+    annonceTu: 'Cette page sera mise à jour au fil des mois : reviens de temps en temps !',
     /* adresse e-mail de contact (pied de page) — '' = masquée */
     contact: '',
 
@@ -404,7 +426,8 @@ window.CONFIG = {
       /* covoiturage : lien vide → tableau d’annonces intégré (onglet « Covoiturage » du Sheet ;
          pour retirer une annonce : effacer sa ligne ou écrire « non » dans la colonne visible).
          lien rempli → simple bouton vers ce lien. null → pas de covoiturage. */
-      covoiturage: { texte: 'Vous avez des places dans votre voiture, ou vous en cherchez une ? Déposez une annonce, les autres invités vous contacteront.', lien: '' }
+      covoiturage: { texte: 'Vous avez des places dans votre voiture, ou vous en cherchez une ? Déposez une annonce, les autres invités vous contacteront.',
+                     texteTu: 'Tu as des places dans ta voiture, ou tu en cherches une ? Dépose une annonce, les autres invités te contacteront.', lien: '' }
     },
 
     /* affiché uniquement pour les formules avec des nuits (jamais pour « Église & vin d’honneur ») */
@@ -428,13 +451,17 @@ window.CONFIG = {
     faq: {
       actif: true,
       titre: 'Vos questions',
+      titreTu: 'Tes questions',
       /* r: '' → la question est masquée tant que la réponse n’est pas écrite */
       questions: [
-        { q: 'Puis-je modifier ma réponse ?', r: 'Bien sûr : rouvrez le lien de votre faire-part, votre réponse s’affiche avec un bouton « Modifier ma réponse ».' },
+        { q: 'Puis-je modifier ma réponse ?', r: 'Bien sûr : rouvrez le lien de votre faire-part, votre réponse s’affiche avec un bouton « Modifier ma réponse ».',
+                                              rTu: 'Bien sûr : rouvre le lien de ton faire-part, ta réponse s’affiche avec un bouton « Modifier ma réponse ».' },
         { q: 'Quelle tenue prévoir ?', r: 'Tout est dans la rubrique « Dress code ».' },
         { q: 'Les enfants sont-ils invités ?', r: '' },
-        { q: 'Peut-on prendre des photos pendant la cérémonie ?', r: 'Vous êtes libres de prendre des photos pendant la cérémonie, à condition de ne pas perturber les invités.' },
-        { q: 'J’ai une allergie ou un régime particulier.', r: 'Indiquez-le dans votre réponse au faire-part, nous transmettrons au traiteur.' },
+        { q: 'Peut-on prendre des photos pendant la cérémonie ?', r: 'Vous êtes libres de prendre des photos pendant la cérémonie, à condition de ne pas perturber les invités.',
+                                                              rTu: 'Tu peux prendre des photos pendant la cérémonie, à condition de ne pas perturber les invités.' },
+        { q: 'J’ai une allergie ou un régime particulier.', r: 'Indiquez-le dans votre réponse au faire-part, nous transmettrons au traiteur.',
+                                                       rTu: 'Indique-le dans ta réponse au faire-part, nous transmettrons au traiteur.' },
         { q: 'Que faire en cas de pluie ?', r: '' }
       ]
     },
@@ -454,7 +481,9 @@ window.CONFIG = {
       actif: true,
       titre: 'Liste de mariage',
       accroche: 'Votre présence est notre plus beau cadeau.',
+      accrocheTu: 'Ta présence est notre plus beau cadeau.',
       texte: 'Si vous souhaitez malgré tout nous gâter, voici quelques idées. Vous pouvez participer à hauteur de ce que vous voulez.',
+      texteTu: 'Si tu souhaites malgré tout nous gâter, voici quelques idées. Tu peux participer à hauteur de ce que tu veux.',
       cadeaux: [
         // { id: 'voyage', type: 'participation', titre: 'Notre voyage de noces', texte: 'Deux semaines en Asie.', objectif: 3000, image: '' },
         // { id: 'cuisine', type: 'participation', titre: 'Une batterie de cuisine en inox', texte: 'Pour les dîners entre amis.', objectif: 600 },
@@ -470,6 +499,7 @@ window.CONFIG = {
         cagnotte: '',
         /* urne le jour J (affichée sous la liste et dans la fenêtre « Participer ») ; '' pour la masquer */
         urne: 'Une urne sera aussi à votre disposition le jour J, pour participer de façon anonyme.',
+        urneTu: 'Une urne sera aussi à ta disposition le jour J, pour participer de façon anonyme.',
         titulaire: '',
         iban: '',
         lydia: '',     // pas utilisé
@@ -502,6 +532,7 @@ window.CONFIG = {
       actif: true,
       titre: 'La playlist',
       texte: 'Une chanson qui vous fera danser ? Proposez-la, on la glissera dans la soirée.',
+      texteTu: 'Une chanson qui te fera danser ? Propose-la, on la glissera dans la soirée.',
       /* lien d’une playlist collaborative (Spotify, Deezer…) ; vide → petit formulaire (onglet « Chansons » du Sheet) */
       lien: ''
     },
@@ -514,7 +545,9 @@ window.CONFIG = {
     photos: {
       actif: true,
       titre: 'Vos photos',
+      titreTu: 'Tes photos',
       texte: 'Partagez vos plus beaux clichés du week-end : ils arrivent directement dans notre album.',
+      texteTu: 'Partage tes plus beaux clichés du week-end : ils arrivent directement dans notre album.',
       url: '',
       album: '',
       tailleMax: 2400,
