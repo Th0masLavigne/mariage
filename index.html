@@ -392,6 +392,11 @@ h2 { font: italic 400 clamp(32px, 6.4vw, 46px)/1.08 var(--f-display); margin: 10
 .submit-hint { margin: 8px 0 0; text-align: center; font: italic 400 14px/1.4 var(--f-body); color: var(--muted); }
 .go-confirm { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 50; border: 0; cursor: pointer; border-radius: 99px; padding: 13px 22px; background: var(--rose); color: #fff; font: 500 12.5px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 8px 22px rgba(0,0,0,.22); animation: fadeup .35s ease both; }
 .go-confirm[hidden] { display: none; }
+.exit-bar { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 70; width: max-content; max-width: calc(100% - 24px); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; padding: 12px 14px 12px 18px; border-radius: 16px; background: var(--card, #fff); color: var(--ink); border: 1.5px solid var(--rose); box-shadow: 0 12px 32px rgba(0,0,0,.18); font: 400 15px/1.4 var(--f-body); animation: exitdown .3s ease both; }
+.exit-bar b { color: var(--rose); }
+.exit-go { border: 0; cursor: pointer; border-radius: 99px; padding: 10px 16px; background: var(--rose); color: #fff; font: 500 12px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.exit-x { border: 0; background: none; cursor: pointer; font-size: 22px; line-height: 1; color: var(--muted); padding: 0 4px; }
+@keyframes exitdown { from { opacity: 0; transform: translate(-50%, -12px); } }
 body:has(.demo-bar) .go-confirm { bottom: calc(max(14px, env(safe-area-inset-bottom, 0px)) + 66px); }
 .err { color: var(--rose); margin-top: 12px; font-weight: 700; }
 .done { text-align: center; padding: 20px 0 6px; }
@@ -1301,7 +1306,6 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     }) : null;
     if (io) io.observe(box);
     go.addEventListener('click', () => { const b = box.querySelector('.submit'); if (b) { b.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => b.focus({ preventScroll: true }), 500); } });
-    window.onbeforeunload = () => (pending && box.isConnected && !box.querySelector('.done')) ? true : undefined;
     let sending = false, lastDraft = '';
 
     function flee() {
@@ -1472,6 +1476,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       } catch (x) {}
     }
     window.__rsvpDraft = saveDraft;
+    window.__rsvpPending = () => pending && !sending && box.isConnected && !!$('#f');
     $('#f').addEventListener('change', () => saveDraft(false));
     $('#f').addEventListener('input', () => saveDraft(false));
 
@@ -1491,7 +1496,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       try {
         if (DEMO) await new Promise(r => setTimeout(r, 700));
         else await envoyer(C.rsvpUrl, JSON.stringify(payload));
-        pending = false; go.hidden = true; if (io) io.disconnect(); window.onbeforeunload = null;
+        pending = false; go.hidden = true; if (io) io.disconnect(); hideExit();
         store.set('rsvpDraft.' + state.code, null); window.__rsvpDraft = null;
         const saved = Object.assign({}, R, { date: new Date().toISOString() });
         store.set('rsvp.' + state.code, saved);
@@ -1507,6 +1512,27 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   /* une seule fois : quand la page passe en arrière-plan ou se ferme, on envoie le brouillon en cours */
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && window.__rsvpDraft) window.__rsvpDraft(true); });
   window.addEventListener('pagehide', () => { if (window.__rsvpDraft) window.__rsvpDraft(true); });
+
+  /* Ordinateur : quand la souris quitte la fenêtre par le haut (vers les onglets ou la croix)
+     alors que la réponse est commencée, un bandeau rappelle qu’elle n’est pas encore envoyée.
+     (Les navigateurs n’autorisent plus de texte personnalisé dans l’alerte « Quitter la page ? ».) */
+  let exitAt = 0;
+  function hideExit() { const b = $('#exitBar'); if (b) b.remove(); }
+  document.addEventListener('mouseout', e => {
+    if (e.relatedTarget || e.clientY > 8 || !window.matchMedia('(pointer: fine)').matches) return;
+    if (!window.__rsvpPending || !window.__rsvpPending() || $('#exitBar') || Date.now() - exitAt < 20000) return;
+    exitAt = Date.now();
+    const bar = document.createElement('div');
+    bar.id = 'exitBar'; bar.className = 'exit-bar'; bar.setAttribute('role', 'alert');
+    bar.innerHTML = '<span><b>Votre réponse n’est pas encore envoyée.</b> Il reste à la valider en bas du formulaire.</span><button type="button" class="exit-go">Terminer ma réponse ↓</button><button type="button" class="exit-x" aria-label="Fermer">×</button>';
+    document.body.appendChild(bar);
+    bar.querySelector('.exit-x').addEventListener('click', hideExit);
+    bar.querySelector('.exit-go').addEventListener('click', () => {
+      hideExit();
+      const b = $('#rsvpBox .submit');
+      if (b) { b.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => b.focus({ preventScroll: true }), 500); }
+    });
+  });
 
   function renderDone(F, R, already) {
     const box = $('#rsvpBox'), oui = R.presence === 'Oui';
