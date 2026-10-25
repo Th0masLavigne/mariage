@@ -16,21 +16,53 @@
   /* dress code « trait » : croquis à l'encre + lavis de couleur sur la robe et le costume, couleurs au choix */
   /* aquarelle : 4 poses + masques robe/costume recolorés en mode « couleur » (les ombres de l'aquarelle restent) */
   const PALT = () => (DC.couleursInvites && DC.couleursInvites.length ? DC.couleursInvites : []);
-  /* Le mode « couleur » garde la luminosité du dessin : un costume foncé ne peut pas devenir rose clair.
-     On ajoute donc d'abord un calque qui éclaircit (écran) ou assombrit (produit) le vêtement
-     jusqu'à la luminosité de la pastille, puis la teinte est posée par-dessus. */
-  const LUM = Object.assign({ robe: .72, costume: .34 }, DC.lumMarche || {});
-  const hexLum = h => { const x = String(h).replace('#', ''), f = x.length < 6 ? x.slice(0, 3).split('').map(c => c + c).join('') : x.slice(0, 6);
-    const n = parseInt(f, 16); return ((n >> 16 & 255) * .3 + (n >> 8 & 255) * .59 + (n & 255) * .11) / 255; };
-  const tone = (hex, lb) => { const lt = hexLum(hex); if (isNaN(lt)) return { c: '#000', b: 'normal', o: 0 };
-    if (lt >= lb) { const g = Math.round(255 * Math.min(1, 1 - (1 - lt) / (1 - lb))); return { c: `rgb(${g},${g},${g})`, b: 'screen', o: 1 }; }
-    const g = Math.round(255 * Math.max(0, lt / lb)); return { c: `rgb(${g},${g},${g})`, b: 'multiply', o: 1 }; };
-  const spVars = (r, c) => { const tr = tone(r, LUM.robe), tc = tone(c, LUM.costume);
-    return `--sp-robe:${esc(r)};--sp-costume:${esc(c)};--sp-robe-t:${tr.c};--sp-robe-b:${tr.b};--sp-costume-t:${tc.c};--sp-costume-b:${tc.b}`; };
+  /* Recoloriage sur canvas : chaque pixel du vêtement prend la couleur de la pastille, avec une clarté
+     proportionnelle à celle du dessin (les plis et l'aquarelle restent, les reflets ne virent pas au blanc).
+     Si le canvas est indisponible, les calques CSS en mode « couleur » servent de secours. */
+  const hexRgb = h => { const x = String(h).replace('#', ''), f = x.length < 6 ? x.slice(0, 3).split('').map(c => c + c).join('') : x.slice(0, 6);
+    const n = parseInt(f, 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
+  const spVars = (r, c) => `--sp-robe:${esc(r)};--sp-costume:${esc(c)}`;
+  const RC = { ready: null, want: null };
+  function recolorInit(fig, m) {
+    const load = src => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; });
+    RC.ready = Promise.all([load(DC.marche), load(AS(m.robe)), load(AS(m.costume))]).then(([base, mr, mc]) => {
+      const W = base.naturalWidth, H = base.naturalHeight;
+      const px = img => { const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.drawImage(img, 0, 0, W, H); return x.getImageData(0, 0, W, H).data; };
+      const src = px(base), ar = px(mr), ac = px(mc), N = W * H, L = new Float32Array(N);
+      let sr = 0, nr = 0, sc = 0, nc = 0;
+      for (let i = 0; i < N; i++) { const k = i * 4, l = (src[k] * .3 + src[k + 1] * .59 + src[k + 2] * .11) / 255; L[i] = l;
+        if (ar[k + 3] > 127) { sr += l; nr++; } if (ac[k + 3] > 127) { sc += l; nc++; } }
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H; cv.className = 'sp-cv';
+      fig.querySelector('.sp-strip').appendChild(cv);
+      Object.assign(RC, { W, H, N, src, ar, ac, L, lmR: sr / Math.max(nr, 1), lmC: sc / Math.max(nc, 1), cv, ctx: cv.getContext('2d') });
+      return RC;
+    });
+    RC.ready.then(() => { fig.classList.add('cv'); if (RC.want) recolor(RC.want[0], RC.want[1]); }).catch(() => {});
+  }
+  function shade(t, lt, lm, l) { /* couleur t (clarté lt) ombrée selon la clarté l du dessin (moyenne lm) */
+    const s = Math.pow(Math.max(l, .001) / lm, .65), hi = (1 - lt) * .55;
+    const ld = s < 1 ? lt * s : lt + hi * (1 - Math.exp(-(s - 1) * lt / Math.max(hi, .001)));
+    let r = t[0] + ld - lt, g = t[1] + ld - lt, b = t[2] + ld - lt;
+    const n = Math.min(r, g, b), x = Math.max(r, g, b);
+    if (n < 0) { const f = ld / Math.max(ld - n, 1e-6); r = ld + (r - ld) * f; g = ld + (g - ld) * f; b = ld + (b - ld) * f; }
+    if (x > 1) { const f = (1 - ld) / Math.max(x - ld, 1e-6); r = ld + (r - ld) * f; g = ld + (g - ld) * f; b = ld + (b - ld) * f; }
+    return [r, g, b];
+  }
+  function recolor(robe, costume) {
+    RC.want = [robe, costume]; if (!RC.ctx) return;
+    const { W, H, N, src, ar, ac, L, lmR, lmC, ctx } = RC, out = ctx.createImageData(W, H), d = out.data;
+    const tr = hexRgb(robe), tc = hexRgb(costume), ltr = tr[0] * .3 + tr[1] * .59 + tr[2] * .11, ltc = tc[0] * .3 + tc[1] * .59 + tc[2] * .11;
+    for (let i = 0; i < N; i++) { const k = i * 4; let r = src[k] / 255, g = src[k + 1] / 255, b = src[k + 2] / 255;
+      const mr = ar[k + 3] / 255, mc = ac[k + 3] / 255;
+      if (mr > 0) { const c = shade(tr, ltr, lmR, L[i]); r += (c[0] - r) * mr; g += (c[1] - g) * mr; b += (c[2] - b) * mr; }
+      if (mc > 0) { const c = shade(tc, ltc, lmC, L[i]); r += (c[0] - r) * mc; g += (c[1] - g) * mc; b += (c[2] - b) * mc; }
+      d[k] = r * 255; d[k + 1] = g * 255; d[k + 2] = b * 255; d[k + 3] = src[k + 3]; }
+    ctx.putImageData(out, 0, 0);
+  }
   const spriteHtml = () => { const pl = PALT(), c0 = DC.couleurDefaut || pl[0], base = DC.marche.replace(/\.webp$/, '');
     const m = DC.masquesMarche || { robe: 'photos/invites-marche-robe.webp', costume: 'photos/invites-marche-costume.webp' };
     return `<div class="dc-sprite${c0 ? ' teinte' : ''}" role="img" aria-label="Un couple d’invités élégants qui marche" style="${c0 ? spVars(c0.robe, c0.costume) : ''}">
-      <div class="sp-strip"><img src="${esc(DC.marche)}" alt="">${c0 ? `<i class="sp-t robe" style="--m:url('${esc(AS(m.robe))}')"></i><i class="sp-t costume" style="--m:url('${esc(AS(m.costume))}')"></i><i class="sp-w robe" style="--m:url('${esc(AS(m.robe))}')"></i><i class="sp-w costume" style="--m:url('${esc(AS(m.costume))}')"></i>` : ''}</div></div>
+      <div class="sp-strip"><img src="${esc(DC.marche)}" alt="">${c0 ? `<i class="sp-w robe" style="--m:url('${esc(AS(m.robe))}')"></i><i class="sp-w costume" style="--m:url('${esc(AS(m.costume))}')"></i>` : ''}</div></div>
       ${DC.afficherPastilles !== false && pl.length > 1 ? `<div class="palette pick dc-pal">${pl.map((c, i) => { const on = c0 && c.robe === c0.robe && c.costume === c0.costume; return `<button type="button" class="${on ? 'on' : ''}" data-r="${esc(c.robe)}" data-c="${esc(c.costume)}" aria-pressed="${on}"><i style="--c:linear-gradient(135deg, ${esc(c.robe)} 50%, ${esc(c.costume)} 50%)"></i>${esc(c.nom)}</button>`; }).join('')}</div>` : ''}`; };
   const traitHtml = () => { const T = DC.trait, c = DC.traitCouleurs;
     return `<div class="dc-trait wait${c ? ' teinte' : ''}" style="--tr-robe:${esc((c && c.robe) || '#b2c4e2')};--tr-costume:${esc((c && c.costume) || '#2e4a72')}" role="img" aria-label="Croquis d’un couple d’invités élégants">
@@ -60,10 +92,13 @@
 
   /* Pastilles cliquables : la couleur choisie habille le costume et la robe */
   function traitPick() {
-    const pal = document.querySelector('.dc-pal'), fig = document.querySelector('.dc-sprite'); if (!pal || !fig) return;
+    const pal = document.querySelector('.dc-pal'), fig = document.querySelector('.dc-sprite'); if (!fig) return;
+    if (fig.classList.contains('teinte')) { const c0 = DC.couleurDefaut || PALT()[0];
+      recolorInit(fig, DC.masquesMarche || { robe: 'photos/invites-marche-robe.webp', costume: 'photos/invites-marche-costume.webp' }); recolor(c0.robe, c0.costume); }
+    if (!pal) return;
     pal.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
       pal.querySelectorAll('button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
-      spVars(b.dataset.r, b.dataset.c).split(';').forEach(d => { const i = d.indexOf(':'); fig.style.setProperty(d.slice(0, i), d.slice(i + 1)); }); });
+      fig.style.setProperty('--sp-robe', b.dataset.r); fig.style.setProperty('--sp-costume', b.dataset.c); recolor(b.dataset.r, b.dataset.c); });
   }
   function palettePick() {
     const pal = $('#palette'); if (!pal || !pal.classList.contains('pick')) return;
