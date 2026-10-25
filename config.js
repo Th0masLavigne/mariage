@@ -233,8 +233,8 @@ window.CONFIG = {
     couleursInvites: [
       { nom: '',     robe: '#d39ced', costume: '#2e4a72' },
       { nom: '', robe: '#9fc3f9', costume: '#eebde1' },
-      { nom: '',       robe: '#acdca2', costume: '#334939' },
       { nom: '',   robe: '#f6b62cf9', costume: '#96b6d4' }
+      { nom: '',       robe: '#acdca2', costume: '#334939' },
     ],
     /* invités qui marchent, une fois révélé (planche de 4 poses ; '' → silhouettes dessinées) */
     marche: 'photos/invites-marche.webp',
