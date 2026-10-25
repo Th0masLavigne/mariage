@@ -232,9 +232,9 @@ window.CONFIG = {
     /* pastilles proposées : chaque pastille recolore la robe et le costume */
     couleursInvites: [
       { nom: '',     robe: '#d39ced', costume: '#2e4a72' },
-      { nom: '', robe: '#9fc3f9', costume: '#3a4f6e' },
-      { nom: '',       robe: '#acdca2', costume: '#4a5a52' },
-      { nom: '',   robe: '#f6b62cf9', costume: '#6e8ca8' }
+      { nom: '', robe: '#9fc3f9', costume: '#eebde1' },
+      { nom: '',       robe: '#acdca2', costume: '#334939' },
+      { nom: '',   robe: '#f6b62cf9', costume: '#96b6d4' }
     ],
     /* invités qui marchent, une fois révélé (planche de 4 poses ; '' → silhouettes dessinées) */
     marche: 'photos/invites-marche.webp',
