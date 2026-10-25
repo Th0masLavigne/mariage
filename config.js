@@ -231,10 +231,10 @@ window.CONFIG = {
     afficherPastilles: true,
     /* pastilles proposées : chaque pastille recolore la robe et le costume */
     couleursInvites: [
-      { nom: 'Lavande',     robe: '#d39ced', costume: '#2e4a72' },
-      { nom: 'Bleu poudré', robe: '#9fc3f9', costume: '#3a4f6e' },
-      { nom: 'Sauge',       robe: '#acdca2', costume: '#4a5a52' },
-      { nom: 'Champagne',   robe: '#f6b62cf9', costume: '#6e8ca8' }
+      { nom: '',     robe: '#d39ced', costume: '#2e4a72' },
+      { nom: '', robe: '#9fc3f9', costume: '#3a4f6e' },
+      { nom: '',       robe: '#acdca2', costume: '#4a5a52' },
+      { nom: '',   robe: '#f6b62cf9', costume: '#6e8ca8' }
     ],
     /* invités qui marchent, une fois révélé (planche de 4 poses ; '' → silhouettes dessinées) */
     marche: 'photos/invites-marche.webp',
@@ -243,6 +243,7 @@ window.CONFIG = {
     /* couleurs de la robe et du costume du couple (mode balade) */
     couleursBalade: { robe: '#c98d97', costume: '#6c7a99' },
     texte: [
+      'Pas de couleur imposée, voici une sélection de tons qui nous plaît.',
       'Pas de gilet pour ces messieurs : il est réservé au marié.',
       'Le blanc et les tons clairs apparentées sont réservés aux mariés.'
     ],
