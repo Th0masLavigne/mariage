@@ -127,6 +127,10 @@
 .dc-sprite .sp-strip img { display: block; width: 100%; height: 100%; max-width: none; }
 .dc-sprite .sp-w { position: absolute; inset: 0; mix-blend-mode: color; transition: background-color .6s ease;
   -webkit-mask: var(--m) 0 0 / 100% 100% no-repeat; mask: var(--m) 0 0 / 100% 100% no-repeat; }
+.dc-sprite .sp-t { position: absolute; inset: 0; transition: background-color .6s ease;
+  -webkit-mask: var(--m) 0 0 / 100% 100% no-repeat; mask: var(--m) 0 0 / 100% 100% no-repeat; }
+.dc-sprite .sp-t.robe { background-color: var(--sp-robe-t, #000); mix-blend-mode: var(--sp-robe-b, screen); }
+.dc-sprite .sp-t.costume { background-color: var(--sp-costume-t, #000); mix-blend-mode: var(--sp-costume-b, screen); }
 .dc-sprite .sp-w.robe { background-color: var(--sp-robe); }
 .dc-sprite .sp-w.costume { background-color: var(--sp-costume); }
 @keyframes dc-walk { to { transform: translateX(-100%); } }

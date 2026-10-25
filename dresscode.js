@@ -16,10 +16,21 @@
   /* dress code « trait » : croquis à l'encre + lavis de couleur sur la robe et le costume, couleurs au choix */
   /* aquarelle : 4 poses + masques robe/costume recolorés en mode « couleur » (les ombres de l'aquarelle restent) */
   const PALT = () => (DC.couleursInvites && DC.couleursInvites.length ? DC.couleursInvites : []);
+  /* Le mode « couleur » garde la luminosité du dessin : un costume foncé ne peut pas devenir rose clair.
+     On ajoute donc d'abord un calque qui éclaircit (écran) ou assombrit (produit) le vêtement
+     jusqu'à la luminosité de la pastille, puis la teinte est posée par-dessus. */
+  const LUM = Object.assign({ robe: .72, costume: .34 }, DC.lumMarche || {});
+  const hexLum = h => { const x = String(h).replace('#', ''), f = x.length < 6 ? x.slice(0, 3).split('').map(c => c + c).join('') : x.slice(0, 6);
+    const n = parseInt(f, 16); return ((n >> 16 & 255) * .3 + (n >> 8 & 255) * .59 + (n & 255) * .11) / 255; };
+  const tone = (hex, lb) => { const lt = hexLum(hex); if (isNaN(lt)) return { c: '#000', b: 'normal', o: 0 };
+    if (lt >= lb) { const g = Math.round(255 * Math.min(1, 1 - (1 - lt) / (1 - lb))); return { c: `rgb(${g},${g},${g})`, b: 'screen', o: 1 }; }
+    const g = Math.round(255 * Math.max(0, lt / lb)); return { c: `rgb(${g},${g},${g})`, b: 'multiply', o: 1 }; };
+  const spVars = (r, c) => { const tr = tone(r, LUM.robe), tc = tone(c, LUM.costume);
+    return `--sp-robe:${esc(r)};--sp-costume:${esc(c)};--sp-robe-t:${tr.c};--sp-robe-b:${tr.b};--sp-costume-t:${tc.c};--sp-costume-b:${tc.b}`; };
   const spriteHtml = () => { const pl = PALT(), c0 = DC.couleurDefaut || pl[0], base = DC.marche.replace(/\.webp$/, '');
     const m = DC.masquesMarche || { robe: 'photos/invites-marche-robe.webp', costume: 'photos/invites-marche-costume.webp' };
-    return `<div class="dc-sprite${c0 ? ' teinte' : ''}" role="img" aria-label="Un couple d’invités élégants qui marche" style="${c0 ? `--sp-robe:${esc(c0.robe)};--sp-costume:${esc(c0.costume)}` : ''}">
-      <div class="sp-strip"><img src="${esc(DC.marche)}" alt="">${c0 ? `<i class="sp-w robe" style="--m:url('${esc(AS(m.robe))}')"></i><i class="sp-w costume" style="--m:url('${esc(AS(m.costume))}')"></i>` : ''}</div></div>
+    return `<div class="dc-sprite${c0 ? ' teinte' : ''}" role="img" aria-label="Un couple d’invités élégants qui marche" style="${c0 ? spVars(c0.robe, c0.costume) : ''}">
+      <div class="sp-strip"><img src="${esc(DC.marche)}" alt="">${c0 ? `<i class="sp-t robe" style="--m:url('${esc(AS(m.robe))}')"></i><i class="sp-t costume" style="--m:url('${esc(AS(m.costume))}')"></i><i class="sp-w robe" style="--m:url('${esc(AS(m.robe))}')"></i><i class="sp-w costume" style="--m:url('${esc(AS(m.costume))}')"></i>` : ''}</div></div>
       ${DC.afficherPastilles !== false && pl.length > 1 ? `<div class="palette pick dc-pal">${pl.map((c, i) => { const on = c0 && c.robe === c0.robe && c.costume === c0.costume; return `<button type="button" class="${on ? 'on' : ''}" data-r="${esc(c.robe)}" data-c="${esc(c.costume)}" aria-pressed="${on}"><i style="--c:linear-gradient(135deg, ${esc(c.robe)} 50%, ${esc(c.costume)} 50%)"></i>${esc(c.nom)}</button>`; }).join('')}</div>` : ''}`; };
   const traitHtml = () => { const T = DC.trait, c = DC.traitCouleurs;
     return `<div class="dc-trait wait${c ? ' teinte' : ''}" style="--tr-robe:${esc((c && c.robe) || '#b2c4e2')};--tr-costume:${esc((c && c.costume) || '#2e4a72')}" role="img" aria-label="Croquis d’un couple d’invités élégants">
@@ -52,7 +63,7 @@
     const pal = document.querySelector('.dc-pal'), fig = document.querySelector('.dc-sprite'); if (!pal || !fig) return;
     pal.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
       pal.querySelectorAll('button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
-      fig.style.setProperty('--sp-robe', b.dataset.r); fig.style.setProperty('--sp-costume', b.dataset.c); });
+      spVars(b.dataset.r, b.dataset.c).split(';').forEach(d => { const i = d.indexOf(':'); fig.style.setProperty(d.slice(0, i), d.slice(i + 1)); }); });
   }
   function palettePick() {
     const pal = $('#palette'); if (!pal || !pal.classList.contains('pick')) return;
