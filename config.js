@@ -215,7 +215,7 @@ window.CONFIG = {
     affichage: 'balade',
     titre: 'Dress code',
     /* sous-titre en mode balade (ex. « Tenue de cocktail chic ») */
-    tenue: 'Chic, mais comme vous êtes',
+    tenue: 'Tenue élégante',
     /* illustration du mode balade ('' → couple dessiné) */
     illustration: 'photos/dresscode.webp',
     /* style une fois révélé : 'aquarelle' (invités en aquarelle qui marchent)
