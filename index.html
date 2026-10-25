@@ -1384,6 +1384,20 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       el.textContent = R.couchage && n ? `Estimation : ${R.nb_couchage} pers. × ${R.nuits.length} nuit${R.nuits.length > 1 ? 's' : ''} × ${C.prixNuit} € = ${n} €` : '';
     }
 
+    /* Envoi robuste : certains navigateurs intégrés (appli Google, Instagram…) bloquent ou font
+       traîner le fetch vers Apps Script. Délai max 12 s, puis repli sur sendBeacon. */
+    async function envoyer(url, body) {
+      const ctl = window.AbortController ? new AbortController() : null;
+      const t = ctl && setTimeout(() => ctl.abort(), 12000);
+      try {
+        await fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, signal: ctl && ctl.signal,
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body });
+      } catch (x) {
+        if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: 'text/plain;charset=utf-8' }))) return;
+        throw x;
+      } finally { if (t) clearTimeout(t); }
+    }
+
     $('#f').addEventListener('submit', async e => {
       e.preventDefault();
       const err = $('#err'); err.textContent = '';
@@ -1396,7 +1410,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       if (!R.presence) { err.textContent = 'Choisissez « On sera là ! » ou « Non ».'; return; }
       if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = 'Cochez au moins un moment.'; return; }
       if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = 'Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.'; $('#regimeOk').focus(); return; }
-      if ($('[name=website]').value) return; /* robot */
+      const robot = !!$('[name=website]').value; /* champ piège : l’autoremplissage Android peut le remplir, on envoie quand même en signalant */
       const btn = e.target.querySelector('.submit'); btn.disabled = true; btn.textContent = 'Envoi…';
       const id = store.get('id') || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
       store.set('id', id);
@@ -1414,9 +1428,10 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         regime: oui ? R.regime : '', consentement_regime: oui && R.regime ? new Date().toISOString().slice(0, 10) : '', chanson: oui ? R.chanson : '', message: R.message, email: R.email,
         telephone: R.telephone, adresse: R.adresse, cp: R.cp, ville: R.ville, pays: R.pays
       };
+      if (robot) payload.robot = 'oui';
       try {
         if (DEMO) await new Promise(r => setTimeout(r, 700));
-        else await fetch(C.rsvpUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        else await envoyer(C.rsvpUrl, JSON.stringify(payload));
         const saved = Object.assign({}, R, { date: new Date().toISOString() });
         store.set('rsvp.' + state.code, saved);
         delete box.dataset.edit;
