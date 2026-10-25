@@ -231,15 +231,15 @@ window.CONFIG = {
     afficherPastilles: true,
     /* pastilles proposées : chaque pastille recolore la robe et le costume */
     couleursInvites: [
-      { nom: 'Lavande',     robe: '#b9a8e0', costume: '#2e4a72' },
-      { nom: 'Bleu poudré', robe: '#a9c0e3', costume: '#3a4f6e' },
-      { nom: 'Sauge',       robe: '#a9c4a3', costume: '#4a5a52' },
-      { nom: 'Champagne',   robe: '#e6d2a8', costume: '#6e8ca8' }
+      { nom: 'Lavande',     robe: '#d39ced', costume: '#2e4a72' },
+      { nom: 'Bleu poudré', robe: '#9fc3f9', costume: '#3a4f6e' },
+      { nom: 'Sauge',       robe: '#acdca2', costume: '#4a5a52' },
+      { nom: 'Champagne',   robe: '#f6b62cf9', costume: '#6e8ca8' }
     ],
     /* invités qui marchent, une fois révélé (planche de 4 poses ; '' → silhouettes dessinées) */
     marche: 'photos/invites-marche.webp',
     messageAttente: 'Revenez gratter ! Le thème vestimentaire vous sera dévoilé ici très prochainement.',
-    reveler: false,
+    reveler: true,
     /* couleurs de la robe et du costume du couple (mode balade) */
     couleursBalade: { robe: '#c98d97', costume: '#6c7a99' },
     texte: [
