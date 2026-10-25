@@ -120,6 +120,35 @@ function effacerBrouillon_(id) {
   for (let k = ids.length - 1; k >= 0; k--) if (String(ids[k][0]) === String(id)) sh.deleteRow(k + 2);
 }
 
+/**
+ * À lancer UNE fois si des brouillons sont arrivés dans l’onglet « RSVP » (ancienne version du script
+ * encore déployée) : déplace vers « RSVP incomplets » les lignes de « RSVP » qui n’ont jamais été validées.
+ * Repère : une réponse validée a toujours « estimation_eur » rempli (au moins 0) ; un brouillon, jamais.
+ * Le journal d’exécution liste les noms déplacés (et signale ceux déjà rattachés à des invités dans l’appli).
+ */
+function migrerBrouillons() {
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const sh = sheet_(), n = sh.getLastRow();
+    if (n < 2) { Logger.log('Onglet RSVP vide.'); return; }
+    const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+    const rows = sh.getRange(2, 1, n - 1, head.length).getValues();
+    const col = k => head.indexOf(k);
+    const dsh = tab_(BROUILLON_SHEET, BROUILLON_COLS);
+    const dhead = dsh.getRange(1, 1, 1, dsh.getLastColumn()).getValues()[0].map(String);
+    const moved = [];
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const r = rows[i], id = String(r[0]);
+      if (!id || String(r[col('estimation_eur')]) !== '') continue;
+      const o = {}; head.forEach((k, j) => o[k] = r[j]);
+      dsh.appendRow(dhead.map(k => o[k] === undefined || o[k] === null ? '' : o[k]));
+      sh.deleteRow(i + 2);
+      moved.push(o.nom + (col('invites') >= 0 && String(o.invites || '').trim() ? '  ⚠️ déjà rattaché à des invités dans l’appli : vérifiez leur statut' : ''));
+    }
+    Logger.log(moved.length ? moved.length + ' brouillon(s) déplacé(s) :\n' + moved.join('\n') : 'Aucun brouillon trouvé dans RSVP.');
+  } finally { lock.releaseLock(); }
+}
+
 /** À lancer une fois depuis l'éditeur : crée l’onglet « RSVP incomplets » avec une ligne test (à supprimer). */
 function testBrouillon() {
   Logger.log(JSON.stringify(brouillon_({ brouillon: true, id: 'test_brouillon', nom: 'Test Claude', presence: 'Oui', adultes: 2, enfants: 0 })));
