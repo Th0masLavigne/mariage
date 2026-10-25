@@ -40,6 +40,7 @@ function doPost(e) {
   if (d && d.action === 'liste-annuler') return out(listeAnnuler_(d));
   if (d && d.action === 'covoiturage') return out(covoiturage_(d));
   if (d && d.action === 'covoiturage-retirer') return out(covoiturageRetirer_(d));
+  if (d && d.brouillon) return out(brouillon_(d));
   if (!d || !d.id || !d.nom || d.website) return out({ ok: false });
 
   const lock = LockService.getScriptLock();
@@ -59,6 +60,7 @@ function doPost(e) {
     const row = head.map((k, j) => (d[k] === undefined || d[k] === null) ? (i >= 0 ? prev[j] : '') : clean_(d[k]));
     if (i >= 0) sh.getRange(i + 2, 1, 1, row.length).setValues([row]);  // la même personne modifie sa réponse
     else sh.appendRow(row);
+    effacerBrouillon_(d.id);  // la réponse est complète : on retire la ligne « incomplète »
   } finally {
     lock.releaseLock();
   }
@@ -80,6 +82,47 @@ function doPost(e) {
     try { MailApp.sendEmail(NOTIFY, 'RSVP mariage : ' + d.nom + ' — ' + d.presence, lignes.join('\n')); } catch (x) {}
   }
   return out({ ok: true });
+}
+
+/* --- Réponses commencées mais pas validées : onglet « RSVP incomplets » ---------
+   Le faire-part envoie un brouillon (nom, présence, nombre de personnes, contact) quand
+   l’invité a cliqué « On sera là ! » ou « Non » puis quitte la page sans valider.
+   Une ligne par invité, mise à jour à chaque passage ; effacée dès qu’il valide.
+   Cet onglet n’est pas lu par l’appli d’organisation : il sert uniquement à relancer.      */
+const BROUILLON_SHEET = 'RSVP incomplets';
+const BROUILLON_COLS = ['id', 'recu_le', 'nom', 'presence', 'formule', 'adultes', 'enfants', 'moments', 'couchage', 'nb_couchage', 'email', 'telephone', 'lien_nom', 'code'];
+
+function brouillon_(d) {
+  if (!d.id || d.website) return { ok: false };
+  d.nom = String(d.nom || '').trim() || (d.lien_nom ? d.lien_nom + ' (nom non saisi)' : '(nom non saisi)');
+  d.recu_le = now_();
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    /* déjà une réponse validée (ex. l’invité rouvre pour modifier puis quitte) : on ne touche à rien */
+    const rs = sheet_(), n = rs.getLastRow();
+    if (n > 1 && rs.getRange(2, 1, n - 1, 1).getValues().some(r => String(r[0]) === String(d.id))) return { ok: true, ignore: true };
+    const sh = tab_(BROUILLON_SHEET, BROUILLON_COLS);
+    const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+    const last = sh.getLastRow();
+    const i = last > 1 ? sh.getRange(2, 1, last - 1, 1).getValues().map(r => String(r[0])).indexOf(String(d.id)) : -1;
+    const row = head.map(k => (d[k] === undefined || d[k] === null) ? '' : clean_(d[k]));
+    if (i >= 0) sh.getRange(i + 2, 1, 1, row.length).setValues([row]);
+    else sh.appendRow(row);
+  } finally { lock.releaseLock(); }
+  return { ok: true };
+}
+
+/** Retire la ligne « incomplète » d’un invité qui vient de valider (appelé sous verrou). */
+function effacerBrouillon_(id) {
+  const sh = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(BROUILLON_SHEET);
+  if (!sh || sh.getLastRow() < 2) return;
+  const ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  for (let k = ids.length - 1; k >= 0; k--) if (String(ids[k][0]) === String(id)) sh.deleteRow(k + 2);
+}
+
+/** À lancer une fois depuis l'éditeur : crée l’onglet « RSVP incomplets » avec une ligne test (à supprimer). */
+function testBrouillon() {
+  Logger.log(JSON.stringify(brouillon_({ brouillon: true, id: 'test_brouillon', nom: 'Test Claude', presence: 'Oui', adultes: 2, enfants: 0 })));
 }
 
 /** Crée l'onglet RSVP (et les colonnes manquantes) si besoin. */

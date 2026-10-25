@@ -74,6 +74,15 @@ Le bouton « iPhone, Mac, Outlook » ouvre `agenda/<code>.ics` (journées entiè
 Onglet **RSVP** : une ligne par foyer et par appareil ; si quelqu’un modifie sa réponse, la ligne est mise à jour (`modifs` compte les changements). Colonnes : présence, adultes/enfants, moments choisis, couchage (nuits, nb de personnes, chambre partagée, estimation à 60 €/pers./nuit), régime, chanson, message, e-mail.
 Idées pour plus tard : reporter `presence` vers l’onglet Invites de l’appli (statut Confirmé/Décliné) et `chanson` vers l’onglet Playlist.
 
+### Réponses incomplètes (à relancer)
+Si un invité clique « On sera là ! » ou « Non » puis quitte la page sans valider (onglet fermé, retour à WhatsApp,
+écran verrouillé), le faire-part envoie l’essentiel (noms, présence, nombre de personnes, moments, couchage,
+e-mail / téléphone déjà saisis) dans l’onglet **RSVP incomplets** du Sheet. Une ligne par invité, effacée dès qu’il
+valide. Pas d’e-mail pour ces brouillons, et l’appli d’organisation ne les compte pas : l’onglet sert à relancer.
+Sur son téléphone, l’invité retrouve sa réponse pré-remplie avec « Vous n’aviez pas terminé ».
+Mise en place : remplacer le code du projet Apps Script par `apps-script/RSVP.gs`, lancer `testBrouillon`
+(crée l’onglet avec une ligne test à supprimer), puis *Gérer les déploiements → crayon → Nouvelle version*.
+
 ## Déploiement automatique (anti-cache)
 Le fichier `.github/workflows/deploy.yml` publie le site à chaque `git push` sur `main`.
 Avant publication, il ajoute `?v=<numéro du commit>` à `config.js`, `sketches.js` et aux images de `config.js` :

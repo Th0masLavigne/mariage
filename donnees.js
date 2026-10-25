@@ -40,7 +40,7 @@
     return `<button class="dn-x" type="button" aria-label="Fermer">×</button>
       <h2>Vos données</h2><p class="dn-sub">En bref, et sans jargon.</p>
       <h3>Ce que nous recueillons</h3>
-      <p>Uniquement ce que vous saisissez : vos noms, votre réponse, le nombre de personnes, les moments choisis, le couchage, un éventuel régime ou allergie (facultatif), vos coordonnées (e-mail, téléphone, adresse postale, facultatifs), une chanson et votre message. Dans le carnet : vos annonces de covoiturage, vos participations à la liste et les photos que vous envoyez.</p>
+      <p>Uniquement ce que vous saisissez : vos noms, votre réponse, le nombre de personnes, les moments choisis, le couchage, un éventuel régime ou allergie (facultatif), vos coordonnées (e-mail, téléphone, adresse postale, facultatifs), une chanson et votre message. Si vous quittez la page avant de valider, nous recevons seulement vos noms, votre présence, le nombre de personnes, les moments, le couchage et votre contact déjà saisi, pour pouvoir vous relancer (effacés dès que vous validez). Dans le carnet : vos annonces de covoiturage, vos participations à la liste et les photos que vous envoyez.</p>
       <h3>Pourquoi</h3>
       <p>Seulement pour organiser notre mariage : repas, couchages, envoi du faire-part papier, vous joindre en cas d’imprévu, vous remercier. Rien n’est vendu, transmis à des tiers ni utilisé pour de la publicité.</p>
       <h3>Où et qui y a accès</h3>

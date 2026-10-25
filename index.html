@@ -387,6 +387,12 @@ h2 { font: italic 400 clamp(32px, 6.4vw, 46px)/1.08 var(--f-display); margin: 10
   font: 500 14px/1 var(--f-mono); letter-spacing: .16em; text-transform: uppercase;
 }
 .submit[disabled] { opacity: .6; cursor: wait; }
+.step-note { margin: 4px 0 6px; padding: 12px 16px; border-radius: 14px; background: var(--card, #fff); border: 1.5px solid var(--rose); font: 400 15px/1.45 var(--f-body); color: var(--ink); text-align: left; }
+.step-note b { color: var(--rose); }
+.submit-hint { margin: 8px 0 0; text-align: center; font: italic 400 14px/1.4 var(--f-body); color: var(--muted); }
+.go-confirm { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 50; border: 0; cursor: pointer; border-radius: 99px; padding: 13px 22px; background: var(--rose); color: #fff; font: 500 12.5px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 8px 22px rgba(0,0,0,.22); animation: fadeup .35s ease both; }
+.go-confirm[hidden] { display: none; }
+body:has(.demo-bar) .go-confirm { bottom: calc(max(14px, env(safe-area-inset-bottom, 0px)) + 66px); }
 .err { color: var(--rose); margin-top: 12px; font-weight: 700; }
 .done { text-align: center; padding: 20px 0 6px; }
 .done .big { font: italic 500 clamp(36px, 7vw, 52px)/1.05 var(--f-display); margin: 6px 0 10px; }
@@ -1259,16 +1265,19 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const box = $('#rsvpBox');
     const prev = store.get('rsvp.' + state.code);
     if (prev && !box.dataset.edit) return renderDone(F, prev, true);
-    const R = prev ? Object.assign({}, prev) : {
+    /* réponse commencée mais pas envoyée lors d’une visite précédente */
+    const draft = prev ? null : store.get('rsvpDraft.' + state.code);
+    const R = prev ? Object.assign({}, prev) : Object.assign({
       presence: '', nom: state.nom, adultes: 1, enfants: 0, moments: F.moments.slice(), regime: '', couchage: false,
       nuits: F.nuits.map(n => n.id), nb_couchage: 1, partage: false, chanson: '', message: '', email: '', telephone: '', adresse: '', cp: '', ville: '', pays: 'France'
-    };
+    }, draft || {});
     let tries = 0;
 
     box.innerHTML = `
       <div class="eyebrow">Répondez s’il vous plaît</div>
       <h2>Serez-vous des nôtres ?</h2>
       ${C.repondreAvant ? `<p class="deadline">Réponse souhaitée avant le ${esc(C.repondreAvant)}</p>` : ''}
+      ${draft && draft.presence ? '<p class="step-note"><b>Vous n’aviez pas terminé.</b> Votre réponse n’a pas encore été validée : vérifiez-la, puis appuyez sur le bouton en bas du formulaire.</p>' : ''}
       <form id="f" novalidate>
         <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <label class="fld"><span>Vos prénoms et noms</span><input id="nom" type="text" required placeholder="ex. Claire & Paul Martin" value="${esc(R.nom)}" autocomplete="name"></label>
@@ -1279,9 +1288,21 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         </div>
         <div id="details"></div>
         <div class="err" id="err" role="alert"></div>
-      </form>`;
+      </form>
+      <button type="button" class="go-confirm" id="goConfirm" hidden>↓ Dernière étape : envoyer</button>`;
 
-    const yes = $('#yes'), no = $('#no'), zone = $('#zone'), taunt = $('#taunt');
+    const yes = $('#yes'), no = $('#no'), zone = $('#zone'), taunt = $('#taunt'), go = $('#goConfirm');
+    /* Rappel flottant : tant que le bouton d’envoi n’est pas visible, on rappelle qu’il reste une étape. */
+    let boxVisible = false, submitVisible = false, pending = false;
+    const syncGo = () => { go.hidden = !(pending && boxVisible && !submitVisible); };
+    const io = window.IntersectionObserver ? new IntersectionObserver(es => {
+      es.forEach(en => { if (en.target === box) boxVisible = en.isIntersecting; else submitVisible = en.isIntersecting; });
+      syncGo();
+    }) : null;
+    if (io) io.observe(box);
+    go.addEventListener('click', () => { const b = box.querySelector('.submit'); if (b) { b.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => b.focus({ preventScroll: true }), 500); } });
+    window.onbeforeunload = () => (pending && box.isConnected && !box.querySelector('.done')) ? true : undefined;
+    let sending = false, lastDraft = '';
 
     function flee() {
       const z = zone.getBoundingClientRect(), nb = no.getBoundingClientRect(), yb = yes.getBoundingClientRect();
@@ -1314,8 +1335,12 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       R.presence = p;
       yes.classList.toggle('sel', p === 'Oui'); no.classList.toggle('sel', p === 'Non');
       if (p === 'Non') { taunt.textContent = 'On vous embrassera quand même.'; }
-      else if (!silent) taunt.textContent = 'Youpi !';
+      else if (!silent) taunt.textContent = 'Youpi ! Plus qu’une étape ↓';
+      pending = true;
       renderDetails();
+      const sb = box.querySelector('.submit');
+      if (io && sb) { io.disconnect(); io.observe(box); io.observe(sb); }
+      if (!silent) setTimeout(() => { const n = box.querySelector('.step-note'); if (n) n.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 350);
     }
 
     function stepper(id, val, min) {
@@ -1326,13 +1351,15 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       const d = $('#details');
       if (R.presence === 'Non') {
         d.innerHTML = `<div class="more">
+          <p class="step-note"><b>Ce n’est pas encore envoyé.</b> Laissez-nous un mot si vous le souhaitez, puis appuyez sur « Envoyer ma réponse » en bas.</p>
           <label class="fld"><span>Un petit mot pour nous ?</span><textarea id="message" placeholder="Nous penserons fort à vous…">${esc(R.message)}</textarea></label>
           <label class="fld"><span>E-mail</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
           ${coordsHtml(R)}
-          <button class="submit" type="submit">Envoyer ma réponse</button>${window.Donnees ? Donnees.ligne() : ''}</div>`;
+          <button class="submit" type="submit">Envoyer ma réponse</button><p class="submit-hint">Votre réponse n’est validée qu’après ce clic.</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
       } else {
         const multi = F.moments.length > 2;
         d.innerHTML = `<div class="more">
+          <p class="step-note"><b>Presque fini !</b> Complétez les détails ci-dessous, puis appuyez sur « Confirmer notre venue » tout en bas : votre réponse n’est validée qu’à ce moment-là.</p>
           <div class="row2">
             <div class="fld"><span>Adultes</span>${stepper('adultes', R.adultes, 1)}</div>
             <div class="fld"><span>Enfants</span>${stepper('enfants', R.enfants, 0)}</div>
@@ -1356,7 +1383,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
           <label class="fld"><span>Un mot pour les mariés</span><textarea id="message" placeholder="Conseils, blagues, déclarations…">${esc(R.message)}</textarea></label>
           <label class="fld"><span>E-mail (pour recevoir les infos à venir)</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
           ${coordsHtml(R)}
-          <button class="submit" type="submit">Confirmer notre venue</button>${window.Donnees ? Donnees.ligne() : ''}</div>`;
+          <button class="submit" type="submit">Confirmer notre venue</button><p class="submit-hint">Votre réponse n’est validée qu’après ce clic.</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
         d.querySelectorAll('.stepper').forEach(st => st.addEventListener('click', e => {
           const btn = e.target.closest('button'); if (!btn) return;
           const id = st.dataset.st, out = $('#' + id);
@@ -1398,24 +1425,18 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       } finally { if (t) clearTimeout(t); }
     }
 
-    $('#f').addEventListener('submit', async e => {
-      e.preventDefault();
-      const err = $('#err'); err.textContent = '';
-      R.nom = $('#nom').value.trim();
+    function collect() {
+      const n = $('#nom'); if (n) R.nom = n.value.trim();
       ['regime', 'chanson', 'message', 'email', 'telephone', 'adresse', 'cp', 'ville', 'pays'].forEach(k => { const el = $('#' + k); if (el) R[k] = el.value.trim(); });
       const p = $('#partage'); if (p) R.partage = p.checked;
       const rok = $('#regimeOk'); R.regimeOk = !!(rok && rok.checked);
       readChecks();
-      if (!R.nom) { err.textContent = 'Indiquez vos prénoms et noms pour qu’on sache qui répond.'; $('#nom').focus(); return; }
-      if (!R.presence) { err.textContent = 'Choisissez « On sera là ! » ou « Non ».'; return; }
-      if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = 'Cochez au moins un moment.'; return; }
-      if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = 'Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.'; $('#regimeOk').focus(); return; }
-      const robot = !!$('[name=website]').value; /* champ piège : l’autoremplissage Android peut le remplir, on envoie quand même en signalant */
-      const btn = e.target.querySelector('.submit'); btn.disabled = true; btn.textContent = 'Envoi…';
+    }
+    function buildPayload() {
       const id = store.get('id') || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
       store.set('id', id);
       const oui = R.presence === 'Oui';
-      const payload = {
+      return {
         id: id + '_' + state.code, formule: F.libelle || F.nom, code: state.code, lien_nom: state.nom,
         nom: R.nom, presence: R.presence,
         adultes: oui ? R.adultes : 0, enfants: oui ? R.enfants : 0,
@@ -1425,23 +1446,67 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         nb_couchage: oui && R.couchage ? R.nb_couchage : 0,
         partage: oui && R.couchage ? (R.partage ? 'Oui' : 'Non') : '',
         estimation_eur: oui && R.couchage ? R.nuits.length * R.nb_couchage * C.prixNuit : 0,
-        regime: oui ? R.regime : '', consentement_regime: oui && R.regime ? new Date().toISOString().slice(0, 10) : '', chanson: oui ? R.chanson : '', message: R.message, email: R.email,
+        regime: oui && R.regimeOk ? R.regime : '', consentement_regime: oui && R.regime && R.regimeOk ? new Date().toISOString().slice(0, 10) : '', chanson: oui ? R.chanson : '', message: R.message, email: R.email,
         telephone: R.telephone, adresse: R.adresse, cp: R.cp, ville: R.ville, pays: R.pays
       };
+    }
+
+    /* Brouillon : si l’invité a choisi Oui / Non puis quitte la page (onglet fermé, retour à WhatsApp,
+       écran verrouillé…) sans valider, on garde sa réponse sur l’appareil et on transmet l’essentiel
+       (nom, présence, nombre de personnes, contact) à l’onglet « RSVP incomplets » pour pouvoir le relancer.
+       sendBeacon part même quand la page se ferme, y compris sur téléphone. */
+    function saveDraft(send) {
+      if (!pending || sending || prev || !box.isConnected || !$('#f')) return;
+      collect();
+      store.set('rsvpDraft.' + state.code, R);
+      if (!send || DEMO || !C.rsvpUrl) return;
+      const P = buildPayload();
+      const d = { brouillon: true, id: P.id, formule: P.formule, code: P.code, lien_nom: P.lien_nom, nom: P.nom, presence: P.presence,
+        adultes: P.adultes, enfants: P.enfants, moments: P.moments, couchage: P.couchage, nb_couchage: P.nb_couchage, email: P.email, telephone: P.telephone };
+      const body = JSON.stringify(d);
+      if (body === lastDraft) return;
+      lastDraft = body;
+      try {
+        if (!(navigator.sendBeacon && navigator.sendBeacon(C.rsvpUrl, new Blob([body], { type: 'text/plain;charset=utf-8' }))))
+          fetch(C.rsvpUrl, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body }).catch(() => {});
+      } catch (x) {}
+    }
+    window.__rsvpDraft = saveDraft;
+    $('#f').addEventListener('change', () => saveDraft(false));
+    $('#f').addEventListener('input', () => saveDraft(false));
+
+    $('#f').addEventListener('submit', async e => {
+      e.preventDefault();
+      const err = $('#err'); err.textContent = '';
+      collect();
+      if (!R.nom) { err.textContent = 'Indiquez vos prénoms et noms pour qu’on sache qui répond.'; $('#nom').focus(); return; }
+      if (!R.presence) { err.textContent = 'Choisissez « On sera là ! » ou « Non ».'; return; }
+      if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = 'Cochez au moins un moment.'; return; }
+      if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = 'Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.'; $('#regimeOk').focus(); return; }
+      const robot = !!$('[name=website]').value; /* champ piège : l’autoremplissage Android peut le remplir, on envoie quand même en signalant */
+      const btn = e.target.querySelector('.submit'); btn.disabled = true; btn.textContent = 'Envoi…';
+      sending = true;
+      const payload = buildPayload();
       if (robot) payload.robot = 'oui';
       try {
         if (DEMO) await new Promise(r => setTimeout(r, 700));
         else await envoyer(C.rsvpUrl, JSON.stringify(payload));
+        pending = false; go.hidden = true; if (io) io.disconnect(); window.onbeforeunload = null;
+        store.set('rsvpDraft.' + state.code, null); window.__rsvpDraft = null;
         const saved = Object.assign({}, R, { date: new Date().toISOString() });
         store.set('rsvp.' + state.code, saved);
         delete box.dataset.edit;
         renderDone(F, saved);
       } catch (x) {
-        btn.disabled = false; btn.textContent = 'Réessayer';
+        sending = false; btn.disabled = false; btn.textContent = 'Réessayer';
         err.textContent = 'L’envoi n’a pas abouti. Vérifiez votre connexion puis réessayez.';
       }
     });
   }
+
+  /* une seule fois : quand la page passe en arrière-plan ou se ferme, on envoie le brouillon en cours */
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && window.__rsvpDraft) window.__rsvpDraft(true); });
+  window.addEventListener('pagehide', () => { if (window.__rsvpDraft) window.__rsvpDraft(true); });
 
   function renderDone(F, R, already) {
     const box = $('#rsvpBox'), oui = R.presence === 'Oui';
