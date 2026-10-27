@@ -164,12 +164,12 @@ window.CONFIG = {
      accueil : facultatif, heure d’arrivée des invités (affichée « accueil dès … » à côté de l’heure)
      dessin : rings | moon | glasses | plate | croissant | bells          */
   moments: {
-    mairie:  { jour: 'Vendredi 6 août',  heure: '', titre: 'Mariage civil',             lieu: 'mairie',  dessin: 'rings',     texte: '' },
-    veillee: { jour: 'Vendredi 6 août',  heure: '16:00', titre: 'Soirée en petit comité',    lieu: 'chateau', dessin: 'moon',      texte: '' },
+    mairie:  { jour: 'Vendredi 6 août',  heure: '14:45', titre: 'Mariage civil',             lieu: 'mairie',  dessin: 'rings',     texte: '' },
+    veillee: { jour: 'Vendredi 6 août',  heure: '18:00', titre: 'Soirée en petit comité',    lieu: 'chateau', dessin: 'moon',      texte: '' },
     eglise:  { jour: 'Samedi 7 août',    heure: '14:00', titre: 'Cérémonie religieuse', lieu: 'eglise',  dessin: 'bells',     texte: '' },
-    vin:     { jour: 'Samedi 7 août',    heure: '17:00', titre: 'Vin d’honneur',             lieu: 'chateau', dessin: 'glasses',   texte: '' },
+    vin:     { jour: 'Samedi 7 août',    heure: '16:00', titre: 'Vin d’honneur',             lieu: 'chateau', dessin: 'glasses',   texte: '' },
     diner:   { jour: 'Samedi 7 août',    heure: '20:30', titre: 'Dîner & soirée dansante',   lieu: 'chateau', dessin: 'plate',     texte: '' },
-    brunch:  { jour: 'Dimanche 8 août',  heure: '11:00', titre: 'Brunch',                    lieu: 'chateau', dessin: 'croissant', texte: '' }
+    brunch:  { jour: 'Dimanche 8 août',  heure: '10:30', titre: 'Brunch',                    lieu: 'chateau', dessin: 'croissant', texte: '' }
   },
 
   /* --- Les 3 faire-parts ----------------------------------------------
