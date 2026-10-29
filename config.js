@@ -498,10 +498,10 @@ window.CONFIG = {
         { id: 'cuisine',   type: 'participation', titre: 'Une batterie de cuisine en inox', texte: 'Pour les dîners entre amis.', objectif: 600, image: 'photos/liste/batterie-cuisine.webp' },
         { id: 'diner',     type: 'participation', titre: 'Un dîner étoilé pendant le voyage', texte: 'Une soirée à deux, pour trinquer à vous.', objectif: 300 },
         { id: 'vaisselle', type: 'participation', titre: 'Un service de vaisselle', texte: 'Assiettes, verres et couverts pour recevoir à douze.', objectif: 500 },
-        { id: 'cafe',      type: 'cadeau',        titre: 'Une machine à café delonghi', texte: 'Pour les matins difficiles.', prix: 500, lien: '' },
+        { id: 'cafe',      type: 'cadeau',        titre: 'Une machine à café delonghi', texte: 'Pour les matins difficiles.', objectif: 500, lien: '' },
         { id: 'velos',     type: 'participation', titre: 'Des vélos pour les balades du dimanche', texte: 'Avec un panier, évidemment.', objectif: 3000 },
         { id: 'cave',      type: 'participation', titre: 'De quoi démarrer notre cave', texte: 'Quelques belles bouteilles à ouvrir pour nos anniversaires de mariage.', objectif: 600 },
-        { id: 'cours',     type: 'cadeau',        titre: 'Un cours de cuisine à deux', texte: 'Pour apprendre à se servir de la batterie de cuisine.', prix: 300, lien: '' },
+        { id: 'cours',     type: 'cadeau',        titre: 'Un cours de cuisine à deux', texte: 'Pour apprendre à se servir de la batterie de cuisine.', objectif: 300, lien: '' },
         { id: 'libre',     type: 'participation', titre: 'Participation libre', texte: 'Pour la suite de nos aventures.' },
       ],
       /* Comment nous faire parvenir sa participation : affiché dans l’encadré sous la liste et juste
