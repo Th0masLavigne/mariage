@@ -1556,6 +1556,13 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       <button class="linkbtn" id="edit" type="button">Modifier ma réponse</button></div>`;
     $('#edit').addEventListener('click', () => { box.dataset.edit = '1'; renderRSVP(F); });
     if (oui && !already) confetti();
+    /* juste après l'envoi : le formulaire (long) est remplacé par ce message (court), la page
+       raccourcit et le navigateur se retrouve tout en bas. On ramène le message au milieu de l'écran. */
+    if (!already) requestAnimationFrame(() => {
+      const d = box.querySelector('.done'); if (!d) return;
+      const r = d.getBoundingClientRect();
+      scrollTo({ top: Math.max(0, scrollY + r.top - Math.max(16, (innerHeight - r.height) / 2)), behavior: 'smooth' });
+    });
   }
 
   /* ---------------- confettis ---------------- */
