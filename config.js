@@ -476,34 +476,46 @@ window.CONFIG = {
        lien : facultatif, page de l’article (bouton « Voir l’article »).
        Les participations arrivent dans l’onglet « Liste » du Sheet et dans l’appli (écran Liste).
        Les invités ne voient que l’avancement, jamais les noms ni les montants des autres.
-       Liste vide → carte « bientôt en ligne ».                                                     */
+       Liste vide → carte « bientôt en ligne ».
+
+       OUVERTURE AUX INVITÉS : tant que « ouverture » vaut false, les invités voient seulement
+       « bientôt en ligne » (carnet) et aucun bouton « Voir la liste » (faire-part), même si les
+       cadeaux ci-dessous sont remplis. true → ouverte ; '2027-01-15' → s’ouvre seule ce jour-là.
+       Pour préparer et vérifier sans que les invités voient rien : liens « Liste (préparation) »
+       dans liens.html, ou site.html?f=noce-4m&tout&demo#liste (aperçu, rien n’est envoyé).     */
     liste: {
       actif: true,
+      ouverture: false,
       titre: 'Liste de mariage',
       accroche: 'Votre présence est notre plus beau cadeau.',
       accrocheTu: 'Ta présence est notre plus beau cadeau.',
       texte: 'Si vous souhaitez malgré tout nous gâter, voici quelques idées. Vous pouvez participer à hauteur de ce que vous voulez.',
       texteTu: 'Si tu souhaites malgré tout nous gâter, voici quelques idées. Tu peux participer à hauteur de ce que tu veux.',
+      /* Idées types (à trier : supprimez, modifiez, réordonnez librement tant que la liste est fermée).
+         image : déposez la photo dans photos/liste/ (format paysage, ≈ 900 px de large). */
       cadeaux: [
-        // { id: 'voyage', type: 'participation', titre: 'Notre voyage de noces', texte: 'Deux semaines en Asie.', objectif: 3000, image: '' },
-        // { id: 'cuisine', type: 'participation', titre: 'Une batterie de cuisine en inox', texte: 'Pour les dîners entre amis.', objectif: 600 },
-        // { id: 'cocotte', type: 'cadeau', titre: 'Une cocotte en fonte', texte: 'Ronde, 24 cm, bleu nuit.', prix: 220, lien: 'https://…' },
-        // { id: 'libre', type: 'participation', titre: 'Participation libre', texte: 'Pour la suite de nos aventures.' },
+        { id: 'voyage',    type: 'participation', titre: 'Notre voyage de noces', texte: 'Deux semaines en Asie, sur les traces de nos premières escales.', objectif: 5000 },
+        { id: 'cuisine',   type: 'participation', titre: 'Une batterie de cuisine en inox', texte: 'Pour les dîners entre amis.', objectif: 600, image: 'photos/liste/batterie-cuisine.webp' },
+        { id: 'diner',     type: 'participation', titre: 'Un dîner étoilé pendant le voyage', texte: 'Une soirée à deux, pour trinquer à vous.', objectif: 300 },
+        { id: 'vaisselle', type: 'participation', titre: 'Un service de vaisselle', texte: 'Assiettes, verres et couverts pour recevoir à douze.', objectif: 500 },
+        { id: 'cafe',      type: 'cadeau',        titre: 'Une machine à café delonghi', texte: 'Pour les matins difficiles.', prix: 500, lien: '' },
+        { id: 'velos',     type: 'participation', titre: 'Des vélos pour les balades du dimanche', texte: 'Avec un panier, évidemment.', objectif: 3000 },
+        { id: 'cave',      type: 'participation', titre: 'De quoi démarrer notre cave', texte: 'Quelques belles bouteilles à ouvrir pour nos anniversaires de mariage.', objectif: 600 },
+        { id: 'cours',     type: 'cadeau',        titre: 'Un cours de cuisine à deux', texte: 'Pour apprendre à se servir de la batterie de cuisine.', prix: 300, lien: '' },
+        { id: 'libre',     type: 'participation', titre: 'Participation libre', texte: 'Pour la suite de nos aventures.' },
       ],
-      /* Comment faire parvenir sa participation (affiché sous la liste et après chaque participation).
-         Laissez vide ce que vous n’utilisez pas.                                                      */
+      /* Comment nous faire parvenir sa participation : affiché dans l’encadré sous la liste et juste
+         après qu’un invité a choisi un cadeau.
+         1. l’urne : ci-dessous.
+         2. virement et 3. Wero : PAS ICI (ce fichier est public sur GitHub). Titulaire, IBAN, BIC, numéro
+            Wero se renseignent dans le projet Apps Script « RSVP mariage » → ⚙ Paramètres du projet →
+            Propriétés du script : TITULAIRE, IBAN, BIC, WERO, WERO_NOM. Le carnet les charge à l’affichage.
+            Une propriété vide → ce moyen n’apparaît pas.                                                 */
       paiement: {
-        texte: 'Le plus simple : notre cagnotte en ligne.',
-        /* lien de la cagnotte en ligne (bouton « Participer à la cagnotte ») ; '' tant qu’elle n’est pas créée */
-        // https://www.onparticipe.fr/cagnottes/c/mariage
-        cagnotte: '',
-        /* urne le jour J (affichée sous la liste et dans la fenêtre « Participer ») ; '' pour la masquer */
-        urne: 'Une urne sera aussi à votre disposition le jour J, pour participer de façon anonyme.',
-        urneTu: 'Une urne sera aussi à ta disposition le jour J, pour participer de façon anonyme.',
-        titulaire: '',
-        iban: '',
-        lydia: '',     // pas utilisé
-        paypal: ''     // pas utilisé
+        texte: 'Au choix, comme vous préférez :',
+        texteTu: 'Au choix, comme tu préfères :',
+        urne: 'Une urne vous attendra le jour J.',
+        urneTu: 'Une urne t’attendra le jour J.'
       }
     },
 

@@ -68,6 +68,10 @@
       rows.push([`Aperçu carnet « ${nm} », toutes rubriques (sans envoi)`, base + 'site.html?f=' + encodeURIComponent(k) + '&tout&demo']);
     });
     rows.push(['Carnet sans code (partie commune)', base + 'site.html']);
+    /* liste de mariage en préparation (invisible des invités tant que site.liste.ouverture vaut false) */
+    rows.push(['Liste (préparation) : aperçu, rien n’est envoyé', base + 'site.html?f=noce-4m&tout&demo#liste']);
+    rows.push(['Liste (préparation) : test réel → onglet Liste du Sheet + e-mail (annulez ensuite)', base + 'site.html?f=noce-4m&tout#liste']);
+    rows.push(['Liste (préparation) : faire-part avec le lien vers la liste, sans envoi', base + '?f=noce-4m&tout&demo']);
     $('#utiles').innerHTML = rows.map(([t, u]) => `<tr><td>${esc(t)}</td><td class="u"><a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a></td><td><button data-u="${esc(u)}">Copier</button></td></tr>`).join('');
   }
   document.addEventListener('input', draw);

@@ -126,9 +126,21 @@ Dans `config.js` → `site.liste` : une carte par idée de cadeau (exemples en c
 - `type: 'participation'` : barre d’avancement vers `objectif` (en €, facultatif) et bouton « Participer » (montant libre,
   suggestions 30 / 50 / 100 / 150 €).
 - `type: 'cadeau'` : un objet offert par une seule personne (« Je m’en occupe »), ensuite « Déjà offert » pour tous.
-- `image` : facultative (déposez-la dans `photos/liste/`) ; `lien` : page de l’article.
-- `paiement` : texte, IBAN (bouton « Copier »), liens Lydia / PayPal, affichés sous la liste et après chaque participation.
-  Le site n’encaisse rien : l’invité vous fait un virement ou vous apporte le cadeau.
+- `image` : facultative (déposez-la dans `photos/liste/`, ex. `batterie-cuisine.webp`) ; `lien` : page de l’article.
+- `paiement` : trois moyens, affichés juste après qu’un invité a choisi un cadeau, et rappelés dans l’encadré
+  « Pour participer » sous la liste : **urne** le jour J (`paiement.urne` dans config.js), **virement** (bouton
+  « Copier l’IBAN », libellé conseillé) et **Wero**. Pas de cagnotte en ligne. Le site n’encaisse rien.
+  **IBAN et Wero ne sont jamais dans le dépôt** : projet Apps Script « RSVP mariage » → ⚙ *Paramètres du projet* →
+  *Propriétés du script* : `TITULAIRE`, `IBAN`, `BIC` (facultatif), `WERO` (numéro ou e-mail), `WERO_NOM` (facultatif).
+  Le carnet les demande au script (`?action=paiement`) au moment de les afficher. Propriété vide → moyen masqué.
+  Mise en place : remplacer le code par `apps-script/RSVP.gs`, *Gérer les déploiements → crayon → Nouvelle version*
+  (une fois), puis ajouter les propriétés ; `testPaiement` les affiche dans le journal. Les modifier ensuite ne demande
+  aucun redéploiement.
+- **Préparer sans que les invités voient rien** : `ouverture: false` → carnet « bientôt en ligne », faire-part avec le
+  tampon « Bientôt », même si `cadeaux` est rempli. Pour vous : `site.html?f=noce-4m&tout&demo#liste` (aperçu, bandeau
+  « aperçu de préparation », moyens vides marqués « à compléter »), ou sans `&demo` pour un vrai test (Sheet + e-mail :
+  annulez la ligne ensuite avec « l’annuler » ou `annulé` dans **statut**). Aussi dans `liens.html` et `demo.html` (étapes Liste).
+  Le jour venu : `ouverture: true` (ou une date `'2027-01-15'`).
 - Les invités ne voient que l’avancement (totaux), jamais les noms ni les montants des autres. Ils peuvent annuler depuis
   leur téléphone. Vous recevez un e-mail à chaque participation.
 - Suivi : onglet **Liste** du Sheet, et écran « Liste de mariage » de l’appli (pastille pour chaque nouveauté,

@@ -321,6 +321,16 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
 .urne::before { content: '✦ '; color: var(--gold); font-style: normal; }
 .iban { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; margin: 10px 0; font-size: 15px; }
 .iban b { font: 500 15px/1.4 var(--f-display); letter-spacing: .06em; user-select: all; word-break: break-all; }
+.payx { display: grid; gap: 10px; margin: 14px 0 6px; text-align: left; }
+.payo { position: relative; padding: 12px 14px 12px 46px; border: 1px solid rgba(197,160,89,.45); border-radius: 10px; background: rgba(255,255,255,.55); }
+.payo .n { position: absolute; left: 12px; top: 12px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: italic 400 15px/1 var(--f-display); color: var(--gold); border: 1px solid rgba(197,160,89,.7); }
+.payo h4 { margin: 0 0 3px; font: italic 400 18px/1.25 var(--f-display); color: var(--blue); }
+.payo p { margin: 0; font-size: 15px; color: #55516a; line-height: 1.45; }
+.payo .val { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-top: 4px; }
+.payo .val b { font: 500 15px/1.4 var(--f-display); letter-spacing: .03em; color: var(--ink); user-select: all; word-break: normal; }
+.payo .val > span { font-size: 12.5px; letter-spacing: .1em; color: var(--muted); }
+.payo small { display: block; color: var(--muted); font-size: 13.5px; margin-top: 3px; }
+.apercu-liste { max-width: 560px; margin: 0 auto 16px; padding: 10px 14px; border: 1px dashed var(--rose); border-radius: 10px; text-align: center; font-size: 14.5px; color: var(--rose); background: rgba(255,255,255,.6); }
 .copy { background: none; border: 0; cursor: pointer; color: var(--ink); font: italic 400 14.5px/1.3 var(--f-display); text-decoration: underline; text-decoration-color: #C5A059; text-underline-offset: 4px; }
 /* panneau « Participer » */
 .lp-bg { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px)); background: rgba(30,36,60,.38); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
@@ -545,10 +555,16 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     ${Q.length ? `<div class="faq">${Q.map(x => `<details><summary>${esc(x.q)}</summary><p>${esc(x.r)}</p></details>`).join('')}</div>` : soon()}` }); }
 
   /* --- Liste de mariage : cadeaux et participations (config.js → site.liste) --- */
-  const B = (C.bientot || [])[0] || {}, LI = SI.liste || {}, CAD = (LI.cadeaux || []).filter(x => x && x.id && x.titre);
+  /* titulaire, IBAN, BIC, Wero : chargés depuis Apps Script (?action=paiement), jamais écrits dans config.js */
+  let PAY = {}, PAY_ETAT = 'chargement';
+  const B = (C.bientot || [])[0] || {}, LI = SI.liste || {}, CAD_ = (LI.cadeaux || []).filter(x => x && x.id && x.titre);
+  /* ouverture : false → les invités ne voient que « bientôt en ligne » ; &tout → aperçu pour vous (préparation) */
+  const LISTE_INVITES = (a => a === undefined || a === true ? true : /^\d{4}-\d{2}-\d{2}$/.test(String(a)) ? Date.now() >= new Date(a + 'T00:00:00+02:00') : false)(LI.ouverture);
+  const CAD = LISTE_INVITES || TOUT ? CAD_ : [];
   if (on(SI.liste)) sections.push({ id: 'liste', menu: 'Liste', html: `
     ${head('Cadeaux', LI.titre || B.titre || 'Liste de mariage')}
     ${CAD.length ? `
+    ${LISTE_INVITES ? '' : `<p class="apercu-liste">Aperçu de préparation : les invités ne voient pas encore cette liste (<code>ouverture: false</code> dans config.js).${params.has('demo') ? ' Rien n’est envoyé.' : ' <b>Mode réel</b> : les participations arrivent dans le Sheet, pensez à les annuler.'}</p>`}
     <p class="accroche" style="max-width:34ch;margin:0 auto 12px">${esc(LI.accroche || B.accroche || '')}</p>
     ${LI.texte ? `<p class="lead">${esc(LI.texte)}</p>` : ''}
     <div class="grid aligned cadeaux" id="cadeaux">${CAD.map((g, i) => `
@@ -565,15 +581,26 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       ${B.lien && B.lien !== 'carnet' ? `<a class="btn" href="${esc(B.lien)}" target="_blank" rel="noopener">Découvrir la liste</a>` : `<p style="margin:16px 0 0">${soon('bientôt en ligne')}</p>`}
     </div>`}` });
   /* bloc « comment nous faire parvenir votre participation » */
-  function payHtml(inPanel) {
-    const P = LI.paiement || {};
-    if (!P.texte && !P.iban && !P.lydia && !P.paypal && !P.urne && !P.cagnotte) return '';
-    return `<div class="${inPanel ? 'pay-in' : 'paper alt pay carte'}"${inPanel ? '' : ' style="--tilt:-.3deg"'}>${inPanel ? '' : '<span class="in-border"></span><h3>Pour participer</h3>'}
+  function payHtml(inPanel, g) {
+    const P = Object.assign({}, LI.paiement || {}, PAY), prep = !LISTE_INVITES;   /* en préparation : on montre aussi les moyens pas encore remplis */
+    const copy = (v, txt, ok) => `<button class="copy" type="button" data-copy="${esc(v)}" data-ok="${esc(ok)}">${txt}</button>`;
+    const vide = t => PAY_ETAT === 'chargement' ? '<small>Chargement…</small>'
+      : PAY_ETAT === 'erreur' ? `<small>Coordonnées momentanément indisponibles : ${T('rechargez', 'recharge')} la page dans un instant.</small>`
+      : prep ? `<small>${soon('à compléter')} ${t}</small>` : '';
+    const montrer = k => P[k] || prep || PAY_ETAT !== 'ok';
+    const opts = [];
+    if (P.urne || prep) opts.push(['Le jour J, dans l’urne', P.urne ? `<p>${esc(P.urne)}</p>` : `<small>${soon('à compléter')} paiement.urne dans config.js</small>`]);
+    if (montrer('iban')) opts.push(['Par virement', P.iban ? `${P.titulaire ? `<p>${esc(P.titulaire)}</p>` : ''}
+        <div class="val"><span>IBAN</span><b>${esc(P.iban)}</b>${copy(String(P.iban).replace(/\s+/g, ''), 'Copier l’IBAN', 'IBAN copié')}</div>
+        ${P.bic ? `<div class="val"><span>BIC</span><b>${esc(P.bic)}</b></div>` : ''}
+        ${inPanel && g ? `<small>Libellé conseillé : « Mariage – ${esc(g.titre)} »</small>` : ''}` : vide('propriétés TITULAIRE, IBAN (et BIC) du script Apps Script')]);
+    if (montrer('wero')) opts.push(['Par Wero', P.wero ? `<p>Depuis l’appli de ${T('votre', 'ta')} banque ou l’appli Wero, rubrique « Envoyer ».</p>
+        <div class="val"><b>${esc(P.wero)}</b>${copy(String(P.wero).replace(/\s+/g, ''), /@/.test(P.wero) ? 'Copier l’adresse' : 'Copier le numéro', 'Copié')}</div>
+        ${P.weroNom ? `<small>au nom de ${esc(P.weroNom)}</small>` : ''}` : vide('propriétés WERO (et WERO_NOM) du script Apps Script')]);
+    if (!opts.length) return '';
+    return `<div class="${inPanel ? 'pay-in' : 'paper alt pay carte'}"${inPanel ? (g ? ` data-g="${esc(g.id)}"` : '') : ' style="--tilt:-.3deg"'}>${inPanel ? '<h3>Pour nous la faire parvenir</h3>' : '<span class="in-border"></span><h3>Pour participer</h3>'}
       ${P.texte ? `<p>${esc(P.texte)}</p>` : ''}
-      ${P.cagnotte ? `<div class="links" style="justify-content:center"><a class="btn" href="${esc(P.cagnotte)}" target="_blank" rel="noopener">Participer à la cagnotte ↗</a></div>` : `<p class="note" style="text-align:center;margin:10px 0">${soon('bientôt')} Le bouton vers notre cagnotte apparaîtra ici dès sa création.</p>`}
-      ${P.iban ? `<div class="iban"><span>${P.titulaire ? esc(P.titulaire) + '<br>' : ''}<b>${esc(P.iban)}</b></span><button class="copy" type="button" data-copy="${esc(String(P.iban).replace(/\s+/g, ''))}">Copier l’IBAN</button></div>` : ''}
-      ${P.lydia || P.paypal ? `<div class="links">${P.lydia ? ext(P.lydia, 'Lydia') : ''}${P.paypal ? ext(P.paypal, 'PayPal') : ''}</div>` : ''}
-      ${P.urne ? `<p class="urne">${esc(P.urne)}</p>` : ''}
+      <div class="payx">${opts.map(([t, h], i) => `<div class="payo"><span class="n">${i + 1}</span><h4>${t}</h4>${h}</div>`).join('')}</div>
     </div>`;
   }
 
@@ -753,6 +780,21 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     });
   }
 
+  /* ---------- liste de mariage : coordonnées de paiement (Apps Script, hors GitHub) ---------- */
+  if ($('#cadeaux')) (async function () {
+    const URL_ = (SI.photos && SI.photos.url) || BACKEND;
+    try {
+      if (!URL_) throw 0;
+      const r = await (await fetch(URL_ + '?action=paiement')).json();
+      if (!r || !r.ok || !r.paiement) throw 0;
+      PAY = r.paiement; PAY_ETAT = 'ok';
+    } catch (e) { PAY_ETAT = URL_ ? 'erreur' : 'ok'; }
+    document.querySelectorAll('.pay.carte, .pay-in').forEach(el => {
+      const g = el.dataset.g ? CAD.find(x => x.id === el.dataset.g) : null, html = payHtml(el.classList.contains('pay-in'), g);
+      if (html) el.outerHTML = html; else el.remove();
+    });
+  })();
+
   /* ---------- liste de mariage : avancement, participations, annulation ---------- */
   if ($('#cadeaux')) (function () {
     const URL_ = (SI.photos && SI.photos.url) || BACKEND, DEMO_ = !URL_ || params.has('demo');
@@ -796,7 +838,6 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
           <p class="note" style="margin:-6px 0 0">${T('Laissez', 'Laisse')} vide pour participer anonymement : nous ne saurons pas de qui elle vient.</p>
           ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="Le montant de ${T('votre', 'ton')} choix"></label>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est ${T('vous', 'toi')}.</p>`}
           <label>Un petit mot (facultatif)<input type="text" id="lpMot" name="message" maxlength="200"></label>
-          ${part && (LI.paiement || {}).urne ? `<p class="urne" style="margin:0">${esc(LI.paiement.urne)}</p>` : ''}
           <input class="hp" name="website" tabindex="-1" aria-hidden="true">
           <button class="btn cta" type="submit">${part ? 'Je participe' : 'Je m’en occupe'}</button>
           <p class="msg" id="lpMsg" aria-live="polite"></p>
@@ -825,7 +866,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
           bg.querySelector('.lp').innerHTML = `<span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
             <div class="merci-l">Merci${row.nom ? ' ' + esc(row.nom) : ''} !</div>
             <p class="lead" style="margin:0 auto">${part ? `${T('Votre', 'Ta')} participation de <b>${eur(montant)}</b> à « ${esc(g.titre)} » est notée.` : `C’est noté : ${T('vous nous offrez', 'tu nous offres')} « ${esc(g.titre)} ».`}${DEMO_ ? ' (aperçu : rien n’a été envoyé)' : ''}</p>
-            ${payHtml(true)}
+            ${part ? '' : `<p class="note" style="margin:10px 0 0">${T('Vous pouvez', 'Tu peux')} nous l’apporter le jour J, ou nous en faire parvenir le montant :</p>`}
+            ${payHtml(true, g)}
             <button class="btn" type="button" data-close>Fermer</button>`;
           bg.querySelector('[data-close]').addEventListener('click', close);
           load();
@@ -847,7 +889,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         } catch (x) { u.disabled = false; }
       }
       const c = e.target.closest('[data-copy]');
-      if (c) { try { await navigator.clipboard.writeText(c.dataset.copy); c.textContent = 'IBAN copié'; } catch (x) { const b = c.parentNode.querySelector('b'); if (b) getSelection().selectAllChildren(b); } }
+      if (c) { try { await navigator.clipboard.writeText(c.dataset.copy); c.textContent = c.dataset.ok || 'Copié'; } catch (x) { const b = c.parentNode.querySelector('b'); if (b) getSelection().selectAllChildren(b); } }
     });
   })();
   /* liens #liste, #covoiturage… : la page est construite par le script, on y va une fois prête */

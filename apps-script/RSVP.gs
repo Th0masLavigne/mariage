@@ -23,6 +23,10 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.action === 'liste') {
     return ContentService.createTextOutput(JSON.stringify({ ok: true, etat: listeEtat_() })).setMimeType(ContentService.MimeType.JSON);
   }
+  /* carnet pratique : coordonnées de paiement de la liste (rangées hors du dépôt GitHub) */
+  if (e && e.parameter && e.parameter.action === 'paiement') {
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, paiement: paiement_() })).setMimeType(ContentService.MimeType.JSON);
+  }
   if (e && e.parameter && e.parameter.action === 'covoiturage') {
     return ContentService.createTextOutput(JSON.stringify({ ok: true, annonces: covoiturageListe_() })).setMimeType(ContentService.MimeType.JSON);
   }
@@ -305,6 +309,23 @@ function covoiturageRetirer_(d) {
   return { ok: true };
 }
 
+
+/* --- Coordonnées de paiement de la liste de mariage -------------------------
+   Elles ne sont NI dans ce fichier NI sur GitHub : elles vivent dans les propriétés du projet.
+   Éditeur Apps Script → ⚙ Paramètres du projet → Propriétés du script → Ajouter :
+     TITULAIRE   ex. Tiphaine et Thomas Lavigne
+     IBAN        ex. FR76 3000 4000 0500 0012 3456 789
+     BIC         (facultatif)
+     WERO        numéro de téléphone (ou e-mail) inscrit sur Wero
+     WERO_NOM    le nom qui s’affiche sur Wero (facultatif)
+   Une propriété absente ou vide → ce moyen n’apparaît pas dans le carnet.
+   Vérifier : lancer testPaiement (journal d’exécution). Pas besoin de redéployer après un changement
+   de propriété ; il faut seulement une nouvelle version la première fois (pour action=paiement). */
+function paiement_() {
+  const p = PropertiesService.getScriptProperties(), g = k => String(p.getProperty(k) || '').trim().slice(0, 120);
+  return { titulaire: g('TITULAIRE'), iban: g('IBAN'), bic: g('BIC'), wero: g('WERO'), weroNom: g('WERO_NOM') };
+}
+function testPaiement() { Logger.log(JSON.stringify(paiement_(), null, 2)); }
 
 /* --- Liste de mariage : onglet « Liste » ----------------------------------
    Une ligne par participation (ou par cadeau réservé).

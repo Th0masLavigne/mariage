@@ -936,8 +936,11 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   /* carnet pratique (site.html) : lien avec le code de l'invité ; « carnet » = la liste de mariage du carnet */
   const carnetUrl = h => `site.html?f=${encodeURIComponent(state.code)}${state.nom ? '&n=' + encodeURIComponent(state.nom) : ''}${h || ''}`;
   const listeEnLigne = () => { const L = C.site && C.site.liste; if (!L || !(L.cadeaux || []).some(x => x && x.id)) return false;
+    /* ouverture: false → liste en préparation, invisible des invités ; &tout → aperçu pour vous */
+    const o = L.ouverture, ouverte = o === undefined || o === true ? true : /^\d{4}-\d{2}-\d{2}$/.test(String(o)) ? Date.now() >= new Date(o + 'T00:00:00+02:00') : false;
+    if (!ouverte && !params.has('tout')) return false;
     const a = L.actif; return a === false ? false : /^\d{4}-\d{2}-\d{2}$/.test(String(a)) ? Date.now() >= new Date(a + 'T00:00:00+02:00') : true; };
-  const lienListe = l => l === 'carnet' ? (listeEnLigne() ? carnetUrl('#liste') : '') : (l || '');
+  const lienListe = l => l === 'carnet' ? (listeEnLigne() ? carnetUrl((params.has('tout') ? '&tout' : '') + (DEMO ? '&demo' : '') + '#liste') : '') : (l || '');
   /* le carnet pratique (site.html) retrouve ainsi la formule sans code dans le lien */
   if (!DEMO && C.formules[state.code]) store.set('code', state.code);
 

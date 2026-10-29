@@ -133,6 +133,14 @@ header p { margin: 0; color: var(--muted); max-width: 60ch; }
       p: 'Sans nuit prévue, la section hébergement disparaît : on passe directement au RSVP.',
       c: "formules['vin-honneur-2k'].nuits: []",
       o: { f: 'vin-honneur-2k', dc: 'balade', rev: false, go: '#rsvp' } },
+    { t: 'Liste de mariage · ce que voient les invités', s: 'Aujourd’hui : « bientôt en ligne »',
+      p: 'Tant que « ouverture » vaut false, les invités ne voient que la carte « bientôt en ligne » dans le carnet, et le faire-part garde le tampon « Bientôt ». Les cadeaux préparés restent invisibles.',
+      c: "site.liste: {\n  ouverture: false,\n  cadeaux: [ … ],\n}",
+      u: 'site.html?f=noce-4m&demo#liste' },
+    { t: 'Liste de mariage · préparation', s: 'Pour vous seulement (&tout)',
+      p: 'Le même carnet avec &tout : toutes les idées s’affichent, avec un bandeau « aperçu de préparation ». Touchez « Participer » (la batterie de cuisine a une photo) : après validation, les trois moyens s’affichent (urne, virement, Wero). Ils sont aussi rappelés dans l’encadré « Pour participer » sous la liste. Rien n’est envoyé.',
+      c: "cadeaux: [\n  { id: 'cuisine', type: 'participation',\n    titre: 'Une batterie de cuisine en inox',\n    objectif: 600,\n    image: 'photos/liste/batterie-cuisine.webp' },\n],\npaiement: { urne, titulaire, iban, bic, wero, weroNom }",
+      u: 'site.html?f=noce-4m&tout&demo#liste' },
     { t: 'Pour comparer : vieux rose', s: 'L’autre palette, en un mot',
       p: 'Toute la page passe en vieux rose avec un seul réglage. Les couleurs se retouchent une à une dans « couleurs ».',
       c: "palette: 'vieux-rose',",
@@ -156,6 +164,8 @@ header p { margin: 0; color: var(--muted); max-width: 60ch; }
     document.getElementById('nCode').textContent = s.c;
     document.getElementById('prev').disabled = i === 0;
     document.getElementById('next').disabled = i === STEPS.length - 1;
+    /* étape « carnet » : la page est chargée telle quelle (site.html?…&demo) */
+    if (s.u) { frame.removeAttribute('srcdoc'); frame.src = s.u; pending = null; return; }
     var html = 'window.DEMO_OPT=' + JSON.stringify(s.o) + ';';
     if (SITE) frame.srcdoc = SITE.replace('/*__OVERRIDE__*/', html); else pending = i;
   }
