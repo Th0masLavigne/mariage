@@ -44,6 +44,11 @@
   <p>Pour vous : aperçus sans envoi (rien n’arrive dans le Sheet) et liens génériques de chaque formule.</p>
   <div class="tw"><table><thead><tr><th>Quoi</th><th>Lien</th><th></th></tr></thead><tbody id="utiles"></tbody></table></div>
 </div>
+  <h2>Liste de mariage : tests (vous seuls)</h2>
+  <p id="lsEtat"></p>
+  <p>Ces liens ajoutent <code>&amp;tout</code> : ils montrent la liste même fermée aux invités. Les liens normaux (au-dessus) ne la montrent pas tant que <code>site.liste.ouverture</code> vaut <code>false</code>.
+     <b>Aperçu</b> : rien n’est envoyé. <b>Test réel</b> : au nom de « <span id="lsNom"></span> » ; les participations arrivent dans l’onglet Liste du Sheet, l’écran Liste de l’appli et par e-mail (et une réponse au faire-part arrive dans l’onglet RSVP). Ensuite : « l’annuler » dans le carnet, ou <code>annulé</code> dans la colonne statut, et supprimez la ligne RSVP de test.</p>
+  <div class="tw"><table><thead id="lsh"></thead><tbody id="ls"></tbody></table></div>
 <script>
   const C = window.CONFIG, $ = s => document.querySelector(s);
   const lib = k => C.formules[k].libelle || C.formules[k].nom;
@@ -68,10 +73,18 @@
       rows.push([`Aperçu carnet « ${nm} », toutes rubriques (sans envoi)`, base + 'site.html?f=' + encodeURIComponent(k) + '&tout&demo']);
     });
     rows.push(['Carnet sans code (partie commune)', base + 'site.html']);
-    /* liste de mariage en préparation (invisible des invités tant que site.liste.ouverture vaut false) */
-    rows.push(['Liste (préparation) : aperçu, rien n’est envoyé', base + 'site.html?f=noce-4m&tout&demo#liste']);
-    rows.push(['Liste (préparation) : test réel → onglet Liste du Sheet + e-mail (annulez ensuite)', base + 'site.html?f=noce-4m&tout#liste']);
-    rows.push(['Liste (préparation) : faire-part avec le lien vers la liste, sans envoi', base + '?f=noce-4m&tout&demo']);
+    /* liste de mariage : aperçu / test réel, par formule */
+    const TEST = 'TEST Tiphaine & Thomas', L = (C.site && C.site.liste) || {};
+    $('#lsNom').textContent = TEST;
+    $('#lsEtat').innerHTML = L.ouverture === true ? '<b>Liste ouverte aux invités.</b>' : /^\d{4}-/.test(String(L.ouverture || '')) ? `<b>Ouverture aux invités prévue le ${esc(L.ouverture)}.</b>` : '<b>Liste fermée aux invités</b> (ouverture: false) : seuls ces liens la montrent.';
+    $('#lsh').innerHTML = `<tr><th>Formule</th><th>Faire-part · aperçu</th><th>Faire-part · test réel</th><th>Carnet · aperçu</th><th>Carnet · test réel</th></tr>`;
+    const lnk = u => `<td class="u"><a href="${esc(u)}" target="_blank" rel="noopener">Ouvrir</a><span class="bt"><button data-u="${esc(u)}">Copier</button></span></td>`;
+    const tn = '&n=' + encodeURIComponent(TEST);
+    $('#ls').innerHTML = K.map((k, i) => `<tr><td class="c${i}">${esc(lib(k))}</td>${[
+      base + '?f=' + encodeURIComponent(k) + '&tout&demo',
+      base + '?f=' + encodeURIComponent(k) + tn + '&tout',
+      base + 'site.html?f=' + encodeURIComponent(k) + '&tout&demo#liste',
+      base + 'site.html?f=' + encodeURIComponent(k) + tn + '&tout#liste'].map(lnk).join('')}</tr>`).join('');
     $('#utiles').innerHTML = rows.map(([t, u]) => `<tr><td>${esc(t)}</td><td class="u"><a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a></td><td><button data-u="${esc(u)}">Copier</button></td></tr>`).join('');
   }
   document.addEventListener('input', draw);
