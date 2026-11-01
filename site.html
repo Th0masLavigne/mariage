@@ -508,11 +508,11 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       ${row('parking', E('Se garer', 'Parking'), V.parking)}
       ${row('train', E('En train', 'By train'), V.train)}
       ${row('navette', E('Navette', 'Shuttle'), V.navette)}
-      ${V.covoiturage && cv.lien ? row('covoiturage', E('Covoiturage', 'Car sharing'), cv.texte || '', `<br><a class="btn ghost" href="${esc(cv.lien)}" target="_blank" rel="noopener">${E('Proposer ou trouver une place', 'Offer or find a seat')}</a>`) : ''}
+      ${V.covoiturage && cv.lien ? row('covoiturage', E('Covoiturage', 'Carpooling'), cv.texte || '', `<br><a class="btn ghost" href="${esc(cv.lien)}" target="_blank" rel="noopener">${E('Proposer ou trouver une place', 'Offer or find a seat')}</a>`) : ''}
     </ul></div>
     ${V.covoiturage && !cv.lien ? `
     <div class="paper alt covoit" id="covoiturage" style="--tilt:.3deg"><span class="in-border"></span>
-      <div class="cv-head">${picto('covoiturage')}<h3>${E('Covoiturage', 'Car sharing')}</h3></div>
+      <div class="cv-head">${picto('covoiturage')}<h3>${E('Covoiturage', 'Carpooling')}</h3></div>
       <p class="lead" style="margin:8px auto 18px">${esc(cv.texte || '')}</p>
       <div class="cv-list" id="cvList" aria-live="polite"><p class="note">${E('Chargement des annonces…', 'Loading notes…')}</p></div>
       <div class="btns"><button class="btn" type="button" id="cvAdd">${E('Publier une annonce', 'Post a note')}</button></div>
@@ -522,13 +522,13 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
           <label><input type="radio" name="type" value="cherche"><span>${E('Je cherche une place', 'I’m looking for a seat')}</span></label>
         </div>
         <label>${E('Prénom', 'First name')}<input type="text" id="cvNom" name="nom" maxlength="60" required value="${esc(nom || (store.get('rsvp.' + code) || {}).nom || '')}"></label>
-        <label>${E('Ville de départ', 'Leaving from')}<input type="text" id="cvDepart" name="depart" maxlength="60" required placeholder="${E('Paris 15e, Orléans…', 'Paris, Orléans, London…')}"></label>
+        <label>${E('Ville de départ', 'Leaving from')}<input type="text" id="cvDepart" name="depart" maxlength="60" required placeholder="${E('Paris 15e, Orléans…', 'Paris, Orléans, New York…')}"></label>
         <div class="row2">
           <label>${E('Jour', 'Day')}<select id="cvJour" name="jour">${days.map(d => `<option value="${esc(d.fr)}">${esc(d.jour)}</option>`).join('')}${days.length > 1 ? `<option value="Tout le week-end">${esc(JOURS['Tout le week-end'])}</option>` : ''}</select></label>
           <label>${E('Places', 'Seats')}<input type="number" id="cvPlaces" name="places" min="1" max="8" value="1" required></label>
         </div>
-        <label>${T('Pour vous joindre', 'Pour te joindre', 'How to reach you')}<input type="text" id="cvContact" name="contact" maxlength="80" required placeholder="${E('06… ou e-mail', 'Phone or e-mail')}"></label>
-        <label>${E('Un mot (facultatif)', 'A note (optional)')}<input type="text" id="cvMot" name="message" maxlength="140" placeholder="${E('Départ vers 13h, retour dimanche…', 'Leaving around 1 pm, back on Sunday…')}"></label>
+        <label>${T('Pour vous joindre', 'Pour te joindre', 'How to reach you')}<input type="text" id="cvContact" name="contact" maxlength="80" required placeholder="${E('06… ou e-mail', 'Phone or email')}"></label>
+        <label>${E('Un mot (facultatif)', 'A note (optional)')}<input type="text" id="cvMot" name="message" maxlength="140" placeholder="${E('Départ vers 13h, retour dimanche…', 'Leaving around 1 PM, back on Sunday…')}"></label>
         <input class="hp" name="website" tabindex="-1" aria-hidden="true">
         <label class="consent"><input type="checkbox" id="cvOk" name="ok"> ${E('J’accepte que mon prénom, ma ville de départ et mon contact soient visibles par les invités du carnet. Je pourrai retirer l’annonce à tout moment depuis ce téléphone.', 'I agree that my first name, departure town and contact details will be visible to guests using this guide. I can remove the note at any time from this phone.')} ${window.Donnees ? `<button class="dn-link" type="button" data-donnees>${E('Vos données', 'Your data')}</button>` : ''}</label>
         <button class="btn cta" type="submit">${E('Publier', 'Post')}</button>
@@ -540,7 +540,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* « Où dormir » : seulement pour les faire-parts qui ont des nuits (pas pour « Église & vin d’honneur ») */
   if (on(SI.dormir) && F.nuits.length) { const D = SI.dormir, adr = D.adresses || [];
     sections.push({ id: 'dormir', menu: E('Dormir', 'Stay'), html: `
-    ${head(E('Hébergement', 'Accommodation'), D.titre || E('Où dormir', 'Where to stay'))}
+    ${head(E('Hébergement', 'Accommodations'), D.titre || E('Où dormir', 'Where to stay'))}
     ${F.nuits.length ? `<div class="paper stay" style="--tilt:.3deg"><span class="in-border"></span>
       ${ico('window')}<h3>${esc(H.titre || E('Dormir sur place', 'Staying on site'))}</h3>
       <p class="lead" style="margin:8px auto 0">${esc(H.texte || '')}</p>
@@ -625,7 +625,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     ${P.length ? `<div class="grid aligned">${P.map((p, i) => `<div class="paper temoin${i % 2 ? ' alt' : ''}" style="--tilt:${i % 2 ? .5 : -.5}deg"><span class="in-border"></span>
         <h3>${esc(p.nom)}</h3><div class="role">${esc(p.role || '')}</div>
         <div class="coords">${[p.tel, p.email].filter(Boolean).map(esc).join('<br>')}</div>
-        <div class="links">${p.tel ? `<a href="tel:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">${E('Appeler', 'Call')}</a><a href="sms:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">SMS</a>` : ''}${p.email ? `<a href="mailto:${esc(p.email)}">E-mail</a>` : ''}</div></div>`).join('')}</div>` : soon(E('contacts à venir', 'contacts coming soon'))}` }); }
+        <div class="links">${p.tel ? `<a href="tel:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">${E('Appeler', 'Call')}</a><a href="sms:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">${E('SMS', 'Text')}</a>` : ''}${p.email ? `<a href="mailto:${esc(p.email)}">${E('E-mail', 'Email')}</a>` : ''}</div></div>`).join('')}</div>` : soon(E('contacts à venir', 'contacts coming soon'))}` }); }
 
   /* --- Playlist --- */
   if (on(SI.playlist)) { const PL = SI.playlist;
@@ -651,7 +651,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       <p class="lead" style="margin:0 auto">${esc(PH.texte || '')}</p>
       <form class="form" id="photoForm">
         <label>${T('Votre prénom', 'Ton prénom', 'Your name')}<input type="text" name="nom" maxlength="80" value="${esc(store.get('photoNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="${E('Pour savoir qui remercier', 'So we know whom to thank')}"></label>
-        <label class="consent"><input type="checkbox" id="phOk" ${store.get('photoOk') ? 'checked' : ''}> ${E('Les personnes reconnaissables sur mes photos sont d’accord pour qu’elles vous soient envoyées (pas de photo de quelqu’un qui ne le souhaite pas, ni d’enfant sans l’accord de ses parents).', 'Anyone recognisable in my photos is happy for them to be sent to you (no photos of anyone who doesn’t want it, and no children without their parents’ consent).')}</label>
+        <label class="consent"><input type="checkbox" id="phOk" ${store.get('photoOk') ? 'checked' : ''}> ${E('Les personnes reconnaissables sur mes photos sont d’accord pour qu’elles vous soient envoyées (pas de photo de quelqu’un qui ne le souhaite pas, ni d’enfant sans l’accord de ses parents).', 'Anyone recognizable in my photos is happy for them to be sent to you (no photos of anyone who doesn’t want it, and no children without their parents’ consent).')}</label>
         <label class="drop" id="drop"><input type="file" id="photoInput" accept="image/*,video/*" multiple>
           <b>${E('Choisir des photos', 'Choose photos')}</b><span>${E('ou les glisser ici · vidéos jusqu’à', 'or drag them here · videos up to')} ${esc(PH.videoMaxMo || 40)} ${E('Mo', 'MB')}</span></label>
         <div class="bar" hidden><i></i></div>
@@ -702,7 +702,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       ${perso ? `<p class="formule">${esc(F.nom)}</p>` : ''}
     </div>
     ${SI.intro ? `<p class="intro">${esc(SI.intro)}</p>` : ''}
-    ${perso ? '' : `<p class="generic">${E('Vous avez reçu un faire-part ? Ouvrez ce carnet depuis son lien : vous y verrez votre programme complet.', 'Received an invitation? Open this guide from its link to see your full programme.')}</p>`}
+    ${perso ? '' : `<p class="generic">${E('Vous avez reçu un faire-part ? Ouvrez ce carnet depuis son lien : vous y verrez votre programme complet.', 'Received an invitation? Open this guide from its link to see your full schedule.')}</p>`}
     <div class="cd" id="cd" role="timer" aria-label="${E('Compte à rebours', 'Countdown')}">
       <div><b id="cdJ">–</b><span>${E('jours', 'days')}</span></div><div><b id="cdH">–</b><span>${E('heures', 'hours')}</span></div><div><b id="cdM">–</b><span>minutes</span></div>
     </div>
@@ -769,7 +769,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     $('#cvAdd').addEventListener('click', () => { form.hidden = !form.hidden; if (!form.hidden) $('#cvDepart').focus(); });
     form.addEventListener('submit', async e => {
       e.preventDefault(); if (form.website.value) return;
-      if (!form.ok.checked) { msg.textContent = T('Cochez la case pour accepter que l’annonce soit visible.', 'Coche la case pour accepter que l’annonce soit visible.', 'Please tick the box to agree to your note being visible.'); return; }
+      if (!form.ok.checked) { msg.textContent = T('Cochez la case pour accepter que l’annonce soit visible.', 'Coche la case pour accepter que l’annonce soit visible.', 'Please check the box to agree to your note being visible.'); return; }
       const btn = form.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = E('Publication…', 'Posting…');
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), cle = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
       const a = { action: 'covoiturage', id, cle, code, type: form.type.value, nom: form.nom.value.trim(), depart: form.depart.value.trim(), jour: form.jour.value, places: form.places.value, contact: form.contact.value.trim(), message: form.message.value.trim() };
@@ -810,7 +810,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* ---------- liste de mariage : avancement, participations, annulation ---------- */
   if ($('#cadeaux')) (function () {
     const URL_ = (SI.photos && SI.photos.url) || BACKEND, DEMO_ = !URL_ || params.has('demo');
-    const eur = n => Langue.en ? '€' + (Math.round(n * 100) / 100).toLocaleString('en-GB') : (Math.round(n * 100) / 100).toLocaleString('fr-FR') + ' €';
+    const eur = n => Langue.en ? '€' + (Math.round(n * 100) / 100).toLocaleString('en-US') : (Math.round(n * 100) / 100).toLocaleString('fr-FR') + ' €';
     const mine = () => store.get('liste') || {};      /* { idLigne: { cle, cadeau } } : ce que ce téléphone a offert */
     let etat = {}, demoRows = [];
     const demoEtat = () => { const e = {}; demoRows.forEach(r => { const x = e[r.cadeau] = e[r.cadeau] || { total: 0, nb: 0, offert: false }; x.total += +r.montant || 0; x.nb++; if (r.type === 'cadeau') x.offert = true; }); return e; };
@@ -941,7 +941,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     let busy = false;
     async function send(files) {
       if (busy || !files.length) return;
-      if (!$('#phOk').checked) { msg.textContent = T('Cochez d’abord la case sur l’accord des personnes photographiées.', 'Coche d’abord la case sur l’accord des personnes photographiées.', 'Please first tick the box confirming the people in the photos agree.'); input.value = ''; return; }
+      if (!$('#phOk').checked) { msg.textContent = T('Cochez d’abord la case sur l’accord des personnes photographiées.', 'Coche d’abord la case sur l’accord des personnes photographiées.', 'Please first check the box confirming the people in the photos agree.'); input.value = ''; return; }
       store.set('photoOk', true); busy = true;
       const qui = pf.nom.value.trim(); store.set('photoNom', qui);
       files = [...files]; let ok = 0, done = 0;

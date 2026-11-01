@@ -982,7 +982,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   const dayNum = j => +(String(j).match(/\d+/) || [0])[0];
   function calendar(F) {
     const d0 = new Date(C.dateMariage + 'T12:00:00'), Y = d0.getFullYear(), M = d0.getMonth(), wed = d0.getDate();
-    const first = (new Date(Y, M, 1).getDay() + 6) % 7, n = new Date(Y, M + 1, 0).getDate();
+    const first = Langue.en ? new Date(Y, M, 1).getDay() : (new Date(Y, M, 1).getDay() + 6) % 7, n = new Date(Y, M + 1, 0).getDate();
     const days = {}; F.moments.forEach(k => { const m = C.moments[k], dn = dayNum(m.jour); (days[dn] = days[dn] || { jour: m.jour, t: [] }).t.push(m.titre); });
     let cells = '';
     for (let i = 0; i < first; i++) cells += '<span></span>';
@@ -996,7 +996,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const legend = C.calendrierResume ? Object.keys(days).sort((a, b) => a - b).map(k => `<li><b>${esc(days[k].jour)}</b> · ${esc(days[k].t.join(', '))}</li>`).join('') : '';
     return `<div class="cal"><div class="cal-in">
       <div class="cal-h"><span class="cal-m">${MOIS[M]}</span><span class="cal-y">${Y}</span></div>
-      <div class="cal-g cal-wd">${(Langue.en ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : ['L', 'M', 'M', 'J', 'V', 'S', 'D']).map(x => `<span>${x}</span>`).join('')}</div>
+      <div class="cal-g cal-wd">${(Langue.en ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['L', 'M', 'M', 'J', 'V', 'S', 'D']).map(x => `<span>${x}</span>`).join('')}</div>
       <div class="cal-g">${cells}</div>
       ${legend ? `<ul class="cal-legend">${legend}</ul>` : ''}
       ${C.sceauImage ? `<i class="cal-corner">${sealPhoto()}</i>` : ''}
@@ -1178,7 +1178,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     ${F.nuits.length ? `${rule()}
     <section id="hebergement">
-      <div class="eyebrow">${E('Hébergement', 'Accommodation')}</div>
+      <div class="eyebrow">${E('Hébergement', 'Accommodations')}</div>
       <h2>${esc(H.titre || E('Dormir sur place', 'Staying on site'))}</h2>
       <div class="paper stay" style="--tilt:-.4deg"><span class="in-border"></span>
         <div class="stay-art">${ico('window')}</div>
@@ -1270,11 +1270,11 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
           <div class="coords">
             <h3>${T('Vos coordonnées', 'Tes coordonnées', 'Your contact details')}</h3>
             <p>${T('Pour vous envoyer le faire-part papier et vous joindre en cas d’imprévu.', 'Pour t’envoyer le faire-part papier et te joindre en cas d’imprévu.', 'So we can send you the paper invitation and reach you if anything comes up.')}</p>
-            <label class="fld"><span>${E('Téléphone', 'Phone')}</span><input id="telephone" type="tel" inputmode="tel" value="${esc(R.telephone)}" placeholder="${E('06 12 34 56 78', '+44 7700 900123')}" autocomplete="tel"></label>
-            <label class="fld"><span>${E('Adresse postale', 'Postal address')}</span><input id="adresse" type="text" value="${esc(R.adresse)}" placeholder="${E('12 rue des Lilas, bât. B', '12 Lilac Street, Flat B')}" autocomplete="street-address"></label>
+            <label class="fld"><span>${E('Téléphone', 'Phone')}</span><input id="telephone" type="tel" inputmode="tel" value="${esc(R.telephone)}" placeholder="${E('06 12 34 56 78', '+1 555 123 4567')}" autocomplete="tel"></label>
+            <label class="fld"><span>${E('Adresse postale', 'Postal address')}</span><input id="adresse" type="text" value="${esc(R.adresse)}" placeholder="${E('12 rue des Lilas, bât. B', '12 Lilac Street, Apt B')}" autocomplete="street-address"></label>
             <div class="row3">
-              <label class="fld"><span>${E('Code postal', 'Postcode')}</span><input id="cp" type="text" inputmode="numeric" value="${esc(R.cp)}" autocomplete="postal-code"></label>
-              <label class="fld"><span>${E('Ville', 'Town / City')}</span><input id="ville" type="text" value="${esc(R.ville)}" autocomplete="address-level2"></label>
+              <label class="fld"><span>${E('Code postal', 'ZIP / Postal code')}</span><input id="cp" type="text" inputmode="numeric" value="${esc(R.cp)}" autocomplete="postal-code"></label>
+              <label class="fld"><span>${E('Ville', 'City')}</span><input id="ville" type="text" value="${esc(R.ville)}" autocomplete="address-level2"></label>
               <label class="fld"><span>${E('Pays', 'Country')}</span><input id="pays" type="text" value="${esc(R.pays)}" autocomplete="country-name"></label>
             </div>
           </div>`;
@@ -1501,8 +1501,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       collect();
       if (!R.nom) { err.textContent = T('Indiquez vos prénoms et noms pour qu’on sache qui répond.', 'Indique ton prénom et ton nom pour qu’on sache qui répond.', 'Please enter your names so we know who is replying.'); $('#nom').focus(); return; }
       if (!R.presence) { err.textContent = E(T('Choisissez', 'Choisis') + ' « ' + OUI_TXT + ' » ou « Non ».', 'Choose “' + OUI_TXT + '” or “No”.'); return; }
-      if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = T('Cochez au moins un moment.', 'Coche au moins un moment.', 'Please tick at least one event.'); return; }
-      if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = T('Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.', 'Coche la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laisse le champ vide.', 'Please tick the box under “Allergies or dietary requirements” so we can pass the information on to the caterer, or leave the field empty.'); $('#regimeOk').focus(); return; }
+      if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = T('Cochez au moins un moment.', 'Coche au moins un moment.', 'Please check at least one event.'); return; }
+      if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = T('Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.', 'Coche la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laisse le champ vide.', 'Please check the box under “Allergies or dietary requirements” so we can pass the information on to the caterer, or leave the field empty.'); $('#regimeOk').focus(); return; }
       const robot = !!$('[name=website]').value; /* champ piège : l’autoremplissage Android peut le remplir, on envoie quand même en signalant */
       const btn = e.target.querySelector('.submit'); btn.disabled = true; btn.textContent = E('Envoi…', 'Sending…');
       sending = true;
@@ -1556,7 +1556,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       <div class="big">${oui ? E('C’est noté, on trinquera ensemble !', 'Noted, we’ll raise a glass together!') : T('Vous allez nous manquer.', 'Tu vas nous manquer.', 'We’ll miss you.')}</div>
       <p>${Langue.en ? (oui ? 'Thank you, ' + esc(R.nom) + '! We’ll send you the timings, the dress code and practical details very soon.' : 'Thank you for letting us know, ' + esc(R.nom) + '. We’ll raise a glass to you.') : oui ? 'Merci ' + esc(R.nom) + T(' ! Nous vous enverrons', ' ! Nous t’enverrons') + ' les horaires, le code couleur et les infos pratiques très bientôt.' : 'Merci de nous avoir répondu, ' + esc(R.nom) + T('. On lèvera un verre à votre santé.', '. On lèvera un verre à ta santé.')}</p>
       ${already ? `<p class="deadline" style="margin:14px 0 0">${E('Réponse envoyée', 'Reply sent')}${R.date ? E(' le ', ' on ') + Langue.jourLong(R.date) : ''}${DEMO ? E(' (aperçu : rien n’a été envoyé)', ' (preview: nothing was sent)') : ''}</p>` : (DEMO ? `<p class="deadline" style="margin:14px 0 0">${E('Mode aperçu : rien n’a été envoyé.', 'Preview mode: nothing was sent.')}</p>` : '')}
-      ${C.site && C.site.lienFairePart ? `<a class="site-link" href="${carnetUrl()}">${E('Le carnet pratique : accès, hébergement, covoiturage', 'The wedding guide: getting here, accommodation, car sharing')} →</a><br>` : ''}
+      ${C.site && C.site.lienFairePart ? `<a class="site-link" href="${carnetUrl()}">${E('Le carnet pratique : accès, hébergement, covoiturage', 'The wedding guide: getting here, accommodations, carpooling')} →</a><br>` : ''}
       ${oui && lienListe((C.bientot[0] || {}).lien) ? `<a class="site-link" href="${esc(lienListe(C.bientot[0].lien))}">${E('Notre liste de mariage', 'Our wedding registry')} →</a><br>` : ''}
       <button class="linkbtn" id="edit" type="button">${E('Modifier ma réponse', 'Change my reply')}</button></div>`;
     $('#edit').addEventListener('click', () => { box.dataset.edit = '1'; renderRSVP(F); });

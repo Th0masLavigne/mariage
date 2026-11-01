@@ -194,7 +194,7 @@
             <div class="scratch-under">${C.codeCouleur.reveler
               ? `<div class="outfits"><figure>${outfit('eux', S.suit, (C.codeCouleur.couleurs[1] || C.codeCouleur.couleurs[0] || {}).hex || '#b4476a')}<figcaption><b>${E('Eux', 'Him')}</b>${esc(C.codeCouleur.eux || '')}</figcaption></figure><figure>${outfit('elles', S.dress, (C.codeCouleur.couleurs[0] || {}).hex || '#f7c6d4')}<figcaption><b>${E('Elles', 'Her')}</b>${esc(C.codeCouleur.elles || '')}</figcaption></figure></div>
                  <div class="sc-sub">${E('Les tons qui nous feraient plaisir', 'Shades we would love to see')}</div>
-                 ${C.codeCouleur.couleurs.length > 1 ? `<div class="pal-hint">${E('Touchez une couleur pour habiller les tenues', 'Tap a colour to dress the outfits')}</div>` : ''}
+                 ${C.codeCouleur.couleurs.length > 1 ? `<div class="pal-hint">${E('Touchez une couleur pour habiller les tenues', 'Tap a color to dress the outfits')}</div>` : ''}
                  <div class="palette${C.codeCouleur.couleurs.length > 1 ? ' pick' : ''}" id="palette">${C.codeCouleur.couleurs.map((c, i) => C.codeCouleur.couleurs.length > 1
                    ? `<button type="button" data-hex="${esc(c.hex)}" class="${i === 0 ? 'on' : ''}" aria-pressed="${i === 0}"><i style="--c:${esc(c.hex)}"></i>${esc(c.nom)}</button>`
                    : `<span><i style="--c:${esc(c.hex)}"></i>${esc(c.nom)}</span>`).join('')}</div>${dcText()}`

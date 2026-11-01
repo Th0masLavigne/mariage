@@ -1,5 +1,6 @@
 /* =====================================================================
-   FAIRE-PART — TEXTES ANGLAIS (liens avec &en)
+   FAIRE-PART — TEXTES ANGLAIS, anglais AMÉRICAIN (liens avec &en)
+   Dates « Friday, August 6 » · heures 2:45 PM (automatique) · color, organize…
    ---------------------------------------------------------------------
    • Même structure que config.js : seuls les TEXTES sont ici. Tout le reste
      (dates, photos, couleurs, liens, prix, objectifs…) vient de config.js.
@@ -13,7 +14,7 @@
 
 window.CONFIG_EN = {
 
-  lieuxNote: 'Good to know: allow about 1 h 15 by car between Suresnes and the Château de la Fontaine, and 8 minutes between the church in Égreville and the château.',
+  lieuxNote: 'Good to know: allow about 1 hour 15 minutes by car between Suresnes and the Château de la Fontaine, and 8 minutes between the church in Égreville and the château.',
 
   textes: {
     sousTitre: 'Forever begins with “I do”.',
@@ -38,35 +39,35 @@ window.CONFIG_EN = {
   },
 
   moments: {
-    mairie:  { jour: 'Friday 6 August',   titre: 'Civil ceremony' },
-    veillee: { jour: 'Friday 6 August',   titre: 'Intimate evening' },
-    eglise:  { jour: 'Saturday 7 August', titre: 'Church ceremony' },
-    vin:     { jour: 'Saturday 7 August', titre: 'Cocktail reception' },
-    diner:   { jour: 'Saturday 7 August', titre: 'Dinner & dancing' },
-    brunch:  { jour: 'Sunday 8 August',   titre: 'Brunch' }
+    mairie:  { jour: 'Friday, August 6',   titre: 'Civil ceremony' },
+    veillee: { jour: 'Friday, August 6',   titre: 'Intimate evening' },
+    eglise:  { jour: 'Saturday, August 7', titre: 'Church ceremony' },
+    vin:     { jour: 'Saturday, August 7', titre: 'Cocktail reception' },
+    diner:   { jour: 'Saturday, August 7', titre: 'Dinner & dancing' },
+    brunch:  { jour: 'Sunday, August 8',   titre: 'Brunch' }
   },
 
   formules: {
     'grand-weekend-7q': {
       nom: 'Save the date',
-      dates: '6 · 7 · 8 August 2027',
+      dates: 'August 6 · 7 · 8, 2027',
       intro: 'We are overjoyed to invite you to our wedding.\nWe would love to have you by our side, from the first “I do” to the very last croissant.',
       nuits: [
-        { label: 'Night of Friday 6 to Saturday 7' },
-        { label: 'Night of Saturday 7 to Sunday 8' }
+        { label: 'Friday night, August 6' },
+        { label: 'Saturday night, August 7' }
       ]
     },
     'noce-4m': {
       nom: 'Save the date',
-      dates: '7 & 8 August 2027',
+      dates: 'August 7 & 8, 2027',
       intro: 'We are overjoyed to invite you to our wedding.\nWe would love to have you by our side for the cocktail reception, the dinner and the next day’s brunch.',
       nuits: [
-        { label: 'Night of Saturday 7 to Sunday 8' }
+        { label: 'Saturday night, August 7' }
       ]
     },
     'vin-honneur-2k': {
       nom: 'Save the date',
-      dates: 'Saturday 7 August 2027',
+      dates: 'Saturday, August 7, 2027',
       intro: 'We are overjoyed to invite you to our wedding.\nWe would love to have you by our side for the cocktail reception.'
     }
   },
@@ -76,11 +77,11 @@ window.CONFIG_EN = {
     tenue: 'Elegant attire',
     messageAttente: 'Come back and scratch! The dress code will be revealed here very soon.',
     texte: [
-      'No set colour: here is a selection of shades we love.',
-      'No waistcoats for the gentlemen, please: that is reserved for the groom.',
+      'No set color: here is a selection of shades we love.',
+      'No vests for the gentlemen, please: that is reserved for the groom.',
       'White and similar light shades are reserved for the bride and groom.'
     ],
-    eux: 'Light-coloured suit',
+    eux: 'Light-colored suit',
     elles: 'Long or midi dress',
     couleurs: [
       { nom: 'Powder pink' },
@@ -126,7 +127,7 @@ window.CONFIG_EN = {
     conservation: 'at the latest a year and a half after the wedding',
     adresses: 'until our thank-you cards have been sent, and at the latest a year and a half after the wedding',
     photos: 'we keep the photos as memories; the shared folder is closed three months after the wedding',
-    miseAJour: '15 October 2026'
+    miseAJour: 'October 15, 2026'
   },
 
   site: {
@@ -138,8 +139,8 @@ window.CONFIG_EN = {
 
     venir: {
       titre: 'Getting here',
-      voiture: 'Allow about 1 h 15 by car between Suresnes and the château, and 8 minutes between the church in Égreville and the château.',
-      parking: 'A large car park is available on site, at the entrance to the château.',
+      voiture: 'Allow about 1 hour 15 minutes by car between Suresnes and the château, and 8 minutes between the church in Égreville and the château.',
+      parking: 'A large parking lot is available on site, at the entrance to the château.',
       covoiturage: { texte: 'Have spare seats in your car, or looking for a ride? Post a note and other guests will get in touch.' }
     },
 
@@ -147,10 +148,10 @@ window.CONFIG_EN = {
       titre: 'Where to stay',
       autour: 'For those who would rather stay nearby, here are a few places just a few minutes away.',
       adresses: [
-        { type: 'Holiday cottage' },
-        { type: 'Holiday cottage' },
-        { type: 'Holiday cottage' },
-        { type: 'Holiday cottage' }
+        { type: 'Vacation rental' },
+        { type: 'Vacation rental' },
+        { type: 'Vacation rental' },
+        { type: 'Vacation rental' }
       ]
     },
 
@@ -174,8 +175,8 @@ window.CONFIG_EN = {
         { id: 'voyage',    titre: 'Our honeymoon', texte: 'Two weeks in Asia, retracing our very first trips.' },
         { id: 'cuisine',   titre: 'A stainless-steel cookware set', texte: 'For dinners with friends.' },
         { id: 'diner',     titre: 'A Michelin-starred dinner on our trip', texte: 'An evening for two, to raise a glass to you.' },
-        { id: 'vaisselle', titre: 'A dinner service', texte: 'Plates, glasses and cutlery to host twelve.' },
-        { id: 'cafe',      titre: 'A De’Longhi coffee machine', texte: 'For those difficult mornings.' },
+        { id: 'vaisselle', titre: 'A dinnerware set', texte: 'Plates, glasses and cutlery to host twelve.' },
+        { id: 'cafe',      titre: 'A De’Longhi coffee machine', texte: 'For those tough mornings.' },
         { id: 'velos',     titre: 'Bikes for Sunday rides', texte: 'With a basket, of course.' },
         { id: 'cave',      titre: 'A start to our wine cellar', texte: 'A few fine bottles to open on our wedding anniversaries.' },
         { id: 'cours',     titre: 'A cooking class for two', texte: 'To learn how to use the cookware set.' },

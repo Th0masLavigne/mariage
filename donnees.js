@@ -41,14 +41,14 @@
     return `<button class="dn-x" type="button" aria-label="Close">×</button>
       <h2>Your data</h2><p class="dn-sub">In short, and without jargon.</p>
       <h3>What we collect</h3>
-      <p>Only what you enter: your names, your reply, the number of people, the events chosen, accommodation, any diet or allergy (optional), your contact details (email, phone, postal address, optional), a song and your message. If you leave the page before confirming, we only receive your names, your attendance, the number of people, the events, accommodation and any contact details already entered, so we can follow up with you (deleted as soon as you confirm). In the wedding guide: your car-sharing notes, your registry contributions and the photos you upload.</p>
+      <p>Only what you enter: your names, your reply, the number of people, the events chosen, accommodations, any diet or allergy (optional), your contact details (email, phone, postal address, optional), a song and your message. If you leave the page before confirming, we only receive your names, your attendance, the number of people, the events, accommodations and any contact details already entered, so we can follow up with you (deleted as soon as you confirm). In the wedding guide: your carpool notes, your registry contributions and the photos you upload.</p>
       <h3>Why</h3>
-      <p>Only to organise our wedding: meals, accommodation, sending the paper invitation, reaching you if anything comes up, thanking you. Nothing is sold, passed on to third parties or used for advertising.</p>
+      <p>Only to organize our wedding: meals, accommodations, sending the paper invitation, reaching you if anything comes up, thanking you. Nothing is sold, passed on to third parties or used for advertising.</p>
       <h3>Where, and who has access</h3>
       <p>In a private Google Sheets spreadsheet and Google Drive folder, in our name. Access: ${esc(acces)}.</p>
       <h3>What other guests can see</h3>
       <ul><li>Nothing from your reply.</li>
-        <li>Car sharing: the first name, departure town and contact on your note (you can remove it at any time).</li>
+        <li>Carpooling: the first name, departure town and contact on your note (you can remove it at any time).</li>
         <li>Wedding registry: only the overall progress, never names or amounts.</li></ul>
       <h3>On your phone</h3>
       <p>The page keeps your reply and a random identifier in the browser’s storage, so you can find it again and change it. No cookies, no analytics, no advertising. The fonts are hosted on the site: nothing is sent to Google to display them.</p>
@@ -99,6 +99,6 @@
     /* petit lien « Vos données » */
     lien: (txt) => `<button class="dn-link" type="button" data-donnees>${esc(txt || (EN ? 'Your data' : 'Vos données'))}</button>`,
     /* phrase sous un formulaire */
-    ligne: (txt) => `<p class="dn-line">${esc(txt || (EN ? 'Your answers are only used to organise the wedding.' : 'Vos réponses ne servent qu’à l’organisation du mariage.'))} <button class="dn-link" type="button" data-donnees>${EN ? 'Learn more' : 'En savoir plus'}</button></p>`
+    ligne: (txt) => `<p class="dn-line">${esc(txt || (EN ? 'Your answers are only used to organize the wedding.' : 'Vos réponses ne servent qu’à l’organisation du mariage.'))} <button class="dn-link" type="button" data-donnees>${EN ? 'Learn more' : 'En savoir plus'}</button></p>`
   };
 })();
