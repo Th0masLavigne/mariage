@@ -130,7 +130,7 @@
       for (let i = 0; i < 140; i++) { ctx.fillStyle = `rgba(255,255,255,${Math.random() * .7})`; ctx.beginPath(); ctx.arc(Math.random() * r.width, Math.random() * r.height, Math.random() * 1.4, 0, 7); ctx.fill(); }
       ctx.fillStyle = tok('--sc-ink'); ctx.textAlign = 'center';
       ctx.font = 'italic 400 26px "Bodoni Moda", Georgia, serif'; ctx.fillText(window.Langue && Langue.en ? 'Scratch here' : 'Grattez ici', r.width / 2, r.height / 2 - 2);
-      ctx.font = '500 11px "EB Garamond", Georgia, serif'; ctx.fillText('DU BOUT DU DOIGT', r.width / 2, r.height / 2 + 20);
+      ctx.font = '500 11px "EB Garamond", Georgia, serif'; ctx.fillText(window.Langue && Langue.en ? 'WITH YOUR FINGERTIP' : 'DU BOUT DU DOIGT', r.width / 2, r.height / 2 + 20);
     };
     paint();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (!moves) paint(); });

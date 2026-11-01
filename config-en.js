@@ -17,7 +17,7 @@ window.CONFIG_EN = {
 
   textes: {
     sousTitre: 'Forever begins with “I do”.',
-    date: 'Mark your calendar',
+    date: 'Save the date.',
     programme: 'The weekend',
     escales: 'Until our next adventure',
     bientot: 'Hush, more is on the way',

@@ -412,9 +412,9 @@
 
   window.SKETCH = {
     branch, sprig, ribbon, pageDefs, couple, fenetre, glycine, filigrane, ornement, pompon,
-    chateau: wrap('0 0 420 236', chateauW, chateau, 'Aquarelle du Château de la Fontaine et de son grand cèdre'),
-    eglise: wrap('0 0 420 236', egliseW, eglise, 'Aquarelle de l’église et de la halle d’Égreville'),
-    mairie: wrap('0 0 420 236', mairieW, mairie, 'Aquarelle de l’hôtel de ville de Suresnes'),
+    chateau: wrap('0 0 420 236', chateauW, chateau, (window.Langue && Langue.en ? 'Watercolour of the Château de la Fontaine and its great cedar' : 'Aquarelle du Château de la Fontaine et de son grand cèdre')),
+    eglise: wrap('0 0 420 236', egliseW, eglise, (window.Langue && Langue.en ? 'Watercolour of the church and market hall in Égreville' : 'Aquarelle de l’église et de la halle d’Égreville')),
+    mairie: wrap('0 0 420 236', mairieW, mairie, (window.Langue && Langue.en ? 'Watercolour of Suresnes Town Hall' : 'Aquarelle de l’hôtel de ville de Suresnes')),
     doodle: (k) => `<svg class="sk doodle" viewBox="0 0 64 64" aria-hidden="true"><g class="ink">${doodles[k] || doodles.heart}</g></svg>`,
     seal,
     /* Tenues illustrées (dress code), façon aquarelle réaliste.

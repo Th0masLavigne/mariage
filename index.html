@@ -1015,7 +1015,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const q = new URLSearchParams({
       action: 'TEMPLATE', text: E(`Mariage de ${C.prenoms[0]} & ${C.prenoms[1]}`, `${C.prenoms[0]} & ${C.prenoms[1]}’s wedding`),
       dates: `${ymd(Math.min(...ds))}/${ymd(Math.max(...ds) + 1)}`,
-      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre}${m.accueil ? E(' (accueil dès ', ' (guests welcome from ') + m.accueil + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
+      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? E(' ', ', ') + Langue.heure(m.heure) : ''}${E(' : ', ': ')}${m.titre}${m.accueil ? E(' (accueil dès ', ' (guests welcome from ') + Langue.heure(m.accueil) + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
       location: `${L.nom}, ${L.adresse}`
     });
     return 'https:/' + '/calendar.google.com/calendar/render?' + q.toString();
@@ -1151,14 +1151,14 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     ${rule()}
     <section id="programme">
-      <div class="eyebrow">${E('Le programme', 'The programme')}</div>
+      <div class="eyebrow">${E('Le programme', 'The schedule')}</div>
       <h2>${esc(TX.programme)}</h2>
       <div class="paper alt prog" style="--tilt:.5deg"><span class="in-border"></span>
       ${days.map(d => `<div class="day"><div class="day-h">${esc(d.jour)}</div>${d.items.map(k => {
         const m = C.moments[k], L = C.lieux[m.lieu];
         return `<div class="moment"><div class="doodle-wrap">${ico(m.dessin)}</div><div class="body">
           <h3>${esc(m.titre)}</h3>
-          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon(E('horaire à venir', 'time to come'))}${m.accueil ? `<span class="accueil">${E('accueil dès', 'guests welcome from')} ${esc(m.accueil)}</span>` : ''}<a href="${esc(L.maps)}" target="_blank" rel="noopener">${esc(L.nom)}</a></div>
+          <div class="meta">${m.heure ? `<span class="time">${esc(Langue.heure(m.heure))}</span>` : soon(E('horaire à venir', 'time to come'))}${m.accueil ? `<span class="accueil">${E('accueil dès', 'guests welcome from')} ${esc(Langue.heure(m.accueil))}</span>` : ''}<a href="${esc(L.maps)}" target="_blank" rel="noopener">${esc(L.nom)}</a></div>
           ${m.texte ? `<p>${esc(m.texte)}</p>` : ''}</div></div>`;
       }).join('')}</div>`).join('')}
       </div>
@@ -1296,7 +1296,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     box.innerHTML = `
       <div class="eyebrow">${E('Répondez s’il vous plaît', 'Kindly reply')}</div>
       <h2>${T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?', 'Will you join us?')}</h2>
-      ${C.repondreAvant ? `<p class="deadline">${E('Réponse souhaitée avant le', 'Kindly reply by')} ${esc(C.repondreAvant)}</p>` : ''}
+      ${C.repondreAvant ? `<p class="deadline">${E('Réponse souhaitée avant le', 'Kindly reply by')} ${esc(Langue.date(C.repondreAvant))}</p>` : ''}
       ${draft && draft.presence ? T('<p class="step-note"><b>Vous n’aviez pas terminé.</b> Votre réponse n’a pas encore été validée : vérifiez-la, puis appuyez sur le bouton en bas du formulaire.</p>', '<p class="step-note"><b>Tu n’avais pas terminé.</b> Ta réponse n’a pas encore été validée : vérifie-la, puis appuie sur le bouton en bas du formulaire.</p>', '<p class="step-note"><b>You hadn’t finished.</b> Your reply has not been sent yet: check it, then press the button at the bottom of the form.</p>') : ''}
       <form id="f" novalidate>
         <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -1427,7 +1427,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     function estimate() {
       const el = $('#estimate'); if (!el) return;
       const n = R.nuits.length * R.nb_couchage * C.prixNuit;
-      el.textContent = R.couchage && n ? E(`Estimation : ${R.nb_couchage} pers. × ${R.nuits.length} nuit${R.nuits.length > 1 ? 's' : ''} × ${C.prixNuit} € = ${n} €`, `Estimate: ${R.nb_couchage} pers. × ${R.nuits.length} night${R.nuits.length > 1 ? 's' : ''} × €${C.prixNuit} = €${n}`) : '';
+      el.textContent = R.couchage && n ? E(`Estimation : ${R.nb_couchage} pers. × ${R.nuits.length} nuit${R.nuits.length > 1 ? 's' : ''} × ${C.prixNuit} € = ${n} €`, `Estimate: ${R.nb_couchage} ${R.nb_couchage > 1 ? 'people' : 'person'} × ${R.nuits.length} night${R.nuits.length > 1 ? 's' : ''} × €${C.prixNuit} = €${n}`) : '';
     }
 
     /* Envoi robuste : certains navigateurs intégrés (appli Google, Instagram…) bloquent ou font
@@ -1555,7 +1555,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       ${S.doodle(oui ? 'glasses' : 'heart')}
       <div class="big">${oui ? E('C’est noté, on trinquera ensemble !', 'Noted, we’ll raise a glass together!') : T('Vous allez nous manquer.', 'Tu vas nous manquer.', 'We’ll miss you.')}</div>
       <p>${Langue.en ? (oui ? 'Thank you, ' + esc(R.nom) + '! We’ll send you the timings, the dress code and practical details very soon.' : 'Thank you for letting us know, ' + esc(R.nom) + '. We’ll raise a glass to you.') : oui ? 'Merci ' + esc(R.nom) + T(' ! Nous vous enverrons', ' ! Nous t’enverrons') + ' les horaires, le code couleur et les infos pratiques très bientôt.' : 'Merci de nous avoir répondu, ' + esc(R.nom) + T('. On lèvera un verre à votre santé.', '. On lèvera un verre à ta santé.')}</p>
-      ${already ? `<p class="deadline" style="margin:14px 0 0">${E('Réponse envoyée', 'Reply sent')}${R.date ? E(' le ', ' on ') + new Date(R.date).toLocaleDateString(Langue.locale) : ''}${DEMO ? E(' (aperçu : rien n’a été envoyé)', ' (preview: nothing was sent)') : ''}</p>` : (DEMO ? `<p class="deadline" style="margin:14px 0 0">${E('Mode aperçu : rien n’a été envoyé.', 'Preview mode: nothing was sent.')}</p>` : '')}
+      ${already ? `<p class="deadline" style="margin:14px 0 0">${E('Réponse envoyée', 'Reply sent')}${R.date ? E(' le ', ' on ') + Langue.jourLong(R.date) : ''}${DEMO ? E(' (aperçu : rien n’a été envoyé)', ' (preview: nothing was sent)') : ''}</p>` : (DEMO ? `<p class="deadline" style="margin:14px 0 0">${E('Mode aperçu : rien n’a été envoyé.', 'Preview mode: nothing was sent.')}</p>` : '')}
       ${C.site && C.site.lienFairePart ? `<a class="site-link" href="${carnetUrl()}">${E('Le carnet pratique : accès, hébergement, covoiturage', 'The wedding guide: getting here, accommodation, car sharing')} →</a><br>` : ''}
       ${oui && lienListe((C.bientot[0] || {}).lien) ? `<a class="site-link" href="${esc(lienListe(C.bientot[0].lien))}">${E('Notre liste de mariage', 'Our wedding registry')} →</a><br>` : ''}
       <button class="linkbtn" id="edit" type="button">${E('Modifier ma réponse', 'Change my reply')}</button></div>`;
@@ -1636,9 +1636,9 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   /* ---------------- barre d’aperçu ---------------- */
   function demoBar() {
     const bar = document.createElement('div'); bar.className = 'demo-bar';
-    bar.innerHTML = `Aperçu
-      <select id="dF" aria-label="Formule">${codes.map(k => `<option value="${k}" ${k === state.code ? 'selected' : ''}>${esc(C.formules[k].nom)}</option>`).join('')}</select>
-      <select id="dS" aria-label="Style"><option value="sketch">Croquis</option><option value="placeholder">Photos à venir</option></select>`;
+    bar.innerHTML = `${E('Aperçu', 'Preview')}
+      <select id="dF" aria-label="${E('Formule', 'Invitation')}">${codes.map(k => `<option value="${k}" ${k === state.code ? 'selected' : ''}>${esc(C.formules[k].nom)}</option>`).join('')}</select>
+      <select id="dS" aria-label="Style"><option value="sketch">${E('Croquis', 'Sketches')}</option><option value="placeholder">${E('Photos à venir', 'Photos to come')}</option></select>`;
     document.body.appendChild(bar);
     $('#dS').value = state.style;
     $('#dF').addEventListener('change', e => { state.code = e.target.value; render(); scrollTo(0, 0); });

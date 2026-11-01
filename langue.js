@@ -54,6 +54,22 @@
     E: (fr, an) => en ? an : fr,
     /* suffixe à ajouter aux liens internes (carnet, faire-part) */
     q: en ? '&en' : '',
-    locale: en ? 'en-GB' : 'fr-FR'
+    locale: en ? 'en-GB' : 'fr-FR',
+    /* heure '14:45' → '2:45 pm' en anglais (inchangée en français) */
+    heure: h => {
+      const m = en && String(h || '').match(/^\s*(\d{1,2})\s*[:hH.]\s*(\d{2})?\s*$/);
+      if (!m) return h;
+      const H = +m[1], M = m[2] || '00';
+      return (H % 12 || 12) + (M === '00' ? '' : ':' + M) + (H < 12 ? ' am' : ' pm');
+    },
+    /* date écrite en français ('Vendredi 6 août', '15 mars 2027') → 'Friday 6 August', '15 March 2027' */
+    date: s => {
+      if (!en || !s) return s;
+      const J = { lundi: 'Monday', mardi: 'Tuesday', mercredi: 'Wednesday', jeudi: 'Thursday', vendredi: 'Friday', samedi: 'Saturday', dimanche: 'Sunday' };
+      const M = { janvier: 'January', 'février': 'February', fevrier: 'February', mars: 'March', avril: 'April', mai: 'May', juin: 'June', juillet: 'July', 'août': 'August', aout: 'August', septembre: 'September', octobre: 'October', novembre: 'November', 'décembre': 'December', decembre: 'December' };
+      return String(s).replace(/\b1er\b/gi, '1').replace(/[A-Za-zÀ-ÿ]+/g, w => J[w.toLowerCase()] || M[w.toLowerCase()] || (w.toLowerCase() === 'le' ? '' : w)).replace(/\s{2,}/g, ' ').trim();
+    },
+    /* date du jour au format long : '1 November 2026' / '1 novembre 2026' */
+    jourLong: d => new Date(d).toLocaleDateString(en ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   };
 })();

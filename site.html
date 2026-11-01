@@ -474,22 +474,22 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     const L = C.lieux.chateau;
     const q = new URLSearchParams({ action: 'TEMPLATE', text: E(`Mariage de ${C.prenoms[0]} & ${C.prenoms[1]}`, `${C.prenoms[0]} & ${C.prenoms[1]}’s wedding`),
       dates: `${ymd(Math.min(...ds))}/${ymd(Math.max(...ds) + 1)}`,
-      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre}${m.accueil ? E(' (accueil dès ', ' (guests welcomed from ') + m.accueil + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
+      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? E(' ', ', ') + Langue.heure(m.heure) : ''}${E(' : ', ': ')}${m.titre}${m.accueil ? E(' (accueil dès ', ' (guests welcomed from ') + Langue.heure(m.accueil) + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
       location: `${L.nom}, ${L.adresse}` });
     return 'https://calendar.google.com/calendar/render?' + q.toString();
   }
 
   /* --- Programme + lieux --- */
-  if (on(SI.programme)) sections.push({ id: 'programme', menu: E('Programme', 'Programme'), html: `
-    ${head(E('Le programme', 'The programme'), (SI.programme.titre || E('Le déroulé', 'The weekend')))}
+  if (on(SI.programme)) sections.push({ id: 'programme', menu: E('Programme', 'Schedule'), html: `
+    ${head(E('Le programme', 'The schedule'), (SI.programme.titre || E('Le déroulé', 'The weekend')))}
     <div class="paper alt" style="--tilt:.4deg"><span class="in-border"></span>
       ${days.map(d => `<div class="day"><div class="day-h">${esc(d.jour)}</div>${d.items.map(k => { const m = C.moments[k], L = C.lieux[m.lieu];
         return `<div class="moment">${ico(m.dessin)}<div><h3>${esc(m.titre)}</h3>
-          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon(E('horaire à venir', 'time to be confirmed'))}${m.accueil ? `<span class="accueil">${E('accueil dès', 'guests welcomed from')} ${esc(m.accueil)}</span>` : ''}${ext(L.maps, esc(L.nom))}</div>
+          <div class="meta">${m.heure ? `<span class="time">${esc(Langue.heure(m.heure))}</span>` : soon(E('horaire à venir', 'time to be confirmed'))}${m.accueil ? `<span class="accueil">${E('accueil dès', 'guests welcomed from')} ${esc(Langue.heure(m.accueil))}</span>` : ''}${ext(L.maps, esc(L.nom))}</div>
           ${m.texte ? `<p>${esc(m.texte)}</p>` : ''}</div></div>`; }).join('')}</div>`).join('')}
     </div>
     <div class="btns">
-      ${perso ? `<a class="btn" href="agenda/${encodeURIComponent(code)}.ics">${ICON_CAL} iPhone, Mac, Outlook</a>` : ''}
+      ${perso ? `<a class="btn" href="agenda/${encodeURIComponent(code)}${Langue.en ? '-en' : ''}.ics">${ICON_CAL} iPhone, Mac, Outlook</a>` : ''}
       <a class="btn ghost" href="${esc(gcal())}" target="_blank" rel="noopener">${ICON_CAL} ${E('Google Agenda', 'Google Calendar')}</a>
     </div>
     <div class="grid aligned">${lieuxUsed.map(k => { const L = C.lieux[k];
@@ -544,7 +544,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     ${F.nuits.length ? `<div class="paper stay" style="--tilt:.3deg"><span class="in-border"></span>
       ${ico('window')}<h3>${esc(H.titre || E('Dormir sur place', 'Staying on site'))}</h3>
       <p class="lead" style="margin:8px auto 0">${esc(H.texte || '')}</p>
-      ${C.prixNuit ? `<div class="prix">${esc(C.prixNuit)} €<small>${E('par personne et par nuit', 'per person per night')}</small></div>` : ''}
+      ${C.prixNuit ? `<div class="prix">${E(esc(C.prixNuit) + ' €', '€' + esc(C.prixNuit))}<small>${E('par personne et par nuit', 'per person per night')}</small></div>` : ''}
       <p class="muted" style="margin:10px 0 0;font-size:15.5px">${F.nuits.map(n => esc(n.label)).join(' · ')}</p>
       ${H.note ? `<p class="note">${esc(H.note)}</p>` : ''}
       <a class="btn" href="${esc(lienFP)}">${E('Je le précise dans ma réponse', 'I’ll mention it in my reply')}</a></div>` : ''}
@@ -680,11 +680,11 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   const R = store.get('rsvp.' + code);
   const statut = R ? `<div class="paper statut alt"><span class="in-border"></span>
       <div class="big">${R.presence === 'Oui' ? T('Vous serez des nôtres', 'Tu seras des nôtres', 'You’ll be joining us') : T('Vous allez nous manquer', 'Tu vas nous manquer', 'We’ll miss you')}</div>
-      <p>${E('Réponse envoyée', 'Reply sent')}${R.date ? E(' le ', ' on ') + new Date(R.date).toLocaleDateString(Langue.locale) : ''}${R.nom ? E(' par ', ' by ') + esc(R.nom) : ''}.</p>
+      <p>${E('Réponse envoyée', 'Reply sent')}${R.date ? E(' le ', ' on ') + Langue.jourLong(R.date) : ''}${R.nom ? E(' par ', ' by ') + esc(R.nom) : ''}.</p>
       <a class="btn ghost" href="${esc(lienFP)}">${E('Modifier ma réponse', 'Change my reply')}</a></div>`
     : perso ? `<div class="paper statut alt"><span class="in-border"></span>
       <div class="big">${T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?', 'Will you join us?')}</div>
-      ${C.repondreAvant ? `<p>${E('Réponse souhaitée avant le', 'Kindly reply by')} ${esc(C.repondreAvant)}.</p>` : ''}
+      ${C.repondreAvant ? `<p>${E('Réponse souhaitée avant le', 'Kindly reply by')} ${esc(Langue.date(C.repondreAvant))}.</p>` : ''}
       <a class="btn cta" href="${esc(lienFP)}">${E('Répondre au faire-part', 'Reply to the invitation')}</a></div>` : '';
 
   $('#annonce').innerHTML = SI.annonce ? `<div class="annonce">${esc(SI.annonce)}</div>` : '';
