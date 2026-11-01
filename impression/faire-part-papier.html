@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Faire-part papier</title>
+<!-- polices intégrées (fonctionne en ouvrant le fichier directement dans Chrome) -->
+<link rel="stylesheet" href="polices.css">
+<script>
+/* =====================================================================
+   FAIRE-PART PAPIER — TOUT CE QUI SE MODIFIE EST ICI
+   ---------------------------------------------------------------------
+   1. Modifiez les textes / horaires / positions ci-dessous, enregistrez.
+   2. Rechargez la page dans Chrome (Cmd + R) pour voir le résultat.
+   3. Choisissez la formule en haut de la page, puis « Exporter en PDF ».
+   Rappels :
+   • apostrophe typographique ’ dans les textes (ou \' ).
+   • toutes les positions / tailles sont en millimètres, mesurées depuis
+     le coin haut-gauche de la page AVEC fond perdu (154 × 216 mm).
+     La coupe se fait à 3 mm du bord (pointillés rouges à l'écran).
+     Gardez textes et dessins à au moins 8 mm du bord (5 mm après coupe).
+   ===================================================================== */
+window.REGLAGES = {
+
+  /* --- RECTO -------------------------------------------------------- */
+  recto: {
+    surtitre: 'Vous êtes invités',
+    prenom1: 'Tiphaine',
+    prenom2: 'Thomas',
+    lieu: 'Château de la Fontaine',
+    photo: '../photos/bateau-nb.jpg',          // photo du médaillon
+    cadragePhoto: '50% 30%',                    // position de la photo dans l'ovale (horizontal vertical)
+    monogramme: '../photos/monogramme-lettres.png',
+    phraseFin: 'Les plus belles histoires se célèbrent ensemble.',
+    /* positions verticales (mm depuis le haut) et tailles */
+    pos: {
+      monogramme:   { haut: 21, largeur: 27 },
+      surtitre:     { haut: 51 },
+      medaillon:    { haut: 60, largeur: 60, hauteur: 75 },
+      prenoms:      { haut: 141, taille: 13 },        // taille = hauteur de police en mm
+      ornement:     { haut: 161, largeur: 32 },
+      date:         { haut: 168, taille: 4.8 },
+      lieu:         { haut: 177, taille: 4.4 },
+      phraseFin:    { haut: 196, taille: 3.5 }
+    }
+  },
+
+  /* --- VERSO -------------------------------------------------------- */
+  verso: {
+    surtitre: 'Le déroulé',
+    titre3lieux: 'Trois adresses',
+    titre2lieux: 'Deux adresses',
+    /* QR code en bas de page vers le carnet pratique ({code} = code de la formule).
+       Pas le lien d'invitation : il est nominatif et envoyé séparément.
+       ⚠ Scannez le QR code imprimé avec votre téléphone avant de lancer l'impression. */
+    carnet: {
+      lien: 'https://th0maslavigne.github.io/mariage/site.html?f={code}',
+      titre: 'Le carnet du mariage',
+      texte: 'Accès, hébergement, liste de mariage… Flashez ce code pour tout retrouver.',
+      taille: 17                                 // côté du QR code en mm
+    },
+    /* la 4L : sur quel tronçon (1 = entre le 1er et le 2e lieu), largeur en mm */
+    voiture: { troncon: 1, largeur: 30, image: '../photos/4l-profil.png', imageInverse: '../photos/4l-profil-d.png' },
+    /* texte affiché le long de la route, selon le lieu de départ */
+    trajets: { mairie: '≈ 1 h 15 de route', eglise: '8 minutes' },
+    /* rangées des lieux : haut (mm), hauteur (mm), côté de l'illustration ('left' ou 'right') */
+    rangees3: [ { haut: 46, hauteur: 33, cote: 'left' }, { haut: 93, hauteur: 33, cote: 'right' }, { haut: 139, hauteur: 38, cote: 'left' } ],
+    rangees2: [ { haut: 52, hauteur: 46, cote: 'left' }, { haut: 120, hauteur: 50, cote: 'right' } ],
+    margeGauche: 19, margeDroite: 135,          // zone utile du verso (mm)
+    largeurMaxIllustration: { mairie: 40, eglise: 40, chateau: 50 }
+  },
+
+  /* --- LES LIEUX ---------------------------------------------------- */
+  lieux: {
+    mairie:  { nom: 'Hôtel de ville de Suresnes',      adresse: '2 rue Carnot, 92150 Suresnes',              image: '../photos/lieux/mairie.webp' },
+    eglise:  { nom: 'Église Saint-Martin d’Égreville', adresse: 'Égreville (77620), à deux pas du château',  image: '../photos/lieux/eglise.webp' },
+    chateau: { nom: 'Château de la Fontaine',          adresse: '41 Bois le Roi, 45210 Griselles',           image: '../photos/lieux/chateau.webp' }
+  },
+  ordreLieux: ['mairie', 'eglise', 'chateau'],   // ordre d'affichage de haut en bas
+
+  /* --- LES MOMENTS --------------------------------------------------
+     icone : rings | moon | bells | glasses | plate | croissant | gift | window   */
+  moments: {
+    mairie:  { jour: 'Vendredi 6 août', heure: '14h45', titre: 'Mariage civil',           lieu: 'mairie',  icone: 'rings' },
+    veillee: { jour: 'Vendredi 6 août', heure: '18h00', titre: 'Soirée en petit comité',  lieu: 'chateau', icone: 'moon' },
+    eglise:  { jour: 'Samedi 7 août',   heure: '14h00', titre: 'Cérémonie religieuse',    lieu: 'eglise',  icone: 'bells' },
+    vin:     { jour: 'Samedi 7 août',   heure: '16h00', titre: 'Vin d’honneur',           lieu: 'chateau', icone: 'glasses' },
+    diner:   { jour: 'Samedi 7 août',   heure: '20h30', titre: 'Dîner & soirée dansante', lieu: 'chateau', icone: 'plate' },
+    brunch:  { jour: 'Dimanche 8 août', heure: '10h30', titre: 'Brunch',                  lieu: 'chateau', icone: 'croissant' }
+  },
+
+  /* --- LES 3 FORMULES ----------------------------------------------- */
+  formules: {
+    'grand-weekend-7q': {
+      nom: 'Grand week-end',
+      dates: '6 · 7 · 8 août 2027',
+      intro: 'Nous serions heureux de vous avoir à nos côtés, du premier « oui » au dernier croissant.',
+      moments: ['mairie', 'veillee', 'eglise', 'vin', 'diner', 'brunch']
+    },
+    'noce-4m': {
+      nom: 'Noce',
+      dates: '7 & 8 août 2027',
+      intro: 'Nous serions heureux de vous avoir à nos côtés au vin d’honneur, au dîner et au brunch du lendemain.',
+      moments: ['eglise', 'vin', 'diner', 'brunch']
+    },
+    'vin-honneur-2k': {
+      nom: 'Vin d’honneur',
+      dates: 'Samedi 7 août 2027',
+      intro: 'Nous serions heureux de vous avoir à nos côtés au vin d’honneur.',
+      moments: ['eglise', 'vin']
+    }
+  },
+
+  /* --- COULEURS ----------------------------------------------------- */
+  couleurs: {
+    carte: '#fffdf8',       // papier crème (jusqu'au bord, fond perdu compris)
+    encre: '#1E2D4A',       // bleu nuit (prénoms, textes)
+    titres: '#2E4A72',      // titres des lieux
+    or: '#a8813a',          // dates, horaires, route
+    gris: '#6f7186'         // surtitres, adresses
+  }
+};
+</script>
+<style>
+/* A5 + 3 mm de fond perdu de chaque côté */
+@page { size: 154mm 216mm; margin: 0; }
+:root {
+  --ink: #1E2D4A; --blue: #2E4A72; --muted: #6f7186; --gold: #a8813a; --card: #fffdf8; --env: #a9c0de;
+  --f-display: 'Bodoni Moda', Georgia, serif; --f-body: 'EB Garamond', Georgia, serif; --f-hand: 'Parisienne', cursive;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--f-body); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { position: relative; width: 154mm; height: 216mm; overflow: hidden; background: var(--card); page-break-after: always; break-after: page; }
+.page:last-child { page-break-after: auto; break-after: auto; }
+@media screen {
+  html, body { background: #8a8f99; }
+  body { padding: 22mm 10mm 10mm; display: flex; gap: 10mm; flex-wrap: wrap; justify-content: center; }
+  .page { box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+  .trim { position: absolute; inset: 3mm; outline: .2mm dashed rgba(220,0,0,.55); pointer-events: none; z-index: 99; }
+  .barre { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap;
+    padding: 10px 16px; background: #fffdf8; box-shadow: 0 2px 10px rgba(0,0,0,.2); font: 15px/1.3 var(--f-body); }
+  .barre select, .barre button { font: inherit; padding: 5px 10px; border-radius: 6px; border: 1px solid #b9b2a2; background: #fff; cursor: pointer; }
+  .barre button { background: #2E4A72; color: #fff; border-color: #2E4A72; }
+  .barre small { color: #6f7186; }
+}
+@media print { .trim, .barre { display: none !important; } }
+.frame { position: absolute; inset: 0; width: 154mm; height: 216mm; }
+.card { position: absolute; inset: 0; }
+.grain { position: absolute; inset: 0; background: url("../photos/grain-carte.png") 0 0 / 50mm 50mm; opacity: .55; mix-blend-mode: multiply; pointer-events: none; }
+.abs { position: absolute; }
+.center { left: 0; right: 0; text-align: center; }
+.fili { position: absolute; width: 15mm; z-index: 2; }
+.fili svg { display: block; width: 100%; height: auto; }
+.fili.tl { left: 11mm; top: 11mm; } .fili.tr { right: 11mm; top: 11mm; transform: scaleX(-1); }
+.fili.bl { left: 11mm; bottom: 11mm; transform: scaleY(-1); } .fili.br { right: 11mm; bottom: 11mm; transform: scale(-1,-1); }
+.orn svg { display: block; width: 100%; height: auto; }
+.eyebrow { font: 500 3.1mm/1 var(--f-body); letter-spacing: .34em; text-transform: uppercase; color: var(--muted); }
+.hcenter { left: 50%; transform: translateX(-50%); }
+
+/* ---------- RECTO ---------- */
+.medaillon { border-radius: 50%; padding: 1.9mm; margin: 0; border: .25mm solid #8a6424;
+  background: linear-gradient(135deg, #8a6424, #e9cd84 22%, #fff3c8 36%, #b48a3c 52%, #f0d690 70%, #8a6424); }
+.filet { position: absolute; inset: 11.9mm; border: .2mm solid var(--gold); opacity: .45; pointer-events: none; }
+.r-fin { font-style: italic; line-height: 1.2; font-family: var(--f-display); color: var(--blue); }
+.qr { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 4mm; }
+.qr svg { display: block; flex: none; }
+.qr .qt { max-width: 62mm; text-align: right; }
+.qr .qt b { display: block; font: italic 400 4.2mm/1.15 var(--f-display); color: var(--blue); }
+.qr .qt span { display: block; font: 400 3.1mm/1.3 var(--f-body); color: var(--muted); margin-top: .8mm; }
+.medaillon::after { content: ''; position: absolute; inset: .9mm; border-radius: 50%; border: .2mm dashed rgba(255,246,214,.8); }
+.medaillon img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: .7mm solid var(--card); }
+.r-names { font-weight: 400; line-height: 1.25; font-family: var(--f-hand); color: var(--ink); white-space: nowrap; }
+.r-names i { font-style: normal; color: var(--gold); padding: 0 .08em; }
+.r-date { font-weight: 500; line-height: 1; font-family: var(--f-display); letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+.r-place { font-style: italic; line-height: 1.2; font-family: var(--f-display); color: var(--ink); }
+
+/* ---------- VERSO ---------- */
+.v-eye { top: 17mm; }
+.v-title { top: 21.5mm; font: italic 400 10mm/1.1 var(--f-display); color: var(--blue); }
+.v-intro { top: 35mm; left: 20mm; right: 20mm; font: italic 400 3.65mm/1.4 var(--f-body); color: #4b4f66; text-align: center; text-wrap: balance; }
+.lieu img.ill { position: absolute; object-fit: contain; }
+.lieu .txt { position: absolute; }
+.lieu h3 { font: italic 400 5.6mm/1.05 var(--f-display); color: var(--blue); }
+.lieu .adr { font: 400 3.15mm/1.3 var(--f-body); color: var(--muted); margin-top: .9mm; }
+.lieu ul { list-style: none; margin-top: 2.3mm; }
+.lieu li { display: grid; grid-template-columns: 7.2mm 1fr; align-items: center; column-gap: 1.6mm; margin-top: 1.3mm; }
+.lieu li img { width: 7.2mm; height: 6.4mm; object-fit: contain; }
+.lieu li .jour { display: block; font: 600 2.35mm/1.1 var(--f-body); letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+.lieu li .quoi { display: block; font: italic 400 3.85mm/1.15 var(--f-display); color: var(--ink); }
+.lieu li .h { font: 600 3.1mm/1 var(--f-body); color: var(--gold); font-style: normal; margin-right: 1.2mm; letter-spacing: .02em; }
+.right .txt { text-align: right; }
+.right li { grid-template-columns: 1fr 7.2mm; }
+.right li img { order: 2; }
+.route { position: absolute; inset: 0; width: 154mm; height: 216mm; pointer-events: none; }
+.car { position: absolute; z-index: 3; }
+.car img { display: block; width: 100%; height: auto; }
+.duree { position: absolute; font: italic 400 3.1mm/1.1 var(--f-body); color: var(--muted); white-space: nowrap; }
+</style>
+</head><body>
+<div class="barre">
+  <label>Formule : <select id="choix"></select></label>
+  <button id="imprimer">Exporter en PDF</button>
+  <small>Dans la fenêtre d’impression : Destination « Enregistrer au format PDF » · Marges « Aucune » · cocher « Graphiques d’arrière-plan »</small>
+</div>
+<div id="out"></div>
+<script src="../sketches.js"></script>
+<script src="qrcode.js"></script>
+<script>
+const R = window.REGLAGES, S = window.SKETCH;
+const P = new URLSearchParams(location.search);
+const f = R.formules[P.get('f')] ? P.get('f') : Object.keys(R.formules)[0], F = R.formules[f];
+const mm = v => v + 'mm';
+const rootStyle = document.documentElement.style, Cc = R.couleurs;
+rootStyle.setProperty('--card', Cc.carte); rootStyle.setProperty('--ink', Cc.encre);
+rootStyle.setProperty('--blue', Cc.titres); rootStyle.setProperty('--gold', Cc.or); rootStyle.setProperty('--muted', Cc.gris);
+
+/* barre d'outils (écran seulement) */
+const sel = document.getElementById('choix');
+sel.innerHTML = Object.entries(R.formules).map(([k, v]) => `<option value="${k}"${k === f ? ' selected' : ''}>${v.nom}</option>`).join('');
+sel.onchange = () => { const u = new URL(location.href); u.searchParams.set('f', sel.value); location.href = u.href; };
+document.getElementById('imprimer').onclick = () => { document.title = 'faire-part-' + f; window.print(); };
+
+/* charge une image pour connaître ses proportions */
+const ratio = src => new Promise(ok => { const i = new Image(); i.onload = () => ok(i.naturalHeight / i.naturalWidth); i.onerror = () => ok(1); i.src = src; });
+const fili = () => ['tl','tr','bl','br'].map(c => `<span class="fili ${c}">${S.filigrane()}</span>`).join('');
+
+/* filet doré fin, aligné sur les coins */
+function frame() { return `<div class="filet"></div>`; }
+/* QR code vectoriel */
+function qrSVG(texte, cote, couleur) {
+  const q = qrcode(0, 'M'); q.addData(texte); q.make();
+  const n = q.getModuleCount(); let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  return `<svg viewBox="-1 -1 ${n + 2} ${n + 2}" style="width:${cote}mm;height:${cote}mm" shape-rendering="crispEdges"><rect x="-1" y="-1" width="${n + 2}" height="${n + 2}" fill="${Cc.carte}"/><path d="${d}" fill="${couleur}"/></svg>`;
+}
+
+(async () => {
+  /* ---------- RECTO ---------- */
+  const RE = R.recto, Q = RE.pos;
+  const recto = `<section class="page">${frame()}<div class="card">
+    <div class="grain"></div>${fili()}
+    <img class="abs hcenter" src="${RE.monogramme}" style="top:${mm(Q.monogramme.haut)};width:${mm(Q.monogramme.largeur)}" alt="">
+    <div class="abs center eyebrow" style="top:${mm(Q.surtitre.haut)}">${RE.surtitre}</div>
+    <figure class="abs hcenter medaillon" style="top:${mm(Q.medaillon.haut)};width:${mm(Q.medaillon.largeur)};height:${mm(Q.medaillon.hauteur)}"><img src="${RE.photo}" style="object-position:${RE.cadragePhoto}" alt=""></figure>
+    <div class="abs center r-names" style="top:${mm(Q.prenoms.haut)};font-size:${mm(Q.prenoms.taille)}">${RE.prenom1}<i>&amp;</i>${RE.prenom2}</div>
+    <div class="abs hcenter orn" style="top:${mm(Q.ornement.haut)};width:${mm(Q.ornement.largeur)}">${S.ornement()}</div>
+    <div class="abs center r-date" style="top:${mm(Q.date.haut + .9)};font-size:${mm(Q.date.taille)}">${F.dates}</div>
+    <div class="abs center r-place" style="top:${mm(Q.lieu.haut)};font-size:${mm(Q.lieu.taille)}">${RE.lieu}</div>
+    <div class="abs center r-fin" style="top:${mm(Q.phraseFin.haut)};font-size:${mm(Q.phraseFin.taille)}">${RE.phraseFin}</div>
+  </div><div class="trim"></div></section>`;
+
+  /* ---------- VERSO ---------- */
+  const V = R.verso;
+  const ids = R.ordreLieux.filter(id => F.moments.some(m => R.moments[m].lieu === id));
+  const n = ids.length, rows = n >= 3 ? V.rangees3 : V.rangees2;
+  const titre = n >= 3 ? V.titre3lieux : V.titre2lieux;
+  const X0 = V.margeGauche, X1 = V.margeDroite;
+  const ratios = await Promise.all(ids.map(id => ratio(R.lieux[id].image)));
+  const carRatio = await ratio(V.voiture.image);
+  let lieuxHTML = '', anchors = [];
+  ids.forEach((id, i) => {
+    const L = R.lieux[id], RW = rows[i], rt = ratios[i];
+    const iw = Math.min(V.largeurMaxIllustration[id] || 40, RW.hauteur / rt), ihh = iw * rt;
+    const left = RW.cote === 'left';
+    const ix = left ? X0 : X1 - iw, iy = RW.haut + (RW.hauteur - ihh) / 2;
+    const tx = left ? ix + iw + 5 : X0, tw = (X1 - X0) - iw - 5;
+    let prevJour = '';
+    const items = F.moments.filter(m => R.moments[m].lieu === id).map(m => { const M = R.moments[m];
+      const j = M.jour !== prevJour ? `<span class="jour">${M.jour}</span>` : ''; prevJour = M.jour;
+      return `<li><img src="../photos/icones/${M.icone}.webp" alt=""><span>${j}<span class="quoi"><span class="h">${M.heure}</span>${M.titre}</span></span></li>`; }).join('');
+    lieuxHTML += `<div class="lieu ${left ? 'left' : 'right'}">
+      <img class="ill" src="${L.image}" style="left:${mm(ix)};top:${mm(iy)};width:${mm(iw)};height:${mm(ihh)}" alt="">
+      <div class="txt" data-row="${i}" style="left:${mm(tx)};width:${mm(tw)};top:${mm(RW.haut)}">
+        <h3>${L.nom}</h3><div class="adr">${L.adresse}</div><ul>${items}</ul></div></div>`;
+    anchors.push({ cx: ix + iw / 2, top: iy, bot: iy + ihh });
+  });
+  /* route en pointillés dorés entre les illustrations + la 4L */
+  let route = '', extras = '';
+  for (let i = 0; i < n - 1; i++) {
+    const a = anchors[i], b = anchors[i + 1];
+    const x0 = a.cx, y0 = a.bot + 1.5, x3 = b.cx, y3 = b.top - 1.5, my = (y0 + y3) / 2;
+    route += `<path d="M${x0} ${y0} C ${x0} ${my + 4}, ${x3} ${my - 4}, ${x3} ${y3}" fill="none" stroke="${Cc.or}" stroke-width=".55" stroke-dasharray="1.4 1.3" stroke-linecap="round" opacity=".85"/>
+      <circle cx="${x0}" cy="${y0}" r=".9" fill="${Cc.or}"/><circle cx="${x3}" cy="${y3}" r=".9" fill="${Cc.or}"/>`;
+    const avecVoiture = i === V.voiture.troncon - 1 || (n === 2);
+    const cw = V.voiture.largeur, chh = cw * carRatio, droite = x3 > x0, cx = (x0 + x3) / 2;
+    if (avecVoiture) extras += `<div class="car" style="left:${mm(cx - cw/2)};top:${mm(my - chh * .9)};width:${mm(cw)}"><img src="${droite ? V.voiture.image : V.voiture.imageInverse}" alt=""></div>`;
+    const label = V.trajets[ids[i]] || '';
+    if (label) {
+      const lx = avecVoiture ? cx + (droite ? -cw/2 - 2 : cw/2 + 2) : cx;
+      const ly = avecVoiture ? my + 1.2 : my - 5.5;
+      const versGauche = avecVoiture ? droite : !droite;
+      extras += `<div class="duree" style="left:${mm(lx)};top:${mm(ly)};transform:translateX(${versGauche ? '-100%' : '0'})">${label}</div>`;
+    }
+  }
+  const verso = `<section class="page">${frame()}<div class="card">
+    <div class="grain"></div>${fili()}
+    <div class="abs center eyebrow v-eye">${V.surtitre}</div>
+    <div class="abs center v-title">${titre}</div>
+    <div class="abs v-intro">${F.intro}</div>
+    <svg class="route" viewBox="0 0 154 216">${route}</svg>
+    ${lieuxHTML}${extras}
+    <div class="qr" style="bottom:15mm"><div class="qt"><b>${V.carnet.titre}</b><span>${V.carnet.texte}</span></div>${qrSVG(V.carnet.lien.replace('{code}', encodeURIComponent(f)), V.carnet.taille, Cc.encre)}</div>
+  </div><div class="trim"></div></section>`;
+
+  document.getElementById('out').outerHTML = (P.has('verso') ? '' : recto) + (P.has('recto') ? '' : verso);
+  /* centre verticalement chaque bloc texte sur sa rangée (une fois les polices chargées) */
+  const centrer = () => document.querySelectorAll('.txt').forEach(t => { const RW = rows[+t.dataset.row];
+    const h = t.getBoundingClientRect().height * 25.4 / 96; t.style.top = mm(RW.haut + (RW.hauteur - h) / 2); });
+  centrer(); await document.fonts.ready; centrer(); document.body.dataset.ready = 1;
+})();
+</script>
+</body></html>
