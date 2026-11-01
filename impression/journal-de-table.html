@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Journal de table</title>
+<!-- polices intégrées (même fichier que le faire-part papier) -->
+<link rel="stylesheet" href="polices.css">
+<!-- dessin des points à relier (généré, ne pas modifier à la main) -->
+<script src="journal-dessin.js"></script>
+<script>
+/* =====================================================================
+   JOURNAL DE TABLE — TOUT CE QUI SE MODIFIE EST ICI
+   ---------------------------------------------------------------------
+   1. Modifiez les textes ci-dessous, enregistrez.
+   2. Rechargez la page dans Chrome (Cmd + R) pour voir le résultat.
+   3. Bouton « Exporter en PDF » en haut (A4, recto-verso, marges : aucune).
+   Rappels :
+   • apostrophe typographique ’ dans les textes (ou \' ).
+   • un texte entre crochets [ … ] est un emplacement à remplir :
+     il est surligné à l’écran (pas à l’impression).
+   • un texte vide '' masque le bloc.
+   • **gras** et *italique* fonctionnent dans tous les textes.
+   ===================================================================== */
+window.JOURNAL = {
+
+  /* --- EN-TÊTE (les deux pages) ------------------------------------- */
+  nom: 'La Gazette des Mariés',
+  devise: 'Le seul quotidien où tout le monde finit par dire oui',
+  edition: 'Édition spéciale · N° 1',
+  date: 'Samedi 7 août 2027',
+  lieu: 'Château de la Fontaine',
+  prix: 'Prix : un sourire',
+  monogramme: '../photos/monogramme-lettres.png',      // '' pour le masquer
+
+  /* --- PAGE 1 : LA UNE ----------------------------------------------- */
+  une: {
+    surtitre: '[Surtitre — ex. Exclusif]',
+    titre: '[Gros titre — ex. Ils ont dit oui !]',
+    chapo: '[Chapeau : deux lignes qui résument l’article principal, ton faussement solennel.]',
+    photo: '',                       // ex. '../photos/fiances.jpeg' ; vide → cadre « photo »
+    cadragePhoto: '50% 40%',
+    legende: '[Légende de la photo]',
+    texte: [
+      '[Premier paragraphe de l’article principal : la rencontre.]',
+      '[Deuxième paragraphe : les premières années, les voyages.]',
+      '[Troisième paragraphe : la demande à Milos.]'
+    ]
+  },
+
+  /* Encadrés de la colonne de droite (autant que vous voulez) */
+  encadres: [
+    { titre: '[Le programme de la soirée]', texte: '[20 h 30 — Dîner]\n[22 h — Ouverture du bal]\n[… — …]' },
+    { titre: 'Météo', texte: '[Ciel dégagé sur le parc, averses de confettis en fin de soirée.]' },
+    { titre: 'Petites annonces', texte: '[Cherche partenaire de rock, niveau débutant accepté.]\n[Perdu : une chaussure de la mariée. Récompense.]' }
+  ],
+
+  /* Deux articles courts sous l’article principal */
+  breves: [
+    { titre: '[Titre de la brève 1]', texte: '[Texte de la brève : une anecdote sur Tiphaine.]' },
+    { titre: '[Titre de la brève 2]', texte: '[Texte de la brève : une anecdote sur Thomas.]' }
+  ],
+
+  /* Bandeau en bas de la page 1 */
+  bandeau: 'En pages 2 à 4 : mots fléchés, points à relier, notre histoire et le labyrinthe — à faire avec toute votre table !',
+
+  /* --- PAGE 2 : LES MOTS FLÉCHÉS ------------------------------------ */
+  jeux: {
+    titre: 'Les mots fléchés des mariés',
+    consigne: 'Interdit de sortir son téléphone : interrogez vos voisins de table ! Les lettres des cases numérotées forment le mot mystère.',
+
+    /* Les définitions : 'grille' → écrites dans les cases (vrais mots fléchés)
+                         'liste'  → un numéro dans la case, les définitions sous la grille */
+    definitions: 'grille',
+    /* ajoute « (2 mots) » quand la réponse contient plusieurs mots */
+    indiquerNbMots: true,
+
+    /* Taille maximale de la grille (en cases, définitions comprises) */
+    colonnesMax: 15,
+    lignesMax: 16,
+
+    /* La grille est construite automatiquement à partir des mots.
+       Elle ne vous plaît pas ? Bouton « Autre grille » en haut de page,
+       puis recopiez ici le numéro affiché pour la garder.               */
+    graine: 15,
+
+    /* Réponses : accents, espaces et apostrophes sont ignorés dans la grille.
+       definition : le texte de la case (court : 3 à 6 mots).             */
+    mots: [
+      { reponse: 'Trampoline',      definition: 'Sport de Tiphaine' },
+      { reponse: 'BMX',             definition: 'Sport de Thomas' },
+      { reponse: 'Salsa',           definition: 'Danse de Tiphaine' },
+      { reponse: 'Milos',           definition: 'Île de la demande' },
+      { reponse: 'Tarte au citron', definition: 'Gâteau préféré de Tiphaine' },
+      { reponse: 'Vietnam',         definition: 'Leur plus grand voyage' },
+      { reponse: 'Una',             definition: 'Le nom du chat' },
+      { reponse: 'Vingt',           definition: 'Années d’études post-bac des deux docteurs, cumulées' },
+      { reponse: 'Grey’s Anatomy',  definition: 'Série de Tiphaine' },
+      { reponse: 'ENS',             definition: 'École de Thomas' },
+      { reponse: 'Trois',           definition: 'Niveau de plongée de Thomas' },
+      { reponse: 'Bronze',          definition: 'Dernière étoile de Tiphaine' },
+      { reponse: 'Fraisier',        definition: 'Gâteau d’anniversaire de Thomas' },
+      { reponse: 'Simpsons',        definition: 'Dessin animé fétiche de Thomas' },
+      { reponse: 'Guitare',         definition: 'Instrument de Thomas' },
+      /* mots « bonus » : ils apportent le H et le D de THAÏLANDE */
+      { reponse: 'Champagne',       definition: 'Il coulera à flots ce soir' },
+      { reponse: 'Docteurs',        definition: 'Leur titre à tous les deux' }
+    ],
+
+    motMystere: {
+      mot: 'Thaïlande',
+      question: 'Le mot mystère : [la destination rêvée de notre voyage de noces ?]'
+    },
+
+    piedDePage: '[Solution auprès des mariés… contre un pas de danse.]'
+  },
+
+  /* --- PAGE 3 : POINTS À RELIER ------------------------------------- */
+  points: {
+    titre: 'Les points à relier',
+    consigne: 'Reliez les points dans l’ordre des numéros. Une étoile ★ marque le début d’un nouveau trait : levez le crayon et repartez de là.',
+    question: 'Mais qui sont donc ces deux-là ?'
+    /* le dessin lui-même est dans journal-dessin.js (généré à partir d’une photo) */
+  },
+
+  /* --- PAGE 4 : NOTRE HISTOIRE (sous le labyrinthe) ------------------- */
+  histoire: {
+    titre: 'Notre histoire… dans le désordre',
+    consigne: 'Retrouvez l’ordre de nos aventures : numérotez-les de 1 à 13.',
+    graine: 2,                    // change l'ordre de mélange
+    /* écrivez les étapes DANS LE BON ORDRE : la page les mélange toute seule */
+    etapes: [
+      'Tonton et Tata jouent les entremetteurs',
+      'Premier week-end à deux, entre Giverny et La Roche-Guyon',
+      'Première escapade, direction Bruges',
+      'Rencontre avec Mamie à Saint-Raphaël',
+      'Une saison de festivals : Solidays et Rock en Seine',
+      'Premier Noël à trois (Una était déjà de la partie !)',
+      'Vacances au ski à l’Alpe d’Huez',
+      'Thomas devient Docteur², Tiphaine devient médecin',
+      'Le grand voyage au Vietnam',
+      'Retour sur les pistes, au Lioran',
+      'Découverte de Vienne et de Prague',
+      'Week-end en famille à Arzon (Tiphaine a failli découvrir les plans !)',
+      'Voyage dans les Cyclades… et nous voilà fiancés !'
+    ]
+  },
+
+  /* --- PAGE 4 : LE LABYRINTHE (au-dessus de « Notre histoire ») ------- */
+  labyrinthe: {
+    titre: 'Le labyrinthe',
+    consigne: 'Aidez Thomas et son BMX à retrouver Tiphaine au cœur du labyrinthe… sans jamais traverser un mur !',
+    depart: 'Thomas',
+    arrivee: 'Tiphaine',
+    largeur: 30,                  // nombre de couloirs en largeur (plus = plus difficile)
+    graine: 1,                    // change le tracé
+    piedDePage: '[Petit mot de fin : merci d’être là, et bonne soirée !]'
+  }
+};
+</script>
+
+<style>
+:root{
+  --encre:#2b3150; --bleu:#4a6a9c; --or:#b48a3c; --pale:#eef2f8; --papier:#fff;
+  --f-display:'Bodoni Moda', Didot, serif; --f-body:'EB Garamond', Garamond, serif; --f-hand:'Parisienne', cursive;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#d9d6cf}
+body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{size:A4;margin:0}
+
+/* barre d'outils (écran seulement) */
+.outils{position:sticky;top:0;z-index:10;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:10px 16px;background:var(--encre);color:#fff;font:14px/1.3 -apple-system,system-ui,sans-serif}
+.outils button{font:inherit;padding:6px 12px;border:0;border-radius:6px;background:#fff;color:var(--encre);cursor:pointer}
+.outils button.or{background:var(--or);color:#fff}
+.outils .info{opacity:.85}
+.alerte{background:#fde8e6;color:#8a1f12;padding:8px 16px;font:14px system-ui,sans-serif;border-bottom:1px solid #f0b4ab}
+.alerte:empty{display:none}
+
+.page{width:210mm;height:297mm;margin:10mm auto;background:var(--papier);padding:11mm 12mm;
+  box-shadow:0 2px 14px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden;position:relative}
+@media print{
+  html{background:#fff} .outils,.alerte{display:none}
+  .page{margin:0;box-shadow:none;page-break-after:always;break-after:page}
+  .ph{background:none!important;outline:none!important}
+}
+.ph{background:#fff4d6;outline:1px dashed var(--or);outline-offset:1px}
+
+/* ---------- en-tête ---------- */
+.filet-haut{display:flex;justify-content:space-between;align-items:center;font-size:3.4mm;letter-spacing:.06em;
+  text-transform:uppercase;border-bottom:.3mm solid var(--encre);padding-bottom:1.5mm}
+.titre-journal{display:flex;align-items:center;justify-content:center;gap:5mm;padding:3mm 0 1mm}
+.titre-journal h1{font-family:var(--f-display);font-weight:800;font-size:13mm;line-height:1;letter-spacing:-.01em;text-align:center;white-space:nowrap}
+.titre-journal img{height:15mm}
+.devise{text-align:center;font-style:italic;font-size:4mm;padding-bottom:2mm}
+.double-filet{border-top:.6mm solid var(--encre);border-bottom:.2mm solid var(--encre);height:1.6mm}
+.mini-tete{display:flex;justify-content:space-between;align-items:baseline;border-bottom:.6mm double var(--encre);padding-bottom:2mm}
+.mini-tete b{font-family:var(--f-display);font-weight:800;font-size:7mm}
+.mini-tete span{font-size:3.4mm;text-transform:uppercase;letter-spacing:.06em}
+
+/* ---------- la une ---------- */
+.surtitre{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.18em;font-size:3.3mm;color:var(--or);text-align:center;margin-top:4mm}
+.gros-titre{font-family:var(--f-display);font-weight:700;font-size:12mm;line-height:1.05;text-align:center;margin:1.5mm 0 2mm}
+.chapo{font-style:italic;font-size:4.6mm;line-height:1.3;text-align:center;max-width:160mm;margin:0 auto 4mm}
+.corps{display:grid;grid-template-columns:2fr 1fr;gap:6mm;flex:1;min-height:0}
+.principal{display:flex;flex-direction:column;gap:3mm;min-height:0}
+.photo{height:62mm;background:var(--pale) center/cover no-repeat;border:.2mm solid var(--encre);display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-display);letter-spacing:.2em;text-transform:uppercase;font-size:3mm;color:var(--bleu)}
+.legende{font-size:3.2mm;font-style:italic;margin-top:-1.5mm}
+.colonnes{columns:2;column-gap:5mm;column-rule:.2mm solid #c9cfdd;font-size:3.9mm;line-height:1.38;text-align:justify;hyphens:auto}
+.colonnes p{margin-bottom:2mm} .colonnes p:first-child::first-letter{font-family:var(--f-display);font-weight:700;float:left;font-size:11mm;line-height:.85;padding:1mm 1.5mm 0 0}
+.breves{display:grid;grid-template-columns:1fr 1fr;gap:5mm;border-top:.3mm solid var(--encre);padding-top:2.5mm;margin-top:auto}
+.breves h3,.encadre h3{font-family:var(--f-display);font-weight:700;font-size:4.4mm;line-height:1.15;margin-bottom:1mm}
+.breves p{font-size:3.7mm;line-height:1.35;text-align:justify;hyphens:auto}
+.cote{border-left:.2mm solid #c9cfdd;padding-left:5mm;display:flex;flex-direction:column;gap:4mm}
+.encadre{border-top:.6mm solid var(--encre);padding-top:2mm}
+.encadre p{font-size:3.7mm;line-height:1.38;white-space:pre-line}
+.bandeau{margin-top:4mm;border-top:.6mm solid var(--encre);border-bottom:.2mm solid var(--encre);padding:2mm 0;text-align:center;
+  font-family:var(--f-display);font-style:italic;font-size:4.3mm}
+
+/* ---------- les jeux ---------- */
+.jeux-titre{font-family:var(--f-display);font-weight:700;font-size:10mm;text-align:center;margin-top:4mm}
+.consigne{text-align:center;font-style:italic;font-size:4.1mm;line-height:1.3;max-width:165mm;margin:1mm auto 4mm}
+.zone-grille{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.grille{display:grid;border:.5mm solid var(--encre);background:var(--encre);gap:.25mm}
+.case{width:var(--c);height:var(--c);background:#fff;position:relative;overflow:hidden}
+.case.vide{background:repeating-linear-gradient(45deg,#f3eee3 0 .6mm,#e6dcc6 .6mm .9mm)}
+.case.def{background:var(--pale);display:flex;flex-direction:column}
+.def .d{flex:1;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:var(--f-body);font-weight:500;line-height:1.02;padding:.35mm .9mm;hyphens:auto;overflow-wrap:anywhere;overflow:hidden}
+.def .d + .d{border-top:.2mm solid var(--encre)}
+.def .num{font-family:var(--f-display);font-weight:700;font-size:calc(var(--c)*.3)}
+.fl{position:absolute;width:0;height:0;z-index:2}
+.fl.A{right:-.1mm;top:50%;transform:translateY(-50%);border-top:1.1mm solid transparent;border-bottom:1.1mm solid transparent;border-left:1.3mm solid var(--encre)}
+.fl.D{bottom:-.1mm;left:50%;transform:translateX(-50%);border-left:1.1mm solid transparent;border-right:1.1mm solid transparent;border-top:1.3mm solid var(--encre)}
+.case .lettre{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);
+  font-weight:600;font-size:calc(var(--c)*.55);color:var(--bleu);visibility:hidden}
+.solution .case .lettre{visibility:visible}
+.case.myst{background:#fbf4e4}
+/* barre épaisse entre les mots d'une réponse en plusieurs mots */
+.case.sepA{box-shadow:inset -.75mm 0 0 var(--encre)}
+.case.sepD{box-shadow:inset 0 -.75mm 0 var(--encre)}
+.case.sepA.sepD{box-shadow:inset -.75mm 0 0 var(--encre),inset 0 -.75mm 0 var(--encre)}
+.case.myst::after{content:"";position:absolute;inset:.8mm;border:.25mm solid var(--or);border-radius:50%}
+.case .n{position:absolute;right:.5mm;bottom:.2mm;font-size:calc(var(--c)*.24);font-weight:700;color:var(--or);font-family:var(--f-display)}
+
+.mystere{text-align:center;margin-top:5mm}
+.mystere p{font-style:italic;font-size:4.2mm;margin-bottom:2mm}
+.cases-myst{display:inline-flex;gap:1.6mm}
+.cases-myst div{width:10mm;height:10mm;border:.4mm solid var(--or);border-radius:50%;position:relative;font-family:var(--f-display);font-weight:600;
+  font-size:5.5mm;display:flex;align-items:center;justify-content:center;color:var(--bleu)}
+.cases-myst div span{visibility:hidden} .solution .cases-myst div span{visibility:visible}
+.cases-myst div i{position:absolute;bottom:-4mm;font-style:normal;font-size:2.8mm;color:var(--or);font-weight:700}
+.liste-defs{columns:2;column-gap:8mm;font-size:3.6mm;line-height:1.35;margin-top:4mm}
+.liste-defs b{font-family:var(--f-display)}
+/* points à relier */
+.zone-points{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin:2mm 0}
+.zone-points svg{width:100%;height:100%}
+.zone-points .trace{fill:none;stroke:var(--bleu);stroke-width:2.2;stroke-linejoin:round;visibility:hidden}
+.solution .zone-points .trace{visibility:visible}
+.question{text-align:center;font-family:var(--f-hand);font-size:7mm;color:var(--or);margin-bottom:2mm}
+/* notre histoire */
+.sous-titre{font-family:var(--f-display);font-weight:700;font-size:7.5mm;text-align:center;border-top:.6mm solid var(--encre);padding-top:3mm}
+.etapes{display:grid;grid-template-columns:1fr 1fr;gap:2mm 6mm;margin-top:1mm}
+.etape{display:flex;align-items:center;gap:3mm;font-size:3.9mm;line-height:1.2;min-height:9mm}
+.etape .rond{flex:none;width:8.5mm;height:8.5mm;border:.4mm solid var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-display);font-weight:600;font-size:4.2mm;color:var(--bleu)}
+.etape .rond span{visibility:hidden} .solution .etape .rond span{visibility:visible}
+/* labyrinthe */
+.zone-laby{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin:1mm 0 4mm}
+.zone-laby svg{width:100%;height:100%}
+.zone-laby .chemin{fill:none;stroke:var(--or);stroke-width:.22;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:.9 .7;visibility:hidden}
+.solution .zone-laby .chemin{visibility:visible}
+.pied{margin-top:auto;padding-top:3mm;text-align:center;font-size:3.5mm;font-style:italic;border-top:.2mm solid #c9cfdd}
+</style>
+</head>
+<body>
+<div class="outils">
+  <button class="or" onclick="window.print()">Exporter en PDF</button>
+  <button onclick="basculerSolution()">Afficher / masquer la solution</button>
+  <button onclick="autreGrille(-1)">← Grille précédente</button>
+  <button onclick="autreGrille(1)">Autre grille →</button>
+  <span class="info" id="info"></span>
+</div>
+<div class="alerte" id="alerte"></div>
+
+<section class="page" id="p1"></section>
+<section class="page" id="p2"></section>
+<section class="page" id="p3"></section>
+<section class="page" id="p4"></section>
+
+<script>
+/* =====================================================================
+   MOTEUR — rien à modifier en dessous
+   ===================================================================== */
+const J = window.JOURNAL, JX = J.jeux;
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* texte → HTML : **gras**, *italique*, [emplacement] surligné */
+const fmt = s => esc(s || '').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>')
+                             .replace(/\[([^\]]*)\]/g,'<span class="ph">[$1]</span>');
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z]/g,'');
+
+/* ---------- page 1 ---------- */
+function entete(){
+  return `<div class="filet-haut"><span>${fmt(J.edition)}</span><span>${fmt(J.date)} · ${fmt(J.lieu)}</span><span>${fmt(J.prix)}</span></div>
+    <div class="titre-journal">${J.monogramme?`<img src="${J.monogramme}" alt="">`:''}<h1>${fmt(J.nom)}</h1>${J.monogramme?`<img src="${J.monogramme}" alt="">`:''}</div>
+    ${J.devise?`<div class="devise">${fmt(J.devise)}</div>`:''}<div class="double-filet"></div>`;
+}
+function page1(){
+  const u = J.une;
+  const photo = u.photo ? `<div class="photo" style="background-image:url('${u.photo}');background-position:${u.cadragePhoto||'50% 50%'}"></div>`
+                        : `<div class="photo">Photo</div>`;
+  $('#p1').innerHTML = entete() + `
+    ${u.surtitre?`<div class="surtitre">${fmt(u.surtitre)}</div>`:''}
+    <h2 class="gros-titre">${fmt(u.titre)}</h2>
+    ${u.chapo?`<p class="chapo">${fmt(u.chapo)}</p>`:''}
+    <div class="corps">
+      <div class="principal">
+        ${photo}${u.legende?`<div class="legende">${fmt(u.legende)}</div>`:''}
+        <div class="colonnes">${(u.texte||[]).map(p=>`<p>${fmt(p)}</p>`).join('')}</div>
+        ${(J.breves||[]).length?`<div class="breves">${J.breves.map(b=>`<div><h3>${fmt(b.titre)}</h3><p>${fmt(b.texte)}</p></div>`).join('')}</div>`:''}
+      </div>
+      <aside class="cote">${(J.encadres||[]).map(e=>`<div class="encadre"><h3>${fmt(e.titre)}</h3><p>${fmt(e.texte)}</p></div>`).join('')}</aside>
+    </div>
+    ${J.bandeau?`<div class="bandeau">${fmt(J.bandeau)}</div>`:''}`;
+}
+
+/* ---------- construction de la grille ---------- */
+function alea(seed){ let a = seed >>> 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const DIR = { A:[0,1], D:[1,0] };   // A = horizontal (flèche →), D = vertical (flèche ↓)
+
+function construire(mots, maxC, maxL, rnd){
+  const g = new Map(), K = (r,c) => r + ',' + c;
+  let bb = null; const places = [];
+  const etendre = (b, r, c) => b ? { r0:Math.min(b.r0,r), r1:Math.max(b.r1,r), c0:Math.min(b.c0,c), c1:Math.max(b.c1,c) } : { r0:r, r1:r, c0:c, c1:c };
+
+  function evaluer(i, r, c, dir, premier){
+    const w = mots[i].rep, [dr,dc] = DIR[dir];
+    const cl = g.get(K(r-dr, c-dc));
+    if (cl && (cl.t !== 'D' || cl[dir] != null)) return null;
+    const ap = g.get(K(r+dr*w.length, c+dc*w.length));
+    if (ap && ap.t === 'L') return null;
+    let croise = 0, b = etendre(bb, r-dr, c-dc);
+    for (let k = 0; k < w.length; k++){
+      const rr = r+dr*k, cc = c+dc*k, x = g.get(K(rr,cc));
+      if (x){ if (x.t !== 'L' || x.ch !== w[k] || x[dir] != null) return null; croise++; }
+      else {
+        const p1 = g.get(K(rr+dc, cc+dr)), p2 = g.get(K(rr-dc, cc-dr));
+        if ((p1 && p1.t === 'L') || (p2 && p2.t === 'L')) return null;
+      }
+      b = etendre(b, rr, cc);
+    }
+    if (!premier && !croise) return null;
+    const lc = b.c1-b.c0+1, ll = b.r1-b.r0+1;
+    if (lc > maxC || ll > maxL) return null;
+    const aire0 = bb ? (bb.c1-bb.c0+1)*(bb.r1-bb.r0+1) : 0;
+    return { i, r, c, dir, b, score: croise*10 + (cl?4:0) - (lc*ll-aire0)*0.15 + rnd()*3 };
+  }
+  function poser(p){
+    const w = mots[p.i].rep, [dr,dc] = DIR[p.dir], kc = K(p.r-dr, p.c-dc);
+    const cl = g.get(kc) || { t:'D' }; cl[p.dir] = p.i; g.set(kc, cl);
+    for (let k = 0; k < w.length; k++){
+      const kk = K(p.r+dr*k, p.c+dc*k), x = g.get(kk) || { t:'L', ch:w[k] };
+      x[p.dir] = p.i; g.set(kk, x);
+    }
+    bb = p.b; places.push(p);
+  }
+
+  let attente = mots.map((m,i)=>i).sort((a,b)=> (mots[b].rep.length + rnd()*4) - (mots[a].rep.length + rnd()*4));
+  const premier = attente.shift();
+  poser(evaluer(premier, 0, 1, rnd() < .5 ? 'A' : 'D', true));
+  let progres = true;
+  while (attente.length && progres){
+    progres = false;
+    for (const i of [...attente]){
+      const w = mots[i].rep; let best = null;
+      for (const [key, x] of g){
+        if (x.t !== 'L') continue;
+        const [r, c] = key.split(',').map(Number);
+        for (let k = 0; k < w.length; k++){
+          if (w[k] !== x.ch) continue;
+          for (const dir of ['A','D']){
+            if (x[dir] != null) continue;
+            const [dr,dc] = DIR[dir], p = evaluer(i, r-dr*k, c-dc*k, dir);
+            if (p && (!best || p.score > best.score)) best = p;
+          }
+        }
+      }
+      if (best){ poser(best); attente.splice(attente.indexOf(i), 1); progres = true; }
+    }
+  }
+  const croisements = [...g.values()].filter(x => x.t==='L' && x.A!=null && x.D!=null).length;
+  return { g, bb, places, manquants: attente, croisements, aire:(bb.c1-bb.c0+1)*(bb.r1-bb.r0+1) };
+}
+
+function meilleureGrille(mots, graine){
+  const rnd = alea(graine * 7919 + 13); let best = null;
+  /* 300 essais après la première grille complète (au plus 3000 au total) */
+  let complets = 0;
+  for (let essai = 0; essai < 3000 && complets < 300; essai++){
+    const r = construire(mots, JX.colonnesMax, JX.lignesMax, rnd);
+    if (!r.manquants.length) complets++;
+    const note = r.manquants.length*1e6 + r.aire - r.croisements*6;
+    if (!best || note < best.note) best = Object.assign(r, { note });
+  }
+  return best;
+}
+
+/* cases du mot mystère : une lettre par case, bien réparties */
+function choisirMystere(G, mot, graine){
+  const rnd = alea(graine + 99), pris = [], manque = [];
+  const lettres = [...G.g].filter(([k,x]) => x.t==='L').map(([k,x]) => { const [r,c]=k.split(',').map(Number); return { k, r, c, ch:x.ch }; });
+  for (const ch of mot){
+    const cands = lettres.filter(l => l.ch===ch && !pris.some(p=>p&&p.k===l.k));
+    if (!cands.length){ manque.push(ch); pris.push(null); continue; }
+    let best = null, bs = -1;
+    for (const l of cands){
+      const d = pris.filter(Boolean).reduce((m,p)=>Math.min(m, Math.hypot(p.r-l.r, p.c-l.c)), 99) + rnd()*1.5;
+      if (d > bs){ bs = d; best = l; }
+    }
+    pris.push(best);
+  }
+  return { cases: pris, manque };
+}
+
+/* ---------- page 2 ---------- */
+let graine = Number(new URLSearchParams(location.search).get('graine')) || JX.graine || 1;
+
+function page2(){
+  const mots = JX.mots.filter(m => norm(m.reponse)).map(m => {
+    const parts = m.reponse.trim().split(/\s+/).map(norm).filter(Boolean), n = parts.length;
+    /* positions (dans la réponse sans espaces) des dernières lettres de chaque mot, sauf le dernier */
+    const coupures = []; let pos = 0;
+    parts.slice(0, -1).forEach(p => { pos += p.length; coupures.push(pos - 1); });
+    return { rep: norm(m.reponse), coupures, def: m.definition + (JX.indiquerNbMots && n > 1 ? ` (${n} mots)` : '') };
+  });
+  const G = meilleureGrille(mots, graine);
+  const motM = norm(JX.motMystere.mot || '');
+  const M = choisirMystere(G, motM, graine);
+  const alertes = [];
+  if (G.manquants.length) alertes.push('Mots impossibles à placer : ' + G.manquants.map(i=>mots[i].rep).join(', ') + ' → essayez « Autre grille » ou augmentez colonnesMax / lignesMax.');
+  if (M.manque.length) alertes.push('Lettres du mot mystère absentes de la grille : ' + [...new Set(M.manque)].join(', ') + ' → ajoutez un mot qui les contient.');
+  $('#alerte').textContent = alertes.join('  ·  ');
+
+  /* numérotation (mode liste) : ordre de lecture des cases définition */
+  const numeros = new Map(); let n = 0;
+  const { r0, r1, c0, c1 } = G.bb, nc = c1-c0+1, nl = r1-r0+1;
+  for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++){
+    const x = G.g.get(r+','+c); if (x && x.t==='D'){ if (x.A!=null) numeros.set(x.A, ++n); if (x.D!=null) numeros.set(x.D, ++n); }
+  }
+  const seps = new Map();
+  G.places.forEach(p => { const [dr,dc] = DIR[p.dir];
+    mots[p.i].coupures.forEach(k => { const kk = (p.r+dr*k)+','+(p.c+dc*k); seps.set(kk, (seps.get(kk)||'') + ' sep' + p.dir); }); });
+  const mystIdx = new Map(); M.cases.forEach((l,i) => l && mystIdx.set(l.k, i+1));
+
+  let cases = '';
+  for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++){
+    const k = r+','+c, x = G.g.get(k);
+    if (!x){ cases += '<div class="case vide"></div>'; continue; }
+    if (x.t === 'L'){
+      const m = mystIdx.get(k);
+      cases += `<div class="case${m?' myst':''}${seps.get(k)||''}"><span class="lettre">${x.ch}</span>${m?`<span class="n">${m}</span>`:''}</div>`; continue;
+    }
+    const parts = ['A','D'].filter(d => x[d] != null).map(d => {
+      const i = x[d], txt = JX.definitions === 'liste' ? `<span class="num">${numeros.get(i)}</span>` : fmt(mots[i].def);
+      return `<div class="d">${txt}<span class="fl ${d}"></span></div>`;
+    });
+    cases += `<div class="case def">${parts.join('')}</div>`;
+  }
+  /* taille des cases : la plus grande qui tient dans la page */
+  const cell = Math.min(186 / nc, 196 / nl, 14);
+  const liste = JX.definitions === 'liste'
+    ? `<div class="liste-defs">${[...numeros].sort((a,b)=>a[1]-b[1]).map(([i,num])=>`<div><b>${num}.</b> ${fmt(mots[i].def)}</div>`).join('')}</div>` : '';
+
+  $('#p2').innerHTML = `<div class="mini-tete"><b>${fmt(J.nom)}</b><span>${fmt(J.date)} · Page 2 · Jeux</span></div>
+    <h2 class="jeux-titre">${fmt(JX.titre)}</h2>
+    ${JX.consigne?`<p class="consigne">${fmt(JX.consigne)}</p>`:''}
+    <div class="zone-grille"><div class="grille" style="--c:${cell}mm;grid-template-columns:repeat(${nc},var(--c))">${cases}</div></div>
+    ${liste}
+    ${motM?`<div class="mystere"><p>${fmt(JX.motMystere.question)}</p><div class="cases-myst">${[...motM].map((ch,i)=>`<div><span>${ch}</span><i>${i+1}</i></div>`).join('')}</div></div>`:''}
+    ${JX.piedDePage?`<div class="pied" style="margin-top:7mm">${fmt(JX.piedDePage)}</div>`:''}`;
+
+  $('#info').textContent = `Grille n° ${graine} · ${nc} × ${nl} cases · ${mots.length - G.manquants.length}/${mots.length} mots placés · ${G.croisements} croisements — pour garder cette grille : graine: ${graine}`;
+  ajusterTextes();
+}
+
+/* réduit la police de chaque définition jusqu'à ce qu'elle tienne dans sa case */
+function ajusterTextes(){
+  document.querySelectorAll('.def .d').forEach(d => {
+    if (d.querySelector('.num')) return;
+    let px = d.parentElement.clientWidth * 0.2;
+    d.style.fontSize = px + 'px';
+    while (px > 4 && (d.scrollHeight > d.clientHeight + .5 || d.scrollWidth > d.clientWidth + .5)){ px -= .25; d.style.fontSize = px + 'px'; }
+  });
+}
+/* ---------- pages 3 et 4 : en-tête commun ---------- */
+const miniTete = n => `<div class="mini-tete"><b>${fmt(J.nom)}</b><span>${fmt(J.date)} · Page ${n} · Jeux</span></div>`;
+
+/* ---------- page 3 : points à relier ---------- */
+function svgPoints(){
+  const D = window.JOURNAL_DESSIN;
+  if (!D) return '<p class="consigne">(fichier journal-dessin.js introuvable)</p>';
+  const tous = D.chaines.flat(), R = D.w / 330, FS = D.w / 70, poses = [], obst = D.obstacles || [];
+  let n = 0, dots = '', labels = '', traces = '';
+  D.chaines.forEach(ch => {
+    traces += `<polyline class="trace" points="${ch.map(p=>p.join(',')).join(' ')}"/>`;
+    ch.forEach((p, i) => {
+      n++;
+      const txt = (i === 0 ? '★' : '') + n, prev = ch[i-1], next = ch[i+1];
+      /* place le numéro là où il gêne le moins (loin des autres points et des traits voisins) */
+      let best = null, bs = -1;
+      for (let a = 0; a < 16; a++){
+        const ang = a * Math.PI / 8, cx = Math.cos(ang), cy = Math.sin(ang);
+        const off = R*2.2 + FS*0.35 + Math.abs(cx) * txt.length * FS * 0.3;
+        const lx = p[0] + cx*off, ly = p[1] + cy*off;
+        let s = 1e9;
+        for (const q of tous) if (q !== p) s = Math.min(s, Math.hypot(q[0]-lx, q[1]-ly));
+        for (const q of poses) s = Math.min(s, Math.hypot((q[0]-lx) * .6, q[1]-ly) * .9);   // numéros déjà placés
+        for (const q of obst) s = Math.min(s, Math.hypot(q[0]-lx, q[1]-ly) * 1.1);          // traits du visage
+        for (const q of [prev, next]) if (q){            // distance au segment voisin
+          const vx = q[0]-p[0], vy = q[1]-p[1], t = Math.max(0, Math.min(1, ((lx-p[0])*vx + (ly-p[1])*vy) / (vx*vx+vy*vy)));
+          s = Math.min(s, Math.hypot(p[0]+t*vx-lx, p[1]+t*vy-ly) * 0.8);
+        }
+        if (s > bs){ bs = s; best = [lx, ly]; }
+      }
+      poses.push(best);
+      dots += `<circle cx="${p[0]}" cy="${p[1]}" r="${R}"/>`;
+      labels += `<text x="${best[0].toFixed(1)}" y="${best[1].toFixed(1)}">${txt}</text>`;
+    });
+  });
+  const m = FS * 3.5;
+  return `<svg viewBox="${-m} ${-m} ${D.w+2*m} ${D.h+2*m}" xmlns="http://www.w3.org/2000/svg">
+    <g fill="var(--encre)">${(D.details||[]).map(d=>`<path d="${d}" fill-rule="evenodd"/>`).join('')}</g>
+    <g stroke="var(--encre)" stroke-linecap="round" stroke-linejoin="round">${(D.traits||[]).map(t=>
+      `<path d="${t.d}" ${t.plein ? 'fill="var(--encre)" stroke="none"' : `fill="none" stroke-width="${t.e}"`}/>`).join('')}</g>
+    ${traces}<g fill="var(--encre)">${dots}</g>
+    <g font-family="EB Garamond, serif" font-size="${FS}" fill="var(--encre)" text-anchor="middle" dominant-baseline="central">${labels}</g></svg>`;
+}
+function melanger(liste, graine){
+  const rnd = alea(graine * 31 + 7); let best = null, bs = 1e9;
+  for (let essai = 0; essai < 60; essai++){
+    const t = liste.map((x, i) => i);
+    for (let i = t.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [t[i], t[j]] = [t[j], t[i]]; }
+    /* évite qu'une étape reste à sa place ou juste à côté de sa voisine */
+    const s = t.reduce((a, v, i) => a + (v === i ? 3 : 0) + (i && Math.abs(v - t[i-1]) === 1 ? 1 : 0), 0);
+    if (s < bs){ bs = s; best = t; }
+  }
+  return best;
+}
+function page3(){
+  const P = J.points;
+  $('#p3').innerHTML = miniTete(3) + `
+    <h2 class="jeux-titre">${fmt(P.titre)}</h2>
+    ${P.consigne?`<p class="consigne">${fmt(P.consigne)}</p>`:''}
+    <div class="zone-points">${svgPoints()}</div>
+    ${P.question?`<div class="question">${fmt(P.question)}</div>`:''}`;
+}
+function blocHistoire(){
+  const H = J.histoire, ordre = melanger(H.etapes, H.graine || 1);
+  const moitie = Math.ceil(ordre.length / 2), cases = [];
+  for (let r = 0; r < moitie; r++) for (const col of [0, 1]){ const k = col * moitie + r; cases.push(k < ordre.length ? ordre[k] : null); }
+  return `<h2 class="sous-titre">${fmt(H.titre)}</h2>
+    ${H.consigne?`<p class="consigne" style="margin-bottom:2mm">${fmt(H.consigne)}</p>`:''}
+    <div class="etapes">${cases.map(i => i === null ? '<div></div>' :
+      `<div class="etape"><div class="rond"><span>${i+1}</span></div><div>${fmt(H.etapes[i])}</div></div>`).join('')}</div>`;
+}
+
+/* ---------- page 4 : labyrinthe en cœur ---------- */
+function labyrinthe(L){
+  const N = L.largeur || 30, s = 2.32 / N, M = Math.ceil(2.32 / s), rnd = alea((L.graine || 1) * 977 + 3);
+  const dans = (i, j) => { const x = -1.16 + (j + .5) * s, y = 1.27 - (i + .5) * s, a = x*x + y*y - 1; return a*a*a - x*x*y*y*y <= 0; };
+  const ok = [...Array(M)].map((_, i) => [...Array(N)].map((_, j) => dans(i, j)));
+  const V = [[-1,0],[0,1],[1,0],[0,-1]];                     // haut, droite, bas, gauche
+  const est = (i, j) => i >= 0 && j >= 0 && i < M && j < N && ok[i][j];
+  /* arrivée : la case la plus proche du centre du cœur */
+  let but = null, bd = 1e9;
+  for (let i = 0; i < M; i++) for (let j = 0; j < N; j++) if (ok[i][j]){
+    const d = Math.hypot(-1.16 + (j+.5)*s, 1.27 - (i+.5)*s - .2); if (d < bd){ bd = d; but = [i, j]; } }
+  /* creusement (parcours en profondeur aléatoire) depuis l'arrivée */
+  const ouvert = new Set(), vu = new Set([but.join()]), pile = [but], pere = new Map();
+  const K = (a, b) => a < b ? a + '|' + b : b + '|' + a;
+  while (pile.length){
+    const [i, j] = pile[pile.length - 1];
+    const v = V.map(([di, dj]) => [i+di, j+dj]).filter(([a, b]) => est(a, b) && !vu.has(a+','+b));
+    if (!v.length){ pile.pop(); continue; }
+    const [a, b] = v[Math.floor(rnd() * v.length)];
+    ouvert.add(K(i+','+j, a+','+b)); vu.add(a+','+b); pere.set(a+','+b, i+','+j); pile.push([a, b]);
+  }
+  for (let i = 0; i < M; i++) for (let j = 0; j < N; j++) if (ok[i][j] && !vu.has(i+','+j)) ok[i][j] = false;  // îlots isolés
+  /* départ : case du bord gauche/haut la plus éloignée de l'arrivée (en suivant les couloirs) */
+  const prof = c => { let d = 0; while (pere.has(c)){ c = pere.get(c); d++; } return d; };
+  let dep = null, side = null, dm = -1;
+  for (let i = 0; i < M; i++) for (let j = 0; j < N; j++) if (ok[i][j] && j < N / 2){
+    for (const k of [3, 0]){ const [di, dj] = V[k]; if (!est(i+di, j+dj)){ const d = prof(i+','+j); if (d > dm){ dm = d; dep = [i, j]; side = k; } } }
+  }
+  /* murs */
+  let murs = '';
+  const seg = (x1, y1, x2, y2) => murs += `M${x1} ${y1}L${x2} ${y2}`;
+  for (let i = 0; i < M; i++) for (let j = 0; j < N; j++){
+    if (!ok[i][j]) continue;
+    V.forEach(([di, dj], k) => {
+      const a = i + di, b = j + dj, voisin = est(a, b);
+      if (voisin && (k === 0 || k === 3)) return;              // mur intérieur : tracé une seule fois
+      if (voisin && ouvert.has(K(i+','+j, a+','+b))) return;
+      if (!voisin && i === dep[0] && j === dep[1] && k === side) return;   // entrée
+      if (k === 0) seg(j, i, j+1, i); if (k === 2) seg(j, i+1, j+1, i+1);
+      if (k === 3) seg(j, i, j, i+1); if (k === 1) seg(j+1, i, j+1, i+1);
+    });
+  }
+  /* solution */
+  const chemin = []; let c = dep.join();
+  while (c){ const [a, b] = c.split(',').map(Number); chemin.push(`${b+.5},${a+.5}`); c = pere.get(c); }
+  const [di, dj] = V[side], ex = dep[1] + .5 + dj * 1.6, ey = dep[0] + .5 + di * 1.6;
+  /* petit BMX dessiné (roue arrière, roue avant, cadre, guidon, selle) */
+  const velo = (x, y, k) => `<g transform="translate(${x} ${y}) scale(${k})" fill="none" stroke="var(--encre)" stroke-width="${.11 / k * .9}" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="-.78" cy="0" r=".45"/><circle cx=".78" cy="0" r=".45"/>
+      <circle cx="-.78" cy="0" r=".06" fill="var(--encre)"/><circle cx=".78" cy="0" r=".06" fill="var(--encre)"/>
+      <path d="M-.78 0L-.02 .03L-.32 -.52ZM-.32 -.52L.48 -.6M-.02 .03L.52 -.38M.48 -.6L.78 0M.48 -.6L.4 -.86L.66 -.9M-.46 -.6L-.16 -.6"/>
+      <circle cx="-.02" cy=".03" r=".1"/><path d="M-.02 .03L.1 .2" /></g>`;
+  const lab = side === 3
+    ? `${velo(ex - 2.2, ey + .1, .95)}<text x="${ex - 2.2}" y="${ey - 1.1}" text-anchor="middle">${fmt(L.depart)}</text><text x="${ex - .5}" y="${ey}" text-anchor="middle" dominant-baseline="central">→</text>`
+    : `<text x="${ex - 1.5}" y="${ey - 1.55}" text-anchor="end" dominant-baseline="central">${fmt(L.depart)}</text>${velo(ex, ey - 1.25, 1)}<text x="${ex}" y="${ey + .2}" text-anchor="middle" font-size=".9" dominant-baseline="central">↓</text>`;
+  const [gi, gj] = but;
+  return `<svg viewBox="-7 -4.5 ${N + 14} ${M + 6}" xmlns="http://www.w3.org/2000/svg">
+    <polyline class="chemin" points="${dep[1]+.5+dj*1.2},${dep[0]+.5+di*1.2} ${chemin.join(' ')}"/>
+    <path d="${murs}" fill="none" stroke="var(--encre)" stroke-width=".16" stroke-linecap="round"/>
+    <g fill="none" stroke="var(--or)" stroke-width=".09"><circle cx="${gj+.4}" cy="${gi+.5}" r=".2"/><circle cx="${gj+.6}" cy="${gi+.5}" r=".2"/></g>
+    <g font-family="Bodoni Moda, serif" font-size="1.05" fill="var(--encre)">${lab}
+      <text x="${gj+.5}" y="${gi-.3}" text-anchor="middle" font-size=".8" fill="var(--or)" stroke="#fff" stroke-width=".35" paint-order="stroke">${fmt(L.arrivee)}</text></g></svg>`;
+}
+function page4(){
+  const L = J.labyrinthe;
+  $('#p4').innerHTML = miniTete(4) + `
+    <h2 class="jeux-titre">${fmt(L.titre)}</h2>
+    ${L.consigne?`<p class="consigne">${fmt(L.consigne)}</p>`:''}
+    <div class="zone-laby">${labyrinthe(L)}</div>
+    ${blocHistoire()}
+    ${L.piedDePage?`<div class="pied">${fmt(L.piedDePage)}</div>`:''}`;
+}
+
+function basculerSolution(){ document.body.classList.toggle('solution'); }
+function autreGrille(s){ graine = Math.max(1, graine + s); page2(); }
+
+page1();
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { page2(); page3(); page4(); });
+</script>
+</body></html>
