@@ -1,0 +1,37 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Tiphaine and Thomas//Invitation//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Tiphaine & Thomas’s wedding
+BEGIN:VEVENT
+UID:mariage-tt-grand-weekend-7q-06@faire-part
+DTSTAMP:20261013T120000Z
+DTSTART;VALUE=DATE:20270806
+DTEND;VALUE=DATE:20270807
+SUMMARY:Tiphaine & Thomas’s civil wedding
+LOCATION:Suresnes Town Hall\, 2 rue Carnot\, 92150 Suresnes
+DESCRIPTION:Civil ceremony at Suresnes Town Hall\, followed by an intimate evening at the Château de la Fontaine. Timings to come.
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:mariage-tt-grand-weekend-7q-07@faire-part
+DTSTAMP:20261013T120000Z
+DTSTART;VALUE=DATE:20270807
+DTEND;VALUE=DATE:20270808
+SUMMARY:Tiphaine & Thomas’s wedding
+LOCATION:Saint-Martin Church\, Égreville\, 77620 Égreville
+DESCRIPTION:Church ceremony in Égreville\, followed by a cocktail reception\, dinner and dancing at the Château de la Fontaine (Griselles). Timings to come.
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:mariage-tt-grand-weekend-7q-08@faire-part
+DTSTAMP:20261013T120000Z
+DTSTART;VALUE=DATE:20270808
+DTEND;VALUE=DATE:20270809
+SUMMARY:Brunch — Tiphaine & Thomas’s wedding
+LOCATION:Château de la Fontaine\, 41 Bois le Roi\, 45210 Griselles
+DESCRIPTION:Brunch at the Château de la Fontaine.
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

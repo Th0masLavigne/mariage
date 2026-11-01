@@ -21,6 +21,7 @@
     let n; while ((n = w.nextNode())) if (!SKIP.test(n.parentNode.nodeName)) fix(n);
   };
   const start = () => {
+    if (window.Langue && Langue.en) return; /* anglais : pas d’espace avant ? ! : */
     walk(document.body);
     if (!('MutationObserver' in window)) return;
     new MutationObserver(ms => ms.forEach(m => {

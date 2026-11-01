@@ -29,6 +29,12 @@ faire-part/
 
 Options d’URL : `&n=Mamie%20Jo` (enveloppe personnalisée, nom pré-rempli) · `&style=placeholder` ou `&style=sketch` · `&demo` (aperçu sans envoi).
 **Tu ou vous ?** Un nom sans « & » (`&n=Lucas%20Bodile`) = une seule personne : le faire-part et le carnet la **tutoient** (« Seras-tu des nôtres ? », « J’aimerais dormir au château ») et ne proposent pas de compter adultes / enfants. Avec « & », « et », « + », ou « Famille … » / « Les … » → « vous ». Forcer : `&tu` ou `&vous`. Les textes de `config.js` ont une variante `…Tu` (`introTu`, `finTu`, `texteTu`, `rTu`…) ; le générateur `liens.html` indique « tu » ou « vous » sous chaque nom. Les pages « Vos données » / confidentialité restent au « vous ».
+**Version anglaise.** Ajouter `&en` au lien (`?f=CODE&n=Nom&en`) : faire-part, formulaire de réponse, carnet, liste de mariage, note « Vos données » et confidentialité s’affichent en anglais (pas de tu / vous). Dans `liens.html`, choisir **English** en haut pour générer les liens anglais à copier-coller. Où sont les textes :
+- `config-en.js` : version anglaise des textes de `config.js` (même structure). **Si vous changez un texte dans `config.js`, changez-le aussi ici**, sinon l’ancienne version anglaise reste (clé absente ici → texte français affiché).
+- textes fixes des pages : `Langue.E('fr', 'en')` dans `index.html` / `site.html`, et 3e texte de `T('vous', 'tu', 'en')`.
+- agenda : `agenda/<code>-en.ics`.
+Le Sheet reçoit toujours les libellés français (moments, nuits, cadeaux) ; la nouvelle colonne **langue** vaut `en`, et l’e-mail de notification indique « 🇬🇧 anglais ». `&fr` force le français.
+
 Les codes se changent dans `config.js` (clés de `formules`). **Après envoi des faire-parts, ne plus changer un code** : les liens déjà envoyés casseraient.
 
 ## Mise en route (≈ 20 min, une seule fois)

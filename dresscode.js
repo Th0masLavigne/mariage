@@ -61,11 +61,11 @@
   }
   const spriteHtml = () => { const pl = PALT(), c0 = DC.couleurDefaut || pl[0], base = DC.marche.replace(/\.webp$/, '');
     const m = DC.masquesMarche || { robe: 'photos/invites-marche-robe.webp', costume: 'photos/invites-marche-costume.webp' };
-    return `<div class="dc-sprite${c0 ? ' teinte' : ''}" role="img" aria-label="Un couple d’invités élégants qui marche" style="${c0 ? spVars(c0.robe, c0.costume) : ''}">
+    return `<div class="dc-sprite${c0 ? ' teinte' : ''}" role="img" aria-label="${window.Langue && Langue.en ? 'An elegant couple of guests walking' : 'Un couple d’invités élégants qui marche'}" style="${c0 ? spVars(c0.robe, c0.costume) : ''}">
       <div class="sp-strip"><img src="${esc(DC.marche)}" alt="">${c0 ? `<i class="sp-w robe" style="--m:url('${esc(AS(m.robe))}')"></i><i class="sp-w costume" style="--m:url('${esc(AS(m.costume))}')"></i>` : ''}</div></div>
       ${DC.afficherPastilles !== false && pl.length > 1 ? `<div class="palette pick dc-pal">${pl.map((c, i) => { const on = c0 && c.robe === c0.robe && c.costume === c0.costume; return `<button type="button" class="${on ? 'on' : ''}" data-r="${esc(c.robe)}" data-c="${esc(c.costume)}" aria-pressed="${on}"><i style="--c:linear-gradient(135deg, ${esc(c.robe)} 50%, ${esc(c.costume)} 50%)"></i>${esc(c.nom)}</button>`; }).join('')}</div>` : ''}`; };
   const traitHtml = () => { const T = DC.trait, c = DC.traitCouleurs;
-    return `<div class="dc-trait wait${c ? ' teinte' : ''}" style="--tr-robe:${esc((c && c.robe) || '#b2c4e2')};--tr-costume:${esc((c && c.costume) || '#2e4a72')}" role="img" aria-label="Croquis d’un couple d’invités élégants">
+    return `<div class="dc-trait wait${c ? ' teinte' : ''}" style="--tr-robe:${esc((c && c.robe) || '#b2c4e2')};--tr-costume:${esc((c && c.costume) || '#2e4a72')}" role="img" aria-label="${window.Langue && Langue.en ? 'Sketch of an elegant couple of guests' : 'Croquis d’un couple d’invités élégants'}">
       ${c ? `<i class="w robe" style="--m:url('${esc(T.robe)}')"></i><i class="w costume" style="--m:url('${esc(T.costume)}')"></i>` : ''}<img class="ln" src="${esc(T.dessin)}" alt=""></div>`; };
   /* texte du dress code : une phrase ou une liste de phrases */
   const dcText = () => { const t = DC.texte; if (!t || !t.length) return ''; return Array.isArray(t) ? `<ul class="dc-rules">${t.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : `<p>${esc(t)}</p>`; };
@@ -129,7 +129,7 @@
       ctx.fillStyle = g; ctx.fillRect(0, 0, r.width, r.height);
       for (let i = 0; i < 140; i++) { ctx.fillStyle = `rgba(255,255,255,${Math.random() * .7})`; ctx.beginPath(); ctx.arc(Math.random() * r.width, Math.random() * r.height, Math.random() * 1.4, 0, 7); ctx.fill(); }
       ctx.fillStyle = tok('--sc-ink'); ctx.textAlign = 'center';
-      ctx.font = 'italic 400 26px "Bodoni Moda", Georgia, serif'; ctx.fillText('Grattez ici', r.width / 2, r.height / 2 - 2);
+      ctx.font = 'italic 400 26px "Bodoni Moda", Georgia, serif'; ctx.fillText(window.Langue && Langue.en ? 'Scratch here' : 'Grattez ici', r.width / 2, r.height / 2 - 2);
       ctx.font = '500 11px "EB Garamond", Georgia, serif'; ctx.fillText('DU BOUT DU DOIGT', r.width / 2, r.height / 2 + 20);
     };
     paint();
@@ -173,6 +173,7 @@
       svg.querySelectorAll('.ink path').forEach((p, i) => { p.setAttribute('pathLength', '1'); p.style.setProperty('--i', i); }));
   }
 
+  const E = (f, e) => window.Langue && Langue.en ? e : f;
   window.DressCode = {
     html: () => DC.affichage === 'balade' ? `
         <div class="dc-card">
@@ -181,26 +182,26 @@
             <div class="scratch dc-scratch" id="scratch">
               <div class="scratch-under">${DC.reveler
                 ? `<div class="dc-walk dc-guests">${DC.style === 'trait' && DC.trait ? traitHtml() : DC.style !== 'simple' && DC.marche ? spriteHtml() : S.couple().replace('class="sk draw couple"', 'class="sk draw couple wait"')}</div>${DC.tenue ? `<div class="nope">${esc(DC.tenue)}</div>` : ''}${dcText()}`
-                : `<div class="dc-walk dc-mystere">${DC.illustration ? `<div class="dc-illu"><img src="${esc(DC.illustration)}" alt=""><i></i><i></i><i></i><i></i><i></i></div>` : S.couple().replace('class="sk draw couple"', 'class="sk couple"')}</div><div class="nope">Chut… pas encore !</div><p>${esc(DC.messageAttente || 'Revenez gratter ! Le thème vestimentaire vous sera dévoilé ici très prochainement.')}</p>${dcText()}`}</div>
+                : `<div class="dc-walk dc-mystere">${DC.illustration ? `<div class="dc-illu"><img src="${esc(DC.illustration)}" alt=""><i></i><i></i><i></i><i></i><i></i></div>` : S.couple().replace('class="sk draw couple"', 'class="sk couple"')}</div><div class="nope">${E('Chut… pas encore !', 'Shh… not yet!')}</div><p>${esc(DC.messageAttente || E('Revenez gratter ! Le thème vestimentaire vous sera dévoilé ici très prochainement.', 'Come back and scratch! The dress code will be revealed here very soon.'))}</p>${dcText()}`}</div>
               <canvas id="scratchCv" aria-hidden="true"></canvas>
             </div>
           </div>
-          <button class="linkbtn sc-skip" id="scSkip" type="button">Révéler sans gratter</button>
+          <button class="linkbtn sc-skip" id="scSkip" type="button">${E('Révéler sans gratter', 'Reveal without scratching')}</button>
         </div>` : `
         <div class="scratch-card">
           <div class="sc-title">${esc(DC.titre || 'Dress code')}</div>
           <div class="scratch" id="scratch">
             <div class="scratch-under">${C.codeCouleur.reveler
-              ? `<div class="outfits"><figure>${outfit('eux', S.suit, (C.codeCouleur.couleurs[1] || C.codeCouleur.couleurs[0] || {}).hex || '#b4476a')}<figcaption><b>Eux</b>${esc(C.codeCouleur.eux || '')}</figcaption></figure><figure>${outfit('elles', S.dress, (C.codeCouleur.couleurs[0] || {}).hex || '#f7c6d4')}<figcaption><b>Elles</b>${esc(C.codeCouleur.elles || '')}</figcaption></figure></div>
-                 <div class="sc-sub">Les tons qui nous feraient plaisir</div>
-                 ${C.codeCouleur.couleurs.length > 1 ? `<div class="pal-hint">Touchez une couleur pour habiller les tenues</div>` : ''}
+              ? `<div class="outfits"><figure>${outfit('eux', S.suit, (C.codeCouleur.couleurs[1] || C.codeCouleur.couleurs[0] || {}).hex || '#b4476a')}<figcaption><b>${E('Eux', 'Him')}</b>${esc(C.codeCouleur.eux || '')}</figcaption></figure><figure>${outfit('elles', S.dress, (C.codeCouleur.couleurs[0] || {}).hex || '#f7c6d4')}<figcaption><b>${E('Elles', 'Her')}</b>${esc(C.codeCouleur.elles || '')}</figcaption></figure></div>
+                 <div class="sc-sub">${E('Les tons qui nous feraient plaisir', 'Shades we would love to see')}</div>
+                 ${C.codeCouleur.couleurs.length > 1 ? `<div class="pal-hint">${E('Touchez une couleur pour habiller les tenues', 'Tap a colour to dress the outfits')}</div>` : ''}
                  <div class="palette${C.codeCouleur.couleurs.length > 1 ? ' pick' : ''}" id="palette">${C.codeCouleur.couleurs.map((c, i) => C.codeCouleur.couleurs.length > 1
                    ? `<button type="button" data-hex="${esc(c.hex)}" class="${i === 0 ? 'on' : ''}" aria-pressed="${i === 0}"><i style="--c:${esc(c.hex)}"></i>${esc(c.nom)}</button>`
                    : `<span><i style="--c:${esc(c.hex)}"></i>${esc(c.nom)}</span>`).join('')}</div>${dcText()}`
-              : `<div class="nope">Chut… pas encore !</div><p>Le dress code sera révélé très bientôt. Revenez gratter !</p><div class="palette blur">${C.codeCouleur.couleurs.map(c => `<span><i style="--c:${esc(c.hex)}"></i></span>`).join('')}</div>${dcText()}`}</div>
+              : `<div class="nope">${E('Chut… pas encore !', 'Shh… not yet!')}</div><p>${E('Le dress code sera révélé très bientôt. Revenez gratter !', 'The dress code will be revealed very soon. Come back and scratch!')}</p><div class="palette blur">${C.codeCouleur.couleurs.map(c => `<span><i style="--c:${esc(c.hex)}"></i></span>`).join('')}</div>${dcText()}`}</div>
             <canvas id="scratchCv" aria-hidden="true"></canvas>
           </div>
-          <button class="linkbtn sc-skip" id="scSkip" type="button">Révéler sans gratter</button>
+          <button class="linkbtn sc-skip" id="scSkip" type="button">${E('Révéler sans gratter', 'Reveal without scratching')}</button>
         </div>`,
     init() { prepCouple(); traitPick(); coupleWatch(); scratch(); }
   };

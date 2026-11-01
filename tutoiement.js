@@ -22,12 +22,13 @@
     nomInvites, seul,
     /* à appeler une fois, avant de construire la page */
     init(nom, params) {
-      actif = params && params.has('tu') ? true : params && params.has('vous') ? false : seul(nom);
+      /* en anglais : pas de tutoiement (les textes …Tu sont français) */
+      actif = window.Langue && Langue.en ? false : params && params.has('tu') ? true : params && params.has('vous') ? false : seul(nom);
       if (actif) appliquer(window.CONFIG);
       return actif;
     },
     get actif() { return actif; },
-    /* T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?') */
-    T: (vous, tu) => actif ? tu : vous
+    /* T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?', 'Will you join us?') — 3e texte : anglais (langue.js) */
+    T: (vous, tu, en) => window.Langue && Langue.en && en != null ? en : actif ? tu : vous
   };
 })();

@@ -16,7 +16,7 @@ const NOTIFY = 'lavignethomas@hotmail.fr, tiphaine.thomas91@gmail.com';
 const SHEET = 'RSVP';
 const COLS = ['id', 'recu_le', 'formule', 'nom', 'presence', 'adultes', 'enfants', 'moments',
   'couchage', 'nuits', 'nb_couchage', 'partage', 'estimation_eur', 'regime', 'chanson',
-  'message', 'email', 'telephone', 'adresse', 'cp', 'ville', 'pays', 'lien_nom', 'code', 'modifs', 'consentement_regime'];
+  'message', 'email', 'telephone', 'adresse', 'cp', 'ville', 'pays', 'lien_nom', 'code', 'modifs', 'consentement_regime', 'langue'];
 
 function doGet(e) {
   /* carnet pratique : liste des annonces de covoiturage */
@@ -72,7 +72,7 @@ function doPost(e) {
   if (NOTIFY) {
     const oui = d.presence === 'Oui';
     const lignes = [
-      (oui ? '🥂 OUI' : '😢 NON') + ' — ' + d.nom + ' (' + d.formule + ')' + (d.modifs ? ' — réponse modifiée' : ''),
+      (oui ? '🥂 OUI' : '😢 NON') + ' — ' + d.nom + ' (' + d.formule + ')' + (d.langue === 'en' ? ' — 🇬🇧 anglais' : '') + (d.modifs ? ' — réponse modifiée' : ''),
       oui ? 'Adultes : ' + d.adultes + ' · Enfants : ' + d.enfants : '',
       oui && d.moments ? 'Moments : ' + d.moments : '',
       d.couchage === 'Oui' ? 'Couchage : ' + d.nb_couchage + ' pers. — ' + d.nuits + (d.partage === 'Oui' ? ' — OK chambre partagée' : '') + ' — ~' + d.estimation_eur + ' €' : '',
@@ -94,7 +94,7 @@ function doPost(e) {
    Une ligne par invité, mise à jour à chaque passage ; effacée dès qu’il valide.
    Cet onglet n’est pas lu par l’appli d’organisation : il sert uniquement à relancer.      */
 const BROUILLON_SHEET = 'RSVP incomplets';
-const BROUILLON_COLS = ['id', 'recu_le', 'nom', 'presence', 'formule', 'adultes', 'enfants', 'moments', 'couchage', 'nb_couchage', 'email', 'telephone', 'lien_nom', 'code'];
+const BROUILLON_COLS = ['id', 'recu_le', 'nom', 'presence', 'formule', 'adultes', 'enfants', 'moments', 'couchage', 'nb_couchage', 'email', 'telephone', 'lien_nom', 'code', 'langue'];
 
 function brouillon_(d) {
   if (!d.id || d.website) return { ok: false };

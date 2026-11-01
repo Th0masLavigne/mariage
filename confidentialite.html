@@ -58,21 +58,25 @@ footer { text-align: center; margin-top: 40px; }
 <body>
 <div class="wrap" id="app"></div>
 <script src="config.js"></script>
+<script src="config-en.js"></script>
+<script src="langue.js"></script>
 <script src="typo.js"></script>
 <script>
 'use strict';
 (function () {
   const C = window.CONFIG || {}, D = C.donnees || {}, P = C.prenoms || ['', ''], S = C.site || {};
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const qui = D.responsables || `${P[0]} et ${P[1]}`;
+  const qui = D.responsables || (Langue.en ? `${P[0]} and ${P[1]}` : `${P[0]} et ${P[1]}`);
+  if (Langue.en) document.title = `Privacy policy · ${P[0]} & ${P[1]}`;
   const contact = D.contact || S.contact || '';
   const ecrire = contact ? `en nous écrivant à <a href="mailto:${esc(contact)}">${esc(contact)}</a>` : 'en nous le disant directement, de vive voix ou par message';
-  const acces = D.acces || `nous deux (${P[0]} et ${P[1]})`;
-  const conserv = D.conservation || 'au plus tard six mois après le mariage';
+  const ecrireEn = contact ? `by writing to <a href="mailto:${esc(contact)}">${esc(contact)}</a>` : 'by simply telling us, in person or by message';
+  const acces = D.acces || (Langue.en ? `the two of us (${P[0]} and ${P[1]})` : `nous deux (${P[0]} et ${P[1]})`);
+  const conserv = D.conservation || (Langue.en ? 'at the latest six months after the wedding' : 'au plus tard six mois après le mariage');
   const sec = (n, titre, html) => `<section class="paper"><span class="in-border"></span><h2><span class="n">${n}</span>${titre}</h2>${html}</section>`;
   let n = 0; const N = () => String(++n).padStart(2, '0');
 
-  document.getElementById('app').innerHTML = `
+  const fr = () => `
   <header>
     <div class="eyebrow">Mariage de ${esc(P[0])} &amp; ${esc(P[1])}</div>
     <h1>Politique de confidentialité</h1>
@@ -134,6 +138,69 @@ footer { text-align: center; margin-top: 40px; }
     <div class="sig">${esc(P[0])} &amp; ${esc(P[1])}</div>
     <a class="back" href="./" onclick="if (history.length > 1) { history.back(); return false; }">← Retour</a>
   </footer>`;
+  const en = () => `
+  <header>
+    <div class="eyebrow">${esc(P[0])} &amp; ${esc(P[1])}’s wedding</div>
+    <h1>Privacy policy</h1>
+    ${D.miseAJour ? `<div class="maj">Last updated: ${esc(D.miseAJour)}</div>` : ''}
+    <p class="intro">This invitation and this guide are home-made, for our family and friends. Here, in detail, is what happens to the information you share with us.</p>
+  </header>
+
+  ${sec(N(), 'Who we are', `
+    <p>The people responsible for this information are ${esc(qui)}, the bride and groom. For any question or request, you can reach us ${ecrireEn}.</p>
+    <p>This is a private family event: these pages are not indexed by search engines and open with the personal link sent with your invitation.</p>`)}
+
+  ${sec(N(), 'What we collect, and why', `<div class="t">
+    <div><b>Your reply to the invitation</b><span class="k">Names, attendance, number of adults and children, chosen events, accommodation (nights, number of people, shared room), song, message; e-mail, phone number and postal address if you provide them. If you start replying and leave the page without confirming, we only receive your names, attendance, number of people, events, accommodation and the e-mail / phone number already entered, so that we can follow up with you; this information is deleted as soon as you confirm.</span>
+      To organise the welcome, meals and accommodation, send you the paper invitation and reach you if anything unexpected comes up. You give it to us voluntarily when replying; contact details are optional.</div>
+    <div><b>Allergies and dietary requirements</b><span class="k">Optional. An allergy is health information.</span>
+      Only to prepare your meal, and passed on to the caterer, with your explicit consent (tick box below the field; the date of consent is kept).</div>
+    <div><b>Car sharing</b><span class="k">First name, departure town, day, number of seats, contact details, short note.</span>
+      So that guests can organise themselves. This information is visible to guests who have access to the guide; you agree to this by ticking the box before posting, and you can remove your note at any time.</div>
+    <div><b>Wedding registry</b><span class="k">Names, chosen gift or contribution amount, short note.</span>
+      To keep track of the registry and thank you. Only we see this information; other guests only see the overall progress, with no names or amounts.</div>
+    <div><b>Photos</b><span class="k">The photos sent and the first name given.</span>
+      To keep memories of the wedding. Before sending, you confirm that anyone recognisable has agreed.</div>
+    <div><b>Playlist</b><span class="k">The suggested song, and your first name if you give it.</span> For the party.</div>
+    <div><b>Witnesses</b><span class="k">First name, role, phone number and e-mail.</span> Shown in the guide only with their consent, the date of which we keep.</div>
+  </div>
+  <p style="margin-top:12px">We sell nothing, share nothing for advertising purposes and do no profiling.</p>`)}
+
+  ${sec(N(), 'Who has access', `<ul>
+    <li><b>Us</b>: ${esc(acces)}.</li>
+    <li><b>The caterer</b>: the number of guests and any allergies or dietary requirements, without your contact details.</li>
+    <li><b>Other guests</b>: only the car-sharing notes, and the overall progress of the registry.</li>
+    <li><b>Our tools</b>, which store or transmit the information on our behalf:
+      <ul><li>Google (Google Sheets, Google Drive, Apps Script, and Gmail for notification e-mails);</li>
+        <li>GitHub, which hosts these pages and, like any host, keeps technical logs containing visitors’ IP addresses.</li></ul></li></ul>`)}
+
+  ${sec(N(), 'Outside the European Union', `<p>Google and GitHub (part of Microsoft) are American companies, so data may be processed in the United States. These transfers are covered by the EU–US Data Privacy Framework and by the European Commission’s standard contractual clauses.</p>`)}
+
+  ${sec(N(), 'How long', `<ul>
+    <li>Replies, accommodation, car sharing, wedding registry, song suggestions and notification e-mails: deleted ${esc(conserv)}.</li>
+    <li>Postal addresses: kept ${esc(D.adresses || 'until our thank-you cards have been sent')}.</li>
+    <li>Photos: ${esc(D.photos || 'we keep them as memories')}.</li>
+    <li>Witnesses’ consent and consent given by tick box: kept for as long as the information concerned.</li></ul>`)}
+
+  ${sec(N(), 'On your phone or computer', `
+    <p>So that you can find and change your reply, the page keeps in your browser’s memory (“local storage”): your reply, a random identifier, your invitation code, your language, and what is needed to remove your notes or contributions. This information stays on your device; you can erase it by deleting the site’s data in your browser settings.</p>
+    <p>No cookies, no analytics, no advertising, no social media buttons. Fonts are hosted on the site itself.</p>`)}
+
+  ${sec(N(), 'Security', `<p>The spreadsheet and the photo folder are private, shared only with the people listed above. Pages are served over an encrypted connection (HTTPS). The code of the pages is public on GitHub, but it contains no guest replies; only the witnesses’ contact details appear there, with their consent.</p>`)}
+
+  ${sec(N(), 'Your rights', `
+    <p>At any time, you can ask to access, correct or delete your information, object to its use, restrict its use, receive a copy of it, or withdraw consent you have given (for an allergy, a note, a photo…). Just ask us ${ecrireEn}; we will reply within one month at the latest.</p>
+    <p>If you feel your rights are not being respected, you can also contact the CNIL, the French data protection authority (<a href="https://www.cnil.fr/en" target="_blank" rel="noopener">cnil.fr</a>).</p>`)}
+
+  ${sec(N(), 'Children', `<p>For children, we only ask how many there are. Photos of children should only be sent with their parents’ consent.</p>`)}
+
+  ${sec(N(), 'Changes', `<p>If this page changes, the “last updated” date at the top will change. If there is a significant change, we will let you know.</p>`)}
+
+  <footer>
+    <div class="sig">${esc(P[0])} &amp; ${esc(P[1])}</div>
+    <a class="back" href="./" onclick="if (history.length > 1) { history.back(); return false; }">← Back</a>
+  </footer>`;
+  document.getElementById('app').innerHTML = Langue.en ? en() : fr();
 })();
 </script>
 </body>

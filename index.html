@@ -833,6 +833,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 </style>
 <!--/STYLE-->
 <script src="config.js"></script>
+<script src="config-en.js"></script>
+<script src="langue.js"></script>
 <script src="sketches.js"></script>
 <script src="dresscode.js"></script>
 <script src="typo.js"></script>
@@ -845,7 +847,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   <div id="petals" aria-hidden="true"></div>
   <div class="env-box">
     <div class="env-to" id="envTo"></div>
-    <button class="gate" id="env" type="button" aria-label="Ouvrir le faire-part">
+    <button class="gate" id="env" type="button" aria-label="Ouvrir le faire-part" data-en="Open the invitation">
       <span class="g-base"></span>
       <span class="g-inner" id="envLetter"></span>
       <span class="door l"><span class="face front" id="doorL"></span><span class="face back"></span></span>
@@ -854,7 +856,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       <span class="sprig-env" id="envSprig"></span>
       <span class="ribbon-env" id="envRibbon"></span>
     </button>
-    <button class="btn-open" id="openBtn" type="button">Ouvrir le faire-part</button>
+    <button class="btn-open" id="openBtn" type="button" data-en="Open the invitation">Ouvrir le faire-part</button>
   </div>
 </div>
 
@@ -864,7 +866,9 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 <script>
 'use strict';
 (function () {
-  const C = window.CONFIG, S = window.SKETCH;
+  const C = window.CONFIG, S = window.SKETCH, E = Langue.E, FR = Langue.FR;
+  /* textes fixes du HTML (data-en) */
+  if (Langue.en) { document.querySelectorAll('[data-en]').forEach(el => { if (el.hasAttribute('aria-label')) el.setAttribute('aria-label', el.dataset.en); if (!el.children.length) el.textContent = el.dataset.en; }); const ev = document.getElementById('envelope'); if (ev) ev.setAttribute('aria-label', 'Invitation'); document.title = 'Tiphaine & Thomas · Invitation'; }
   /* tutoiement : lien ?n=… adressé à une seule personne → « tu » (tutoiement.js) ; à appliquer avant de lire la config */
   const TU = Tutoiement.init((() => { try { return new URLSearchParams(location.search).get('n'); } catch (e) { return ''; } })(),
     (() => { try { return new URLSearchParams(location.search); } catch (e) { return null; } })()), T = Tutoiement.T;
@@ -874,7 +878,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   /* « Tiphaine et Thomas », « Tiphaine & Thomas », « Tiphaine + Thomas » → « Tiphaine & Thomas » */
   const nomInvites = Tutoiement.nomInvites;
   /* textes des sections (config.textes), avec valeurs par défaut */
-  const TX = Object.assign({ sousTitre: 'Et maintenant, pour toujours.', date: 'Notez-le bien', programme: 'Le déroulé', lieux: '', escales: 'Avant la prochaine',
+  const TX = Object.assign(Langue.en ? { sousTitre: 'Now and forever.', date: 'Mark your calendar', programme: 'The weekend', lieux: '', escales: 'Until our next adventure',
+    bientot: 'Hush, more is on the way', finPhrase: 'The best stories are celebrated together.', fin: 'We can’t wait to see you' } : { sousTitre: 'Et maintenant, pour toujours.', date: 'Notez-le bien', programme: 'Le déroulé', lieux: '', escales: 'Avant la prochaine',
     bientot: 'Ne dites rien, on prépare la suite', finPhrase: 'Les plus belles histoires se célèbrent ensemble.', fin: 'On vous attend' }, C.textes || {});
   /* ornements : image (config.ornements) ou dessin intégré */
   if (DC.couleursBalade) { const cb = DC.couleursBalade; if (cb.robe) document.documentElement.style.setProperty('--dc-robe', cb.robe); if (cb.costume) document.documentElement.style.setProperty('--dc-costume', cb.costume); }
@@ -934,7 +939,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   if (state.nom && !DEMO) store.set('nom', state.nom); /* le carnet (site.html) s’en sert quand il est rouvert sans le lien */
   document.body.insertAdjacentHTML('afterbegin', S.defs + S.pageDefs);
   /* carnet pratique (site.html) : lien avec le code de l'invité ; « carnet » = la liste de mariage du carnet */
-  const carnetUrl = h => `site.html?f=${encodeURIComponent(state.code)}${state.nom ? '&n=' + encodeURIComponent(state.nom) : ''}${h || ''}`;
+  const carnetUrl = h => `site.html?f=${encodeURIComponent(state.code)}${state.nom ? '&n=' + encodeURIComponent(state.nom) : ''}${Langue.q}${h || ''}`;
   const listeEnLigne = () => { const L = C.site && C.site.liste; if (!L || !(L.cadeaux || []).some(x => x && x.id)) return false;
     /* ouverture: false → liste en préparation, invisible des invités ; &tout → aperçu pour vous */
     const o = L.ouverture, ouverte = o === undefined || o === true ? true : /^\d{4}-\d{2}-\d{2}$/.test(String(o)) ? Date.now() >= new Date(o + 'T00:00:00+02:00') : false;
@@ -947,7 +952,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   /* ---------------- rendu ---------------- */
   const rule = () => C.palette === 'bleu' ? ruleSimple() : S.ornement();
   const ruleSimple = () => `<svg class="rule" viewBox="0 0 120 18" aria-hidden="true"><path d="M4 9 H46 M74 9 H116" stroke="currentColor" stroke-width=".8"/><path d="M60 3 L64 9 L60 15 L56 9 Z" fill="currentColor"/><circle cx="50" cy="9" r="1.4" fill="currentColor"/><circle cx="70" cy="9" r="1.4" fill="currentColor"/></svg>`;
-  const soon = t => `<span class="soon">${esc(t || 'à venir')}</span>`;
+  const soon = t => `<span class="soon">${esc(t || E('à venir', 'to come'))}</span>`;
   /* icônes illustrées (photos/icones/*.webp) ou dessins intégrés */
   const ICONES = ['rings', 'moon', 'bells', 'glasses', 'plate', 'croissant', 'window', 'gift'];
   const AS = p => (window.ASSETS && window.ASSETS[p]) || p;
@@ -958,7 +963,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     if (state.style !== 'placeholder' && dessin) return `<img class="lieu-img${big ? ' hero-sk' : ''}" src="${esc(dessin)}" alt="${esc(L.nom)}">`;
     if (state.style === 'placeholder') {
       return L.photo ? `<img class="ph-img" src="${esc(L.photo)}" alt="${esc(L.nom)}">`
-        : `<div class="ph">Photo · ${esc(L.nom)}<br>à venir</div>`;
+        : `<div class="ph">Photo · ${esc(L.nom)}<br>${E('à venir', 'coming soon')}</div>`;
     }
     return S[key].replace('class="sk"', `class="sk draw${big ? ' hero-sk' : ''}"`);
   };
@@ -973,7 +978,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   function chars(t) { let i = 0; return [...t].map(c => c === ' ' ? ' ' : `<span class="ch" style="--i:${i++}">${esc(c)}</span>`).join(''); }
   /* ---------------- calendrier « réservez la date » ---------------- */
   const ICON_CAL = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
-  const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  const MOIS = Langue.en ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] : ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
   const dayNum = j => +(String(j).match(/\d+/) || [0])[0];
   function calendar(F) {
     const d0 = new Date(C.dateMariage + 'T12:00:00'), Y = d0.getFullYear(), M = d0.getMonth(), wed = d0.getDate();
@@ -991,7 +996,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const legend = C.calendrierResume ? Object.keys(days).sort((a, b) => a - b).map(k => `<li><b>${esc(days[k].jour)}</b> · ${esc(days[k].t.join(', '))}</li>`).join('') : '';
     return `<div class="cal"><div class="cal-in">
       <div class="cal-h"><span class="cal-m">${MOIS[M]}</span><span class="cal-y">${Y}</span></div>
-      <div class="cal-g cal-wd">${['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(x => `<span>${x}</span>`).join('')}</div>
+      <div class="cal-g cal-wd">${(Langue.en ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : ['L', 'M', 'M', 'J', 'V', 'S', 'D']).map(x => `<span>${x}</span>`).join('')}</div>
       <div class="cal-g">${cells}</div>
       ${legend ? `<ul class="cal-legend">${legend}</ul>` : ''}
       ${C.sceauImage ? `<i class="cal-corner">${sealPhoto()}</i>` : ''}
@@ -1008,9 +1013,9 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const ymd = d => `${d0.getFullYear()}${String(d0.getMonth() + 1).padStart(2, '0')}${String(d).padStart(2, '0')}`;
     const L = C.lieux.chateau;
     const q = new URLSearchParams({
-      action: 'TEMPLATE', text: `Mariage de ${C.prenoms[0]} & ${C.prenoms[1]}`,
+      action: 'TEMPLATE', text: E(`Mariage de ${C.prenoms[0]} & ${C.prenoms[1]}`, `${C.prenoms[0]} & ${C.prenoms[1]}’s wedding`),
       dates: `${ymd(Math.min(...ds))}/${ymd(Math.max(...ds) + 1)}`,
-      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre}${m.accueil ? ' (accueil dès ' + m.accueil + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
+      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre}${m.accueil ? E(' (accueil dès ', ' (guests welcome from ') + m.accueil + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
       location: `${L.nom}, ${L.adresse}`
     });
     return 'https:/' + '/calendar.google.com/calendar/render?' + q.toString();
@@ -1081,7 +1086,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         const txt = k === 'j' ? String(v[k]) : String(v[k]).padStart(2, '0');
         if (cells[k].textContent !== txt) { cells[k].textContent = txt; cells[k].classList.remove('tick'); void cells[k].offsetWidth; cells[k].classList.add('tick'); }
       });
-      if (t === 0) { clearInterval(cdTimer); $('#cdLbl').textContent = 'C’est le grand jour !'; }
+      if (t === 0) { clearInterval(cdTimer); $('#cdLbl').textContent = E('C’est le grand jour !', 'The big day is here!'); }
     };
     tick(); cdTimer = setInterval(tick, 1000);
   }
@@ -1091,7 +1096,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     document.body.className = 'st-' + state.style;
     const app = $('#app');
     if (!F) {
-      app.innerHTML = `<div class="lost"><div class="eyebrow">Faire-part</div><h2>Ce lien semble incomplet</h2><p>Utilisez le lien exact que vous avez reçu, ou écrivez-nous.</p></div>`;
+      app.innerHTML = E(`<div class="lost"><div class="eyebrow">Faire-part</div><h2>Ce lien semble incomplet</h2><p>Utilisez le lien exact que vous avez reçu, ou écrivez-nous.</p></div>`, `<div class="lost"><div class="eyebrow">Invitation</div><h2>This link seems incomplete</h2><p>Please use the exact link you received, or drop us a line.</p></div>`);
       $('#envelope').classList.add('gone');
       return;
     }
@@ -1100,8 +1105,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     F.moments.forEach(k => { const m = C.moments[k]; let d = days.find(x => x.jour === m.jour); if (!d) days.push(d = { jour: m.jour, items: [] }); d.items.push(k); });
     const [a, b] = C.prenoms;
     const hero = (C.haut || 'photo') === 'photo' || state.style === 'placeholder'
-      ? `<figure class="arch${(C.cadrePhoto || 'ovale') === 'ovale' ? ' ovale' : ''}"><img src="${esc(C.photoHero)}" alt="${esc(a)} et ${esc(b)}"></figure>`
-      : `<div class="hero-art">${lieuArt('chateau', true)}<span class="note" style="left:-2%;top:6%">le grand cèdre<br>(on trinque ici !)</span><span class="note" style="right:0;top:-4%;transform:rotate(5deg)">Griselles, Gâtinais</span></div>`;
+      ? `<figure class="arch${(C.cadrePhoto || 'ovale') === 'ovale' ? ' ovale' : ''}"><img src="${esc(C.photoHero)}" alt="${esc(a)} ${E('et', 'and')} ${esc(b)}"></figure>`
+      : `<div class="hero-art">${lieuArt('chateau', true)}<span class="note" style="left:-2%;top:6%">${E('le grand cèdre<br>(on trinque ici !)', 'the great cedar<br>(drinks here!)')}</span><span class="note" style="right:0;top:-4%;transform:rotate(5deg)">Griselles, Gâtinais</span></div>`;
 
     app.innerHTML = `
     <header class="hero">
@@ -1111,7 +1116,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         ${C.filigranesCoins !== false ? `${ORNV('coin') ? '' : `<span class="fili tl">${S.filigrane()}</span>`}<span class="fili tr">${S.filigrane()}</span><span class="fili bl">${S.filigrane()}</span><span class="fili br">${S.filigrane()}</span>` : ''}
         ${ORNV('coin') ? `<span class="deco coin-tl${ornCls('coin')}">${orn('coin')}</span>` : ''}
         <div class="hero-seal">${sealAt('haut')}</div>
-        <div class="eyebrow">Nous nous marions</div>
+        <div class="eyebrow">${E('Nous nous marions', 'We’re getting married')}</div>
         ${hero}
         <h1 class="names">${writeName(a, .4)}<span class="amp" style="--dl:${(NAME_DELAY + .4 + .16 * a.length).toFixed(2)}s">&amp;</span>${writeName(b, .55 + .16 * a.length)}</h1>
         <p class="dates">${esc(F.dates)}</p>
@@ -1124,36 +1129,36 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     ${rule()}
     <section id="date" class="save">
-      <div class="eyebrow">Réservez la date</div>
+      <div class="eyebrow">${E('Réservez la date', 'Save the date')}</div>
       ${TX.date ? `<h2 class="date-h">${esc(TX.date)}</h2>` : ''}
       ${bigDate(F)}
-      ${C.phraseDate === '' ? '' : `<p class="phrase">${esc(C.phraseDate || 'Une date à garder précieusement.')}</p>`}
+      ${C.phraseDate === '' ? '' : `<p class="phrase">${esc(C.phraseDate || E('Une date à garder précieusement.', 'A date to treasure.'))}</p>`}
       <div class="cal-wrap">${calendar(F)}</div>
-      <div class="countdown" id="cd" role="timer" aria-label="Compte à rebours">
-        <div class="cd-lbl" id="cdLbl">${F.moments.includes('mairie') ? 'Avant le premier « oui »' : 'Chaque jour, un peu moins'}</div>
+      <div class="countdown" id="cd" role="timer" aria-label="${E('Compte à rebours', 'Countdown')}">
+        <div class="cd-lbl" id="cdLbl">${F.moments.includes('mairie') ? E('Avant le premier « oui »', 'Until the first “I do”') : E('Chaque jour, un peu moins', 'A little closer every day')}</div>
         <div class="cd-grid">
-          <div class="cd-cell"><b id="cdJ">–</b><span>jours</span></div>
-          <div class="cd-cell"><b id="cdH">–</b><span>heures</span></div>
+          <div class="cd-cell"><b id="cdJ">–</b><span>${E('jours', 'days')}</span></div>
+          <div class="cd-cell"><b id="cdH">–</b><span>${E('heures', 'hours')}</span></div>
           <div class="cd-cell"><b id="cdM">–</b><span>minutes</span></div>
-          <div class="cd-cell"><b id="cdS">–</b><span>secondes</span></div>
+          <div class="cd-cell"><b id="cdS">–</b><span>${E('secondes', 'seconds')}</span></div>
         </div>
       </div>
       <div class="addcal">
-        <a class="btn-cal" href="agenda/${encodeURIComponent(state.code)}.ics">${ICON_CAL} iPhone, Mac, Outlook</a>
-        <a class="btn-cal ghost" href="${gcal(F)}" target="_blank" rel="noopener">${ICON_CAL} Google Agenda</a>
+        <a class="btn-cal" href="agenda/${encodeURIComponent(state.code)}${Langue.en ? '-en' : ''}.ics">${ICON_CAL} iPhone, Mac, Outlook</a>
+        <a class="btn-cal ghost" href="${gcal(F)}" target="_blank" rel="noopener">${ICON_CAL} ${E('Google Agenda', 'Google Calendar')}</a>
       </div>
     </section>
 
     ${rule()}
     <section id="programme">
-      <div class="eyebrow">Le programme</div>
+      <div class="eyebrow">${E('Le programme', 'The programme')}</div>
       <h2>${esc(TX.programme)}</h2>
       <div class="paper alt prog" style="--tilt:.5deg"><span class="in-border"></span>
       ${days.map(d => `<div class="day"><div class="day-h">${esc(d.jour)}</div>${d.items.map(k => {
         const m = C.moments[k], L = C.lieux[m.lieu];
         return `<div class="moment"><div class="doodle-wrap">${ico(m.dessin)}</div><div class="body">
           <h3>${esc(m.titre)}</h3>
-          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon('horaire à venir')}${m.accueil ? `<span class="accueil">accueil dès ${esc(m.accueil)}</span>` : ''}<a href="${esc(L.maps)}" target="_blank" rel="noopener">${esc(L.nom)}</a></div>
+          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon(E('horaire à venir', 'time to come'))}${m.accueil ? `<span class="accueil">${E('accueil dès', 'guests welcome from')} ${esc(m.accueil)}</span>` : ''}<a href="${esc(L.maps)}" target="_blank" rel="noopener">${esc(L.nom)}</a></div>
           ${m.texte ? `<p>${esc(m.texte)}</p>` : ''}</div></div>`;
       }).join('')}</div>`).join('')}
       </div>
@@ -1161,25 +1166,25 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     ${rule()}
     <section id="lieux">
-      <div class="eyebrow">Les lieux</div>
-      <h2>${lieuxUsed.length > 2 ? 'Trois adresses' : 'Deux adresses'}</h2>
+      <div class="eyebrow">${E('Les lieux', 'The venues')}</div>
+      <h2>${lieuxUsed.length > 2 ? E('Trois adresses', 'Three addresses') : E('Deux adresses', 'Two addresses')}</h2>
       <div class="places">${lieuxUsed.map(k => { const L = C.lieux[k]; return `
-        <div class="place paper"><div class="art">${lieuArt(k)}${state.style === 'sketch' && k === 'eglise' ? '<span class="tag">ici, on dit oui !</span>' : ''}</div>
+        <div class="place paper"><div class="art">${lieuArt(k)}${state.style === 'sketch' && k === 'eglise' ? `<span class="tag">${E('ici, on dit oui !', 'this is where we say “I do”!')}</span>` : ''}</div>
           <h3>${esc(L.nom)}</h3><div class="addr">${esc(L.adresse)}</div>
-          <a class="go" href="${esc(L.maps)}" target="_blank" rel="noopener">Itinéraire →</a></div>`; }).join('')}
+          <a class="go" href="${esc(L.maps)}" target="_blank" rel="noopener">${E('Itinéraire', 'Directions')} →</a></div>`; }).join('')}
       </div>
       ${C.lieuxNote ? `<p class="lieux-note">${esc(C.lieuxNote)}</p>` : ''}
     </section>
 
     ${F.nuits.length ? `${rule()}
     <section id="hebergement">
-      <div class="eyebrow">Hébergement</div>
-      <h2>${esc(H.titre || 'Dormir sur place')}</h2>
+      <div class="eyebrow">${E('Hébergement', 'Accommodation')}</div>
+      <h2>${esc(H.titre || E('Dormir sur place', 'Staying on site'))}</h2>
       <div class="paper stay" style="--tilt:-.4deg"><span class="in-border"></span>
         <div class="stay-art">${ico('window')}</div>
         <p class="stay-lead">${esc(H.texte || '')}</p>
         ${H.note ? `<p class="stay-note">${esc(H.note)}</p>` : ''}
-        <a class="go" href="#rsvp">Je le précise dans ma réponse ↓</a>
+        <a class="go" href="#rsvp">${E('Je le précise dans ma réponse', 'Let us know in your reply')} ↓</a>
       </div>
     </section>` : ''}
 
@@ -1189,7 +1194,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     ${rule()}
     <section id="bientot">
-      <div class="eyebrow">Plus d’infos très bientôt</div>
+      <div class="eyebrow">${E('Plus d’infos très bientôt', 'More details very soon')}</div>
       <h2>${esc(TX.bientot)}</h2>
       <div class="soon-grid">
         ${DressCode.html()}
@@ -1198,21 +1203,21 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
           <div class="gift-art">${ico('gift')}</div>
           <div class="gift-body">
             ${t.accroche ? `<p class="gift-lead">${esc(t.accroche)}</p>` : ''}
-            <div class="sc-title">${esc(t.titre)}${t.lien ? '' : '<span class="gold-stamp">Bientôt</span>'}</div>
-            <p>${esc(t.texte || (t.lien ? T('Pour ceux qui le souhaitent, nous avons préparé une liste : vous y trouverez quelques idées et les façons de participer.', 'Si tu le souhaites, nous avons préparé une liste : tu y trouveras quelques idées et les façons de participer.') : T('Pour ceux qui le souhaitent, une liste sera là pour vous aider. Le lien arrive très vite.', 'Si tu le souhaites, une liste sera là pour t’aider. Le lien arrive très vite.')))}</p>
-            ${t.lien ? `<a class="btn-cal" href="${esc(t.lien)}"${/^https?:/.test(t.lien) ? ' target="_blank" rel="noopener"' : ''}>Voir la liste ${/^https?:/.test(t.lien) ? '↗' : '→'}</a>` : ''}</div>
+            <div class="sc-title">${esc(t.titre)}${t.lien ? '' : `<span class="gold-stamp">${E('Bientôt', 'Soon')}</span>`}</div>
+            <p>${esc(t.texte || (t.lien ? T('Pour ceux qui le souhaitent, nous avons préparé une liste : vous y trouverez quelques idées et les façons de participer.', 'Si tu le souhaites, nous avons préparé une liste : tu y trouveras quelques idées et les façons de participer.', 'For those who would like to, we have put together a registry: you will find a few ideas there and the ways to contribute.') : T('Pour ceux qui le souhaitent, une liste sera là pour vous aider. Le lien arrive très vite.', 'Si tu le souhaites, une liste sera là pour t’aider. Le lien arrive très vite.', 'For those who would like one, a registry will be available. The link is coming very soon.')))}</p>
+            ${t.lien ? `<a class="btn-cal" href="${esc(t.lien)}"${/^https?:/.test(t.lien) ? ' target="_blank" rel="noopener"' : ''}>${E('Voir la liste', 'View the registry')} ${/^https?:/.test(t.lien) ? '↗' : '→'}</a>` : ''}</div>
         </div>`).join('')}
       </div>
     </section>
 
     ${rule()}
     <section id="escales">
-      <div class="eyebrow">Nos escales</div>
+      <div class="eyebrow">${E('Nos escales', 'Our travels')}</div>
       <h2>${esc(TX.escales)}</h2>
-      <div class="gallery-scroll" tabindex="0" aria-label="Photos de nos voyages"><div class="gallery">
+      <div class="gallery-scroll" tabindex="0" aria-label="${E('Photos de nos voyages', 'Photos from our travels')}"><div class="gallery">
         ${C.photos.map((p, i) => `<figure class="polaroid" style="--rot:${[-3, 2.5, -1.5, 3.5, -2.5, 1.5][i % 6]}deg"><img loading="lazy" src="${esc(p.src)}" alt="${esc(p.legende)}"><span>${esc(p.legende)}</span></figure>`).join('')}
       </div></div>
-      <div class="hint">${T('faites', 'fais')} défiler →</div>
+      <div class="hint">${T('faites défiler', 'fais défiler', 'scroll')} →</div>
     </section>
 
     <section class="finale">
@@ -1222,9 +1227,9 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
 
     <footer>
       <div class="foot-seal">${sealAt('bas')}</div>
-      <div class="eyebrow">Avec toute notre impatience</div>
+      <div class="eyebrow">${E('Avec toute notre impatience', 'Counting the days')}</div>
       <div class="sig">${esc(a)} &amp; ${esc(b)}</div>
-      ${C.site && C.site.lienFairePart ? `<a class="site-link" href="site.html?f=${encodeURIComponent(state.code)}${state.nom ? '&n=' + encodeURIComponent(state.nom) : ''}">Le carnet pratique →</a>` : ''}
+      ${C.site && C.site.lienFairePart ? `<a class="site-link" href="site.html?f=${encodeURIComponent(state.code)}${state.nom ? '&n=' + encodeURIComponent(state.nom) : ''}${Langue.q}">${E('Le carnet pratique', 'The wedding guide')} →</a>` : ''}
       <div style="margin-top:18px">${window.Donnees ? Donnees.lien() : ''}</div>
     </footer>`;
 
@@ -1263,14 +1268,14 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
   /* Coordonnées : faire-part papier et contact en cas d'imprévu */
   const coordsHtml = R => `
           <div class="coords">
-            <h3>${T('Vos', 'Tes')} coordonnées</h3>
-            <p>${T('Pour vous envoyer le faire-part papier et vous joindre en cas d’imprévu.', 'Pour t’envoyer le faire-part papier et te joindre en cas d’imprévu.')}</p>
-            <label class="fld"><span>Téléphone</span><input id="telephone" type="tel" inputmode="tel" value="${esc(R.telephone)}" placeholder="06 12 34 56 78" autocomplete="tel"></label>
-            <label class="fld"><span>Adresse postale</span><input id="adresse" type="text" value="${esc(R.adresse)}" placeholder="12 rue des Lilas, bât. B" autocomplete="street-address"></label>
+            <h3>${T('Vos coordonnées', 'Tes coordonnées', 'Your contact details')}</h3>
+            <p>${T('Pour vous envoyer le faire-part papier et vous joindre en cas d’imprévu.', 'Pour t’envoyer le faire-part papier et te joindre en cas d’imprévu.', 'So we can send you the paper invitation and reach you if anything comes up.')}</p>
+            <label class="fld"><span>${E('Téléphone', 'Phone')}</span><input id="telephone" type="tel" inputmode="tel" value="${esc(R.telephone)}" placeholder="${E('06 12 34 56 78', '+44 7700 900123')}" autocomplete="tel"></label>
+            <label class="fld"><span>${E('Adresse postale', 'Postal address')}</span><input id="adresse" type="text" value="${esc(R.adresse)}" placeholder="${E('12 rue des Lilas, bât. B', '12 Lilac Street, Flat B')}" autocomplete="street-address"></label>
             <div class="row3">
-              <label class="fld"><span>Code postal</span><input id="cp" type="text" inputmode="numeric" value="${esc(R.cp)}" autocomplete="postal-code"></label>
-              <label class="fld"><span>Ville</span><input id="ville" type="text" value="${esc(R.ville)}" autocomplete="address-level2"></label>
-              <label class="fld"><span>Pays</span><input id="pays" type="text" value="${esc(R.pays)}" autocomplete="country-name"></label>
+              <label class="fld"><span>${E('Code postal', 'Postcode')}</span><input id="cp" type="text" inputmode="numeric" value="${esc(R.cp)}" autocomplete="postal-code"></label>
+              <label class="fld"><span>${E('Ville', 'Town / City')}</span><input id="ville" type="text" value="${esc(R.ville)}" autocomplete="address-level2"></label>
+              <label class="fld"><span>${E('Pays', 'Country')}</span><input id="pays" type="text" value="${esc(R.pays)}" autocomplete="country-name"></label>
             </div>
           </div>`;
 
@@ -1282,29 +1287,29 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const draft = prev ? null : store.get('rsvpDraft.' + state.code);
     const R = prev ? Object.assign({}, prev) : Object.assign({
       presence: '', nom: state.nom, adultes: 1, enfants: 0, moments: F.moments.slice(), regime: '', couchage: false,
-      nuits: F.nuits.map(n => n.id), nb_couchage: 1, partage: false, chanson: '', message: '', email: '', telephone: '', adresse: '', cp: '', ville: '', pays: 'France'
+      nuits: F.nuits.map(n => n.id), nb_couchage: 1, partage: false, chanson: '', message: '', email: '', telephone: '', adresse: '', cp: '', ville: '', pays: E('France', '')
     }, draft || {});
     let tries = 0;
-    const OUI_TXT = T('On sera là !', 'Je serai là !');
+    const OUI_TXT = T('On sera là !', 'Je serai là !', 'We’ll be there!');
     if (TU) { R.adultes = 1; R.enfants = 0; R.nb_couchage = 1; } /* invitation pour une personne : pas de compteur */
 
     box.innerHTML = `
-      <div class="eyebrow">Répondez s’il vous plaît</div>
-      <h2>${T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?')}</h2>
-      ${C.repondreAvant ? `<p class="deadline">Réponse souhaitée avant le ${esc(C.repondreAvant)}</p>` : ''}
-      ${draft && draft.presence ? T('<p class="step-note"><b>Vous n’aviez pas terminé.</b> Votre réponse n’a pas encore été validée : vérifiez-la, puis appuyez sur le bouton en bas du formulaire.</p>', '<p class="step-note"><b>Tu n’avais pas terminé.</b> Ta réponse n’a pas encore été validée : vérifie-la, puis appuie sur le bouton en bas du formulaire.</p>') : ''}
+      <div class="eyebrow">${E('Répondez s’il vous plaît', 'Kindly reply')}</div>
+      <h2>${T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?', 'Will you join us?')}</h2>
+      ${C.repondreAvant ? `<p class="deadline">${E('Réponse souhaitée avant le', 'Kindly reply by')} ${esc(C.repondreAvant)}</p>` : ''}
+      ${draft && draft.presence ? T('<p class="step-note"><b>Vous n’aviez pas terminé.</b> Votre réponse n’a pas encore été validée : vérifiez-la, puis appuyez sur le bouton en bas du formulaire.</p>', '<p class="step-note"><b>Tu n’avais pas terminé.</b> Ta réponse n’a pas encore été validée : vérifie-la, puis appuie sur le bouton en bas du formulaire.</p>', '<p class="step-note"><b>You hadn’t finished.</b> Your reply has not been sent yet: check it, then press the button at the bottom of the form.</p>') : ''}
       <form id="f" novalidate>
         <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <label class="fld"><span>${T('Vos prénoms et noms', 'Ton prénom et ton nom')}</span><input id="nom" type="text" required placeholder="${T('ex. Claire & Paul Martin', 'ex. Claire Martin')}" value="${esc(R.nom)}" autocomplete="name"></label>
+        <label class="fld"><span>${T('Vos prénoms et noms', 'Ton prénom et ton nom', 'Your full names')}</span><input id="nom" type="text" required placeholder="${T('ex. Claire & Paul Martin', 'ex. Claire Martin', 'e.g. Claire & Paul Martin')}" value="${esc(R.nom)}" autocomplete="name"></label>
         <div class="choice-zone" id="zone">
           <button type="button" class="yes" id="yes">${OUI_TXT}</button>
-          <button type="button" class="no" id="no">Non</button>
+          <button type="button" class="no" id="no">${E('Non', 'No')}</button>
           <div class="taunt" id="taunt" aria-live="polite"></div>
         </div>
         <div id="details"></div>
         <div class="err" id="err" role="alert"></div>
       </form>
-      <button type="button" class="go-confirm" id="goConfirm" hidden>↓ Dernière étape : envoyer</button>`;
+      <button type="button" class="go-confirm" id="goConfirm" hidden>↓ ${E('Dernière étape : envoyer', 'Last step: send')}</button>`;
 
     const yes = $('#yes'), no = $('#no'), zone = $('#zone'), taunt = $('#taunt'), go = $('#goConfirm');
     /* Rappel flottant : tant que le bouton d’envoi n’est pas visible, on rappelle qu’il reste une étape. */
@@ -1328,12 +1333,12 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         k++;
       } while (k < 30 && x + z.left < yb.right + 12 && x + z.left + nb.width > yb.left - 12 && y + z.top < yb.bottom + 12 && y + z.top + nb.height > yb.top - 12);
       no.style.left = x + 'px'; no.style.top = y + 'px';
-      no.textContent = C.fuite[tries] || 'Non';
+      no.textContent = C.fuite[tries] || E('Non', 'No');
       tries++;
       yes.style.setProperty('--grow', (1 + tries * 0.1).toFixed(2));
-      taunt.textContent = ['Raté !', 'Presque…', 'Trop lent !', 'Hop !', 'Encore raté'][tries - 1] || '';
+      taunt.textContent = (Langue.en ? ['Missed!', 'Almost…', 'Too slow!', 'Whoops!', 'Missed again'] : ['Raté !', 'Presque…', 'Trop lent !', 'Hop !', 'Encore raté'])[tries - 1] || '';
       if (tries >= C.fuite.length) {
-        setTimeout(() => { no.textContent = C.nonFinal; taunt.textContent = T('D’accord, d’accord… vous pouvez cliquer.', 'D’accord, d’accord… tu peux cliquer.'); }, 700);
+        setTimeout(() => { no.textContent = C.nonFinal; taunt.textContent = T('D’accord, d’accord… vous pouvez cliquer.', 'D’accord, d’accord… tu peux cliquer.', 'All right, all right… you may click.'); }, 700);
       }
     }
     const canFlee = () => tries < C.fuite.length && R.presence !== 'Non';
@@ -1348,8 +1353,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     function choose(p, silent) {
       R.presence = p;
       yes.classList.toggle('sel', p === 'Oui'); no.classList.toggle('sel', p === 'Non');
-      if (p === 'Non') { taunt.textContent = T('On vous embrassera quand même.', 'On t’embrassera quand même.'); }
-      else if (!silent) taunt.textContent = 'Youpi ! Plus qu’une étape ↓';
+      if (p === 'Non') { taunt.textContent = T('On vous embrassera quand même.', 'On t’embrassera quand même.', 'Sending you lots of love anyway.'); }
+      else if (!silent) taunt.textContent = E('Youpi ! Plus qu’une étape ↓', 'Hooray! Just one more step ↓');
       pending = true;
       renderDetails();
       const sb = box.querySelector('.submit');
@@ -1358,46 +1363,46 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     }
 
     function stepper(id, val, min) {
-      return `<div class="stepper" data-st="${id}" data-min="${min}"><button type="button" data-d="-1" aria-label="moins">−</button><output id="${id}">${val}</output><button type="button" data-d="1" aria-label="plus">+</button></div>`;
+      return `<div class="stepper" data-st="${id}" data-min="${min}"><button type="button" data-d="-1" aria-label="${E('moins', 'less')}">−</button><output id="${id}">${val}</output><button type="button" data-d="1" aria-label="${E('plus', 'more')}">+</button></div>`;
     }
 
     function renderDetails() {
       const d = $('#details');
       if (R.presence === 'Non') {
         d.innerHTML = `<div class="more">
-          <p class="step-note"><b>Ce n’est pas encore envoyé.</b> ${T('Laissez-nous un mot si vous le souhaitez, puis appuyez', 'Laisse-nous un mot si tu le souhaites, puis appuie')} sur « Envoyer ma réponse » en bas.</p>
-          <label class="fld"><span>Un petit mot pour nous ?</span><textarea id="message" placeholder="${T('Nous penserons fort à vous…', 'Nous penserons fort à toi…')}">${esc(R.message)}</textarea></label>
-          <label class="fld"><span>E-mail</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
+          <p class="step-note">${E(`<b>Ce n’est pas encore envoyé.</b> ${T('Laissez-nous un mot si vous le souhaitez, puis appuyez', 'Laisse-nous un mot si tu le souhaites, puis appuie')} sur « Envoyer ma réponse » en bas.`, '<b>It hasn’t been sent yet.</b> Leave us a note if you like, then press “Send my reply” at the bottom.')}</p>
+          <label class="fld"><span>${E('Un petit mot pour nous ?', 'A little note for us?')}</span><textarea id="message" placeholder="${T('Nous penserons fort à vous…', 'Nous penserons fort à toi…', 'We’ll be thinking of you…')}">${esc(R.message)}</textarea></label>
+          <label class="fld"><span>${E('E-mail', 'Email')}</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
           ${coordsHtml(R)}
-          <button class="submit" type="submit">Envoyer ma réponse</button><p class="submit-hint">${T('Votre', 'Ta')} réponse n’est validée qu’après ce clic.</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
+          <button class="submit" type="submit">${E('Envoyer ma réponse', 'Send my reply')}</button><p class="submit-hint">${T('Votre réponse n’est validée qu’après ce clic.', 'Ta réponse n’est validée qu’après ce clic.', 'Your reply is only sent once you click.')}</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
       } else {
         const multi = F.moments.length > 2;
         d.innerHTML = `<div class="more">
-          <p class="step-note"><b>Presque fini !</b> ${T('Complétez les détails ci-dessous, puis appuyez sur « Confirmer notre venue » tout en bas : votre réponse', 'Complète les détails ci-dessous, puis appuie sur « Confirmer ma venue » tout en bas : ta réponse')} n’est validée qu’à ce moment-là.</p>
+          <p class="step-note">${E(`<b>Presque fini !</b> ${T('Complétez les détails ci-dessous, puis appuyez sur « Confirmer notre venue » tout en bas : votre réponse', 'Complète les détails ci-dessous, puis appuie sur « Confirmer ma venue » tout en bas : ta réponse')} n’est validée qu’à ce moment-là.`, '<b>Almost done!</b> Fill in the details below, then press “Confirm attendance” at the very bottom: your reply is only sent at that point.')}</p>
           ${TU ? '' : `<div class="row2">
-            <div class="fld"><span>Adultes</span>${stepper('adultes', R.adultes, 1)}</div>
-            <div class="fld"><span>Enfants</span>${stepper('enfants', R.enfants, 0)}</div>
+            <div class="fld"><span>${E('Adultes', 'Adults')}</span>${stepper('adultes', R.adultes, 1)}</div>
+            <div class="fld"><span>${E('Enfants', 'Children')}</span>${stepper('enfants', R.enfants, 0)}</div>
           </div>`}
-          ${multi ? `<div class="fld"><span>${T('Vous serez là pour…', 'Tu seras là pour…')}</span><div class="checks">${F.moments.map(k => { const m = C.moments[k]; return `
+          ${multi ? `<div class="fld"><span>${T('Vous serez là pour…', 'Tu seras là pour…', 'You’ll join us for…')}</span><div class="checks">${F.moments.map(k => { const m = C.moments[k]; return `
             <label class="chk"><input type="checkbox" name="mom" value="${k}" ${R.moments.includes(k) ? 'checked' : ''}>${esc(m.titre)}<small>${esc(m.jour)}</small></label>`; }).join('')}</div></div>` : ''}
           ${F.nuits.length ? `<div class="sleep">
-            <h3>Dormir sur place ?</h3>
-            <p>${C.prixNuit} € par nuit et par personne, dans la limite des places au château. Plus d’informations à venir. Chambres partagées possibles.</p>
-            <label class="chk" style="margin-top:12px"><input type="checkbox" id="couchage" ${R.couchage ? 'checked' : ''}>${T('Oui, nous aimerions dormir au château', 'Oui, j’aimerais dormir au château')}</label>
+            <h3>${E('Dormir sur place ?', 'Staying overnight?')}</h3>
+            <p>${E(`${C.prixNuit} € par nuit et par personne, dans la limite des places au château. Plus d’informations à venir. Chambres partagées possibles.`, `€${C.prixNuit} per person per night, subject to availability at the château. More information to come. Shared rooms possible.`)}</p>
+            <label class="chk" style="margin-top:12px"><input type="checkbox" id="couchage" ${R.couchage ? 'checked' : ''}>${T('Oui, nous aimerions dormir au château', 'Oui, j’aimerais dormir au château', 'Yes, we’d like to stay at the château')}</label>
             <div id="sleepMore" ${R.couchage ? '' : 'hidden'}>
               <div class="checks" style="margin-top:10px">${F.nuits.map(n => `<label class="chk"><input type="checkbox" name="nuit" value="${n.id}" ${R.nuits.includes(n.id) ? 'checked' : ''}>${esc(n.label)}</label>`).join('')}</div>
-              ${TU ? '' : `<div class="fld"><span>Nombre de personnes</span>${stepper('nb_couchage', R.nb_couchage, 1)}</div>`}
-              <label class="chk" style="margin-top:12px"><input type="checkbox" id="partage" ${R.partage ? 'checked' : ''}>${T('Partager une chambre ne nous dérange pas', 'Partager une chambre ne me dérange pas')}</label>
+              ${TU ? '' : `<div class="fld"><span>${E('Nombre de personnes', 'Number of people')}</span>${stepper('nb_couchage', R.nb_couchage, 1)}</div>`}
+              <label class="chk" style="margin-top:12px"><input type="checkbox" id="partage" ${R.partage ? 'checked' : ''}>${T('Partager une chambre ne nous dérange pas', 'Partager une chambre ne me dérange pas', 'We don’t mind sharing a room')}</label>
               <div class="estimate" id="estimate"></div>
             </div>
           </div>` : ''}
-          <label class="fld"><span>Allergies ou régime particulier (facultatif)</span><input id="regime" type="text" value="${esc(R.regime)}" placeholder="végétarien, sans gluten…"></label>
-          <label class="consent"><input type="checkbox" id="regimeOk" ${R.regimeOk ? 'checked' : ''}> Si je signale une allergie ou un régime, j’accepte que cette information serve uniquement à préparer mon repas et soit transmise au traiteur.</label>
-          <label class="fld"><span>La chanson qui ${T('vous', 'te')} fera danser</span><input id="chanson" type="text" value="${esc(R.chanson)}" placeholder="Titre – artiste"></label>
-          <label class="fld"><span>Un mot pour les mariés</span><textarea id="message" placeholder="Conseils, blagues, déclarations…">${esc(R.message)}</textarea></label>
-          <label class="fld"><span>E-mail (pour recevoir les infos à venir)</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
+          <label class="fld"><span>${E('Allergies ou régime particulier (facultatif)', 'Allergies or dietary requirements (optional)')}</span><input id="regime" type="text" value="${esc(R.regime)}" placeholder="${E('végétarien, sans gluten…', 'vegetarian, gluten-free…')}"></label>
+          <label class="consent"><input type="checkbox" id="regimeOk" ${R.regimeOk ? 'checked' : ''}> ${E('Si je signale une allergie ou un régime, j’accepte que cette information serve uniquement à préparer mon repas et soit transmise au traiteur.', 'If I mention an allergy or a diet, I agree that this information will only be used to prepare my meal and will be passed on to the caterer.')}</label>
+          <label class="fld"><span>${T('La chanson qui vous fera danser', 'La chanson qui te fera danser', 'The song that will get you dancing')}</span><input id="chanson" type="text" value="${esc(R.chanson)}" placeholder="${E('Titre – artiste', 'Title – artist')}"></label>
+          <label class="fld"><span>${E('Un mot pour les mariés', 'A note for the couple')}</span><textarea id="message" placeholder="${E('Conseils, blagues, déclarations…', 'Advice, jokes, declarations…')}">${esc(R.message)}</textarea></label>
+          <label class="fld"><span>${E('E-mail (pour recevoir les infos à venir)', 'Email (to receive updates)')}</span><input id="email" type="email" value="${esc(R.email)}" autocomplete="email"></label>
           ${coordsHtml(R)}
-          <button class="submit" type="submit">${T('Confirmer notre venue', 'Confirmer ma venue')}</button><p class="submit-hint">${T('Votre', 'Ta')} réponse n’est validée qu’après ce clic.</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
+          <button class="submit" type="submit">${T('Confirmer notre venue', 'Confirmer ma venue', 'Confirm attendance')}</button><p class="submit-hint">${T('Votre réponse n’est validée qu’après ce clic.', 'Ta réponse n’est validée qu’après ce clic.', 'Your reply is only sent once you click.')}</p>${window.Donnees ? Donnees.ligne() : ''}</div>`;
         d.querySelectorAll('.stepper').forEach(st => st.addEventListener('click', e => {
           const btn = e.target.closest('button'); if (!btn) return;
           const id = st.dataset.st, out = $('#' + id);
@@ -1422,7 +1427,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     function estimate() {
       const el = $('#estimate'); if (!el) return;
       const n = R.nuits.length * R.nb_couchage * C.prixNuit;
-      el.textContent = R.couchage && n ? `Estimation : ${R.nb_couchage} pers. × ${R.nuits.length} nuit${R.nuits.length > 1 ? 's' : ''} × ${C.prixNuit} € = ${n} €` : '';
+      el.textContent = R.couchage && n ? E(`Estimation : ${R.nb_couchage} pers. × ${R.nuits.length} nuit${R.nuits.length > 1 ? 's' : ''} × ${C.prixNuit} € = ${n} €`, `Estimate: ${R.nb_couchage} pers. × ${R.nuits.length} night${R.nuits.length > 1 ? 's' : ''} × €${C.prixNuit} = €${n}`) : '';
     }
 
     /* Envoi robuste : certains navigateurs intégrés (appli Google, Instagram…) bloquent ou font
@@ -1454,14 +1459,14 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         id: id + '_' + state.code, formule: F.libelle || F.nom, code: state.code, lien_nom: state.nom,
         nom: R.nom, presence: R.presence,
         adultes: oui ? R.adultes : 0, enfants: oui ? R.enfants : 0,
-        moments: oui ? (F.moments.length > 2 ? R.moments : F.moments).map(k => C.moments[k].titre).join(', ') : '',
+        moments: oui ? (F.moments.length > 2 ? R.moments : F.moments).map(k => (FR.moments[k] || C.moments[k]).titre).join(', ') : '',
         couchage: oui && R.couchage ? 'Oui' : 'Non',
-        nuits: oui && R.couchage ? F.nuits.filter(n => R.nuits.includes(n.id)).map(n => n.label).join(', ') : '',
+        nuits: oui && R.couchage ? FR.formules[state.code].nuits.filter(n => R.nuits.includes(n.id)).map(n => n.label).join(', ') : '',
         nb_couchage: oui && R.couchage ? R.nb_couchage : 0,
         partage: oui && R.couchage ? (R.partage ? 'Oui' : 'Non') : '',
         estimation_eur: oui && R.couchage ? R.nuits.length * R.nb_couchage * C.prixNuit : 0,
         regime: oui && R.regimeOk ? R.regime : '', consentement_regime: oui && R.regime && R.regimeOk ? new Date().toISOString().slice(0, 10) : '', chanson: oui ? R.chanson : '', message: R.message, email: R.email,
-        telephone: R.telephone, adresse: R.adresse, cp: R.cp, ville: R.ville, pays: R.pays
+        telephone: R.telephone, adresse: R.adresse, cp: R.cp, ville: R.ville, pays: R.pays, langue: Langue.code
       };
     }
 
@@ -1476,7 +1481,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       if (!send || DEMO || !C.rsvpUrl) return;
       const P = buildPayload();
       const d = { brouillon: true, id: P.id, formule: P.formule, code: P.code, lien_nom: P.lien_nom, nom: P.nom, presence: P.presence,
-        adultes: P.adultes, enfants: P.enfants, moments: P.moments, couchage: P.couchage, nb_couchage: P.nb_couchage, email: P.email, telephone: P.telephone };
+        adultes: P.adultes, enfants: P.enfants, moments: P.moments, couchage: P.couchage, nb_couchage: P.nb_couchage, email: P.email, telephone: P.telephone, langue: P.langue };
       const body = JSON.stringify(d);
       if (body === lastDraft) return;
       lastDraft = body;
@@ -1494,12 +1499,12 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
       e.preventDefault();
       const err = $('#err'); err.textContent = '';
       collect();
-      if (!R.nom) { err.textContent = T('Indiquez vos prénoms et noms pour qu’on sache qui répond.', 'Indique ton prénom et ton nom pour qu’on sache qui répond.'); $('#nom').focus(); return; }
-      if (!R.presence) { err.textContent = T('Choisissez', 'Choisis') + ' « ' + OUI_TXT + ' » ou « Non ».'; return; }
-      if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = T('Cochez', 'Coche') + ' au moins un moment.'; return; }
-      if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = T('Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.', 'Coche la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laisse le champ vide.'); $('#regimeOk').focus(); return; }
+      if (!R.nom) { err.textContent = T('Indiquez vos prénoms et noms pour qu’on sache qui répond.', 'Indique ton prénom et ton nom pour qu’on sache qui répond.', 'Please enter your names so we know who is replying.'); $('#nom').focus(); return; }
+      if (!R.presence) { err.textContent = E(T('Choisissez', 'Choisis') + ' « ' + OUI_TXT + ' » ou « Non ».', 'Choose “' + OUI_TXT + '” or “No”.'); return; }
+      if (R.presence === 'Oui' && F.moments.length > 2 && !R.moments.length) { err.textContent = T('Cochez au moins un moment.', 'Coche au moins un moment.', 'Please tick at least one event.'); return; }
+      if (R.presence === 'Oui' && R.regime && !R.regimeOk) { err.textContent = T('Cochez la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laissez le champ vide.', 'Coche la case sous « Allergies ou régime » pour que nous puissions transmettre l’information au traiteur, ou laisse le champ vide.', 'Please tick the box under “Allergies or dietary requirements” so we can pass the information on to the caterer, or leave the field empty.'); $('#regimeOk').focus(); return; }
       const robot = !!$('[name=website]').value; /* champ piège : l’autoremplissage Android peut le remplir, on envoie quand même en signalant */
-      const btn = e.target.querySelector('.submit'); btn.disabled = true; btn.textContent = 'Envoi…';
+      const btn = e.target.querySelector('.submit'); btn.disabled = true; btn.textContent = E('Envoi…', 'Sending…');
       sending = true;
       const payload = buildPayload();
       if (robot) payload.robot = 'oui';
@@ -1513,8 +1518,8 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
         delete box.dataset.edit;
         renderDone(F, saved);
       } catch (x) {
-        sending = false; btn.disabled = false; btn.textContent = 'Réessayer';
-        err.textContent = T('L’envoi n’a pas abouti. Vérifiez votre connexion puis réessayez.', 'L’envoi n’a pas abouti. Vérifie ta connexion puis réessaie.');
+        sending = false; btn.disabled = false; btn.textContent = E('Réessayer', 'Try again');
+        err.textContent = T('L’envoi n’a pas abouti. Vérifiez votre connexion puis réessayez.', 'L’envoi n’a pas abouti. Vérifie ta connexion puis réessaie.', 'Sending failed. Check your connection and try again.');
       }
     });
   }
@@ -1534,7 +1539,7 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     exitAt = Date.now();
     const bar = document.createElement('div');
     bar.id = 'exitBar'; bar.className = 'exit-bar'; bar.setAttribute('role', 'alert');
-    bar.innerHTML = '<span><b>' + T('Votre', 'Ta') + ' réponse n’est pas encore envoyée.</b> Il reste à la valider en bas du formulaire.</span><button type="button" class="exit-go">Terminer ma réponse ↓</button><button type="button" class="exit-x" aria-label="Fermer">×</button>';
+    bar.innerHTML = E('<span><b>' + T('Votre', 'Ta') + ' réponse n’est pas encore envoyée.</b> Il reste à la valider en bas du formulaire.</span><button type="button" class="exit-go">Terminer ma réponse ↓</button><button type="button" class="exit-x" aria-label="Fermer">×</button>', '<span><b>Your reply hasn’t been sent yet.</b> You still need to confirm it at the bottom of the form.</span><button type="button" class="exit-go">Finish my reply ↓</button><button type="button" class="exit-x" aria-label="Close">×</button>');
     document.body.appendChild(bar);
     bar.querySelector('.exit-x').addEventListener('click', hideExit);
     bar.querySelector('.exit-go').addEventListener('click', () => {
@@ -1548,12 +1553,12 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const box = $('#rsvpBox'), oui = R.presence === 'Oui';
     box.innerHTML = `<div class="done">
       ${S.doodle(oui ? 'glasses' : 'heart')}
-      <div class="big">${oui ? 'C’est noté, on trinquera ensemble !' : T('Vous allez nous manquer.', 'Tu vas nous manquer.')}</div>
-      <p>${oui ? 'Merci ' + esc(R.nom) + T(' ! Nous vous enverrons', ' ! Nous t’enverrons') + ' les horaires, le code couleur et les infos pratiques très bientôt.' : 'Merci de nous avoir répondu, ' + esc(R.nom) + T('. On lèvera un verre à votre santé.', '. On lèvera un verre à ta santé.')}</p>
-      ${already ? `<p class="deadline" style="margin:14px 0 0">Réponse envoyée${R.date ? ' le ' + new Date(R.date).toLocaleDateString('fr-FR') : ''}${DEMO ? ' (aperçu : rien n’a été envoyé)' : ''}</p>` : (DEMO ? '<p class="deadline" style="margin:14px 0 0">Mode aperçu : rien n’a été envoyé.</p>' : '')}
-      ${C.site && C.site.lienFairePart ? `<a class="site-link" href="${carnetUrl()}">Le carnet pratique : accès, hébergement, covoiturage →</a><br>` : ''}
-      ${oui && lienListe((C.bientot[0] || {}).lien) ? `<a class="site-link" href="${esc(lienListe(C.bientot[0].lien))}">Notre liste de mariage →</a><br>` : ''}
-      <button class="linkbtn" id="edit" type="button">Modifier ma réponse</button></div>`;
+      <div class="big">${oui ? E('C’est noté, on trinquera ensemble !', 'Noted, we’ll raise a glass together!') : T('Vous allez nous manquer.', 'Tu vas nous manquer.', 'We’ll miss you.')}</div>
+      <p>${Langue.en ? (oui ? 'Thank you, ' + esc(R.nom) + '! We’ll send you the timings, the dress code and practical details very soon.' : 'Thank you for letting us know, ' + esc(R.nom) + '. We’ll raise a glass to you.') : oui ? 'Merci ' + esc(R.nom) + T(' ! Nous vous enverrons', ' ! Nous t’enverrons') + ' les horaires, le code couleur et les infos pratiques très bientôt.' : 'Merci de nous avoir répondu, ' + esc(R.nom) + T('. On lèvera un verre à votre santé.', '. On lèvera un verre à ta santé.')}</p>
+      ${already ? `<p class="deadline" style="margin:14px 0 0">${E('Réponse envoyée', 'Reply sent')}${R.date ? E(' le ', ' on ') + new Date(R.date).toLocaleDateString(Langue.locale) : ''}${DEMO ? E(' (aperçu : rien n’a été envoyé)', ' (preview: nothing was sent)') : ''}</p>` : (DEMO ? `<p class="deadline" style="margin:14px 0 0">${E('Mode aperçu : rien n’a été envoyé.', 'Preview mode: nothing was sent.')}</p>` : '')}
+      ${C.site && C.site.lienFairePart ? `<a class="site-link" href="${carnetUrl()}">${E('Le carnet pratique : accès, hébergement, covoiturage', 'The wedding guide: getting here, accommodation, car sharing')} →</a><br>` : ''}
+      ${oui && lienListe((C.bientot[0] || {}).lien) ? `<a class="site-link" href="${esc(lienListe(C.bientot[0].lien))}">${E('Notre liste de mariage', 'Our wedding registry')} →</a><br>` : ''}
+      <button class="linkbtn" id="edit" type="button">${E('Modifier ma réponse', 'Change my reply')}</button></div>`;
     $('#edit').addEventListener('click', () => { box.dataset.edit = '1'; renderRSVP(F); });
     if (oui && !already) confetti();
     /* juste après l'envoi : le formulaire (long) est remplacé par ce message (court), la page
@@ -1599,11 +1604,11 @@ footer .sig { font: 400 40px/1.1 var(--f-hand); color: var(--ink); }
     const F = C.formules[state.code];
     $('#envSeal').innerHTML = sealAt('enveloppe');
     $('#env').classList.toggle('photo-seal', ((C.sceaux || {}).enveloppe === 'photo'));
-    $('#envLetter').innerHTML = `${C.monogrammeLettres && ((C.sceaux || {}).carte || 'image') === 'image' ? `<img class="l-mono" src="${esc(C.monogrammeLettres)}" alt="">` : ''}<span class="l-eye">${T('Vous êtes invités', 'Nous t’invitons')}</span><span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-orn">${S.ornement()}</span><span class="l-date gold">${esc(F.dates)}</span><span class="l-place">${esc(C.lieux.chateau.nom)}</span>${C.illustrationsLieux !== false ? `<img class="l-chateau" src="${AS('photos/lieux/chateau.webp')}" alt="">` : ''}<span class="fili tl">${S.filigrane()}</span><span class="fili tr">${S.filigrane()}</span><span class="fili bl">${S.filigrane()}</span><span class="fili br">${S.filigrane()}</span>`;
+    $('#envLetter').innerHTML = `${C.monogrammeLettres && ((C.sceaux || {}).carte || 'image') === 'image' ? `<img class="l-mono" src="${esc(C.monogrammeLettres)}" alt="">` : ''}<span class="l-eye">${T('Vous êtes invités', 'Nous t’invitons', 'You are invited')}</span><span class="l-names">${esc(C.prenoms[0])}<i>&amp;</i>${esc(C.prenoms[1])}</span><span class="l-orn">${S.ornement()}</span><span class="l-date gold">${esc(F.dates)}</span><span class="l-place">${esc(C.lieux.chateau.nom)}</span>${C.illustrationsLieux !== false ? `<img class="l-chateau" src="${AS('photos/lieux/chateau.webp')}" alt="">` : ''}<span class="fili tl">${S.filigrane()}</span><span class="fili tr">${S.filigrane()}</span><span class="fili bl">${S.filigrane()}</span><span class="fili br">${S.filigrane()}</span>`;
     const br = C.palette !== 'bleu' ? '<img class="branch" src="photos/branche-or.webp" alt="">' : S.branch(false);
     $('#doorL').innerHTML = br; $('#doorR').innerHTML = br;
     $('#envSprig').innerHTML = orn('branche'); $('#envSprig').className = 'sprig-env' + ornCls('branche'); $('#envRibbon').innerHTML = orn('ruban'); $('#envRibbon').className = 'ribbon-env' + ornCls('ruban');
-    $('#envTo').textContent = state.nom ? (C.titreEnveloppeNom || 'Une invitation pour {nom}').replace('{nom}', nomInvites(state.nom)) : (C.titreEnveloppe == null ? 'Une invitation vous attend' : C.titreEnveloppe);
+    $('#envTo').textContent = state.nom ? (C.titreEnveloppeNom || E('Une invitation pour {nom}', 'An invitation for {nom}')).replace('{nom}', nomInvites(state.nom)) : (C.titreEnveloppe == null ? E('Une invitation vous attend', 'An invitation awaits you') : C.titreEnveloppe);
     $('#petals').innerHTML = Array.from({ length: PET('enveloppe') }, () =>
       `<i class="petal${Math.random() < .35 ? ' g' : ''}" style="left:${Math.random() * 100}%;animation-duration:${10 + Math.random() * 8}s;animation-delay:${-Math.random() * 12}s;transform:scale(${.6 + Math.random() * .8}) rotate(${Math.round(Math.random() * 360)}deg)"></i>`).join('');
     let opened = false, ready = false;

@@ -361,6 +361,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
 <div class="wrap" id="app"></div>
 
 <script src="config.js"></script>
+<script src="config-en.js"></script>
+<script src="langue.js"></script>
 <script src="sketches.js"></script>
 <script src="dresscode.js"></script>
 <script src="typo.js"></script>
@@ -370,6 +372,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
 'use strict';
 (function () {
   const C = window.CONFIG, S = window.SKETCH, SI = C.site || {};
+  const E = Langue.E, FRC = Langue.FR || C;
+  if (Langue.en) document.title = `${C.prenoms[0]} & ${C.prenoms[1]} · The wedding guide`;
   const $ = (s, el = document) => el.querySelector(s);
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const store = {
@@ -391,7 +395,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   const nom = params.get('n') || (perso ? store.get('nom') || '' : '');
   /* tutoiement : invitation pour une seule personne → « tu » (tutoiement.js) */
   const TU = Tutoiement.init(nom, params), T = Tutoiement.T;
-  const lienFP = './?f=' + encodeURIComponent(code) + (nom ? '&n=' + encodeURIComponent(nom) : '');
+  const lienFP = './?f=' + encodeURIComponent(code) + (nom ? '&n=' + encodeURIComponent(nom) : '') + Langue.q;
 
   /* ---------- palette, retouches, filigrane (comme le faire-part) ---------- */
   const root = document.documentElement, PAL = C.palette || 'bridgerton';
@@ -423,7 +427,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     if (a === 'jour-j') return Date.now() >= JOUR_J;
     if (/^\d{4}-\d{2}-\d{2}$/.test(String(a))) return Date.now() >= new Date(a + 'T00:00:00+02:00');
     return !!a; };
-  const soon = t => `<span class="soon">${esc(t || 'bientôt')}</span>`;
+  const soon = t => `<span class="soon">${esc(t || E('bientôt', 'coming soon'))}</span>`;
   const rule = () => C.palette === 'bleu' ? '<svg class="rule" viewBox="0 0 120 18" aria-hidden="true"><path d="M4 9 H46 M74 9 H116" stroke="currentColor" stroke-width=".8"/><path d="M60 3 L64 9 L60 15 L56 9 Z" fill="currentColor"/></svg>' : S.ornement();
   const ICONES = ['rings', 'moon', 'bells', 'glasses', 'plate', 'croissant', 'window', 'gift'];
   const ico = k => C.icones !== false && ICONES.includes(k) ? `<img class="ico" src="photos/icones/${k}.webp" alt="">` : `<span class="ico">${k === 'window' ? S.fenetre() : S.doodle(k)}</span>`;
@@ -456,7 +460,9 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
      SECTIONS — chacune : { id, menu, html }
      ===================================================================== */
   const days = [];
-  F.moments.forEach(k => { const m = C.moments[k]; let d = days.find(x => x.jour === m.jour); if (!d) days.push(d = { jour: m.jour, items: [] }); d.items.push(k); });
+  F.moments.forEach(k => { const m = C.moments[k]; let d = days.find(x => x.jour === m.jour); if (!d) days.push(d = { jour: m.jour, fr: ((FRC.moments || {})[k] || m).jour, items: [] }); d.items.push(k); });
+  /* jour d’une annonce (toujours en français dans le Sheet) → langue affichée */
+  const JOURS = { 'Tout le week-end': E('Tout le week-end', 'All weekend') }; days.forEach(d => { JOURS[d.fr] = d.jour; });
   const lieuxUsed = ['mairie', 'eglise', 'chateau'].filter(k => F.moments.some(m => C.moments[m].lieu === k));
   const DC = C.dressCode || {};
   const H = C.hebergement || {};
@@ -466,25 +472,25 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     const ds = F.moments.map(k => parseInt(C.moments[k].jour.replace(/\D+/g, ' ').trim(), 10)), d0 = new Date(C.dateMariage + 'T12:00:00');
     const ymd = d => `${d0.getFullYear()}${String(d0.getMonth() + 1).padStart(2, '0')}${String(d).padStart(2, '0')}`;
     const L = C.lieux.chateau;
-    const q = new URLSearchParams({ action: 'TEMPLATE', text: `Mariage de ${C.prenoms[0]} & ${C.prenoms[1]}`,
+    const q = new URLSearchParams({ action: 'TEMPLATE', text: E(`Mariage de ${C.prenoms[0]} & ${C.prenoms[1]}`, `${C.prenoms[0]} & ${C.prenoms[1]}’s wedding`),
       dates: `${ymd(Math.min(...ds))}/${ymd(Math.max(...ds) + 1)}`,
-      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre}${m.accueil ? ' (accueil dès ' + m.accueil + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
+      details: F.moments.map(k => { const m = C.moments[k]; return `${m.jour}${m.heure ? ' ' + m.heure : ''} : ${m.titre}${m.accueil ? E(' (accueil dès ', ' (guests welcomed from ') + m.accueil + ')' : ''} (${C.lieux[m.lieu].nom})`; }).join('\n'),
       location: `${L.nom}, ${L.adresse}` });
     return 'https://calendar.google.com/calendar/render?' + q.toString();
   }
 
   /* --- Programme + lieux --- */
-  if (on(SI.programme)) sections.push({ id: 'programme', menu: 'Programme', html: `
-    ${head('Le programme', (SI.programme.titre || 'Le déroulé'))}
+  if (on(SI.programme)) sections.push({ id: 'programme', menu: E('Programme', 'Programme'), html: `
+    ${head(E('Le programme', 'The programme'), (SI.programme.titre || E('Le déroulé', 'The weekend')))}
     <div class="paper alt" style="--tilt:.4deg"><span class="in-border"></span>
       ${days.map(d => `<div class="day"><div class="day-h">${esc(d.jour)}</div>${d.items.map(k => { const m = C.moments[k], L = C.lieux[m.lieu];
         return `<div class="moment">${ico(m.dessin)}<div><h3>${esc(m.titre)}</h3>
-          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon('horaire à venir')}${m.accueil ? `<span class="accueil">accueil dès ${esc(m.accueil)}</span>` : ''}${ext(L.maps, esc(L.nom))}</div>
+          <div class="meta">${m.heure ? `<span class="time">${esc(m.heure)}</span>` : soon(E('horaire à venir', 'time to be confirmed'))}${m.accueil ? `<span class="accueil">${E('accueil dès', 'guests welcomed from')} ${esc(m.accueil)}</span>` : ''}${ext(L.maps, esc(L.nom))}</div>
           ${m.texte ? `<p>${esc(m.texte)}</p>` : ''}</div></div>`; }).join('')}</div>`).join('')}
     </div>
     <div class="btns">
       ${perso ? `<a class="btn" href="agenda/${encodeURIComponent(code)}.ics">${ICON_CAL} iPhone, Mac, Outlook</a>` : ''}
-      <a class="btn ghost" href="${esc(gcal())}" target="_blank" rel="noopener">${ICON_CAL} Google Agenda</a>
+      <a class="btn ghost" href="${esc(gcal())}" target="_blank" rel="noopener">${ICON_CAL} ${E('Google Agenda', 'Google Calendar')}</a>
     </div>
     <div class="grid aligned">${lieuxUsed.map(k => { const L = C.lieux[k];
       return `<div class="place"><div class="art">${C.illustrationsLieux !== false ? `<img src="photos/lieux/${k}.webp" alt="${esc(L.nom)}" loading="lazy">` : S[k]}</div>
@@ -495,37 +501,37 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* --- Venir --- */
   if (on(SI.venir)) { const V = SI.venir, cv = V.covoiturage || {};
     const row = (k, titre, txt, extra) => txt === null || txt === undefined ? '' : `<li>${picto(k)}<div><b>${titre}</b><p>${txt ? esc(txt) : soon()}${extra || ''}</p></div></li>`;
-    sections.push({ id: 'venir', menu: 'Venir', html: `
-    ${head('Accès', V.titre || 'Venir jusqu’à nous')}
+    sections.push({ id: 'venir', menu: E('Venir', 'Getting here'), html: `
+    ${head(E('Accès', 'Travel'), V.titre || E('Venir jusqu’à nous', 'Getting here'))}
     <div class="paper" style="--tilt:-.3deg"><span class="in-border"></span><ul class="infos">
-      ${row('voiture', 'En voiture', V.voiture)}
-      ${row('parking', 'Se garer', V.parking)}
-      ${row('train', 'En train', V.train)}
-      ${row('navette', 'Navette', V.navette)}
-      ${V.covoiturage && cv.lien ? row('covoiturage', 'Covoiturage', cv.texte || '', `<br><a class="btn ghost" href="${esc(cv.lien)}" target="_blank" rel="noopener">Proposer ou trouver une place</a>`) : ''}
+      ${row('voiture', E('En voiture', 'By car'), V.voiture)}
+      ${row('parking', E('Se garer', 'Parking'), V.parking)}
+      ${row('train', E('En train', 'By train'), V.train)}
+      ${row('navette', E('Navette', 'Shuttle'), V.navette)}
+      ${V.covoiturage && cv.lien ? row('covoiturage', E('Covoiturage', 'Car sharing'), cv.texte || '', `<br><a class="btn ghost" href="${esc(cv.lien)}" target="_blank" rel="noopener">${E('Proposer ou trouver une place', 'Offer or find a seat')}</a>`) : ''}
     </ul></div>
     ${V.covoiturage && !cv.lien ? `
     <div class="paper alt covoit" id="covoiturage" style="--tilt:.3deg"><span class="in-border"></span>
-      <div class="cv-head">${picto('covoiturage')}<h3>Covoiturage</h3></div>
+      <div class="cv-head">${picto('covoiturage')}<h3>${E('Covoiturage', 'Car sharing')}</h3></div>
       <p class="lead" style="margin:8px auto 18px">${esc(cv.texte || '')}</p>
-      <div class="cv-list" id="cvList" aria-live="polite"><p class="note">Chargement des annonces…</p></div>
-      <div class="btns"><button class="btn" type="button" id="cvAdd">Publier une annonce</button></div>
+      <div class="cv-list" id="cvList" aria-live="polite"><p class="note">${E('Chargement des annonces…', 'Loading notes…')}</p></div>
+      <div class="btns"><button class="btn" type="button" id="cvAdd">${E('Publier une annonce', 'Post a note')}</button></div>
       <form class="form" id="cvForm" hidden autocomplete="on">
-        <div class="seg" role="radiogroup" aria-label="Type d’annonce">
-          <label><input type="radio" name="type" value="propose" checked><span>Je propose des places</span></label>
-          <label><input type="radio" name="type" value="cherche"><span>Je cherche une place</span></label>
+        <div class="seg" role="radiogroup" aria-label="${E('Type d’annonce', 'Type of note')}">
+          <label><input type="radio" name="type" value="propose" checked><span>${E('Je propose des places', 'I’m offering seats')}</span></label>
+          <label><input type="radio" name="type" value="cherche"><span>${E('Je cherche une place', 'I’m looking for a seat')}</span></label>
         </div>
-        <label>Prénom<input type="text" id="cvNom" name="nom" maxlength="60" required value="${esc(nom || (store.get('rsvp.' + code) || {}).nom || '')}"></label>
-        <label>Ville de départ<input type="text" id="cvDepart" name="depart" maxlength="60" required placeholder="Paris 15e, Orléans…"></label>
+        <label>${E('Prénom', 'First name')}<input type="text" id="cvNom" name="nom" maxlength="60" required value="${esc(nom || (store.get('rsvp.' + code) || {}).nom || '')}"></label>
+        <label>${E('Ville de départ', 'Leaving from')}<input type="text" id="cvDepart" name="depart" maxlength="60" required placeholder="${E('Paris 15e, Orléans…', 'Paris, Orléans, London…')}"></label>
         <div class="row2">
-          <label>Jour<select id="cvJour" name="jour">${days.map(d => `<option>${esc(d.jour)}</option>`).join('')}${days.length > 1 ? '<option>Tout le week-end</option>' : ''}</select></label>
-          <label>Places<input type="number" id="cvPlaces" name="places" min="1" max="8" value="1" required></label>
+          <label>${E('Jour', 'Day')}<select id="cvJour" name="jour">${days.map(d => `<option value="${esc(d.fr)}">${esc(d.jour)}</option>`).join('')}${days.length > 1 ? `<option value="Tout le week-end">${esc(JOURS['Tout le week-end'])}</option>` : ''}</select></label>
+          <label>${E('Places', 'Seats')}<input type="number" id="cvPlaces" name="places" min="1" max="8" value="1" required></label>
         </div>
-        <label>${T('Pour vous joindre', 'Pour te joindre')}<input type="text" id="cvContact" name="contact" maxlength="80" required placeholder="06… ou e-mail"></label>
-        <label>Un mot (facultatif)<input type="text" id="cvMot" name="message" maxlength="140" placeholder="Départ vers 13h, retour dimanche…"></label>
+        <label>${T('Pour vous joindre', 'Pour te joindre', 'How to reach you')}<input type="text" id="cvContact" name="contact" maxlength="80" required placeholder="${E('06… ou e-mail', 'Phone or e-mail')}"></label>
+        <label>${E('Un mot (facultatif)', 'A note (optional)')}<input type="text" id="cvMot" name="message" maxlength="140" placeholder="${E('Départ vers 13h, retour dimanche…', 'Leaving around 1 pm, back on Sunday…')}"></label>
         <input class="hp" name="website" tabindex="-1" aria-hidden="true">
-        <label class="consent"><input type="checkbox" id="cvOk" name="ok"> J’accepte que mon prénom, ma ville de départ et mon contact soient visibles par les invités du carnet. Je pourrai retirer l’annonce à tout moment depuis ce téléphone. ${window.Donnees ? `<button class="dn-link" type="button" data-donnees>Vos données</button>` : ''}</label>
-        <button class="btn cta" type="submit">Publier</button>
+        <label class="consent"><input type="checkbox" id="cvOk" name="ok"> ${E('J’accepte que mon prénom, ma ville de départ et mon contact soient visibles par les invités du carnet. Je pourrai retirer l’annonce à tout moment depuis ce téléphone.', 'I agree that my first name, departure town and contact details will be visible to guests using this guide. I can remove the note at any time from this phone.')} ${window.Donnees ? `<button class="dn-link" type="button" data-donnees>${E('Vos données', 'Your data')}</button>` : ''}</label>
+        <button class="btn cta" type="submit">${E('Publier', 'Post')}</button>
       </form>
       <p class="msg" id="cvMsg" aria-live="polite"></p>
     </div>` : ''}` }); }
@@ -533,30 +539,30 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* --- Dormir --- */
   /* « Où dormir » : seulement pour les faire-parts qui ont des nuits (pas pour « Église & vin d’honneur ») */
   if (on(SI.dormir) && F.nuits.length) { const D = SI.dormir, adr = D.adresses || [];
-    sections.push({ id: 'dormir', menu: 'Dormir', html: `
-    ${head('Hébergement', D.titre || 'Où dormir')}
+    sections.push({ id: 'dormir', menu: E('Dormir', 'Stay'), html: `
+    ${head(E('Hébergement', 'Accommodation'), D.titre || E('Où dormir', 'Where to stay'))}
     ${F.nuits.length ? `<div class="paper stay" style="--tilt:.3deg"><span class="in-border"></span>
-      ${ico('window')}<h3>${esc(H.titre || 'Dormir sur place')}</h3>
+      ${ico('window')}<h3>${esc(H.titre || E('Dormir sur place', 'Staying on site'))}</h3>
       <p class="lead" style="margin:8px auto 0">${esc(H.texte || '')}</p>
-      ${C.prixNuit ? `<div class="prix">${esc(C.prixNuit)} €<small>par personne et par nuit</small></div>` : ''}
+      ${C.prixNuit ? `<div class="prix">${esc(C.prixNuit)} €<small>${E('par personne et par nuit', 'per person per night')}</small></div>` : ''}
       <p class="muted" style="margin:10px 0 0;font-size:15.5px">${F.nuits.map(n => esc(n.label)).join(' · ')}</p>
       ${H.note ? `<p class="note">${esc(H.note)}</p>` : ''}
-      <a class="btn" href="${esc(lienFP)}">Je le précise dans ma réponse</a></div>` : ''}
+      <a class="btn" href="${esc(lienFP)}">${E('Je le précise dans ma réponse', 'I’ll mention it in my reply')}</a></div>` : ''}
     <p class="lead" style="margin-top:${F.nuits.length ? 40 : 0}px">${esc(D.autour || '')}</p>
     ${adr.length ? `<div class="grid aligned">${adr.map((a, i) => `<div class="paper adr${i % 2 ? ' alt' : ''}" style="--tilt:${i % 2 ? .5 : -.4}deg"><span class="in-border"></span>
         <div class="type">${esc(a.type || '')}${a.distance ? ' · ' + esc(a.distance) : ''}</div><h3>${esc(a.nom)}</h3>
-        <p>${esc(a.texte || '')}</p><div class="links" style="justify-content:flex-start">${a.lien ? ext(a.lien, 'Voir l’adresse →') : ''}</div></div>`).join('')}</div>`
-      : soon('adresses à venir')}` }); }
+        <p>${esc(a.texte || '')}</p><div class="links" style="justify-content:flex-start">${a.lien ? ext(a.lien, E('Voir l’adresse →', 'View →')) : ''}</div></div>`).join('')}</div>`
+      : soon(E('adresses à venir', 'addresses coming soon'))}` }); }
 
   /* --- Dress code : exactement la carte du faire-part (dresscode.js) --- */
   if (on(SI.dressCode) && window.DressCode) sections.push({ id: 'dress-code', menu: 'Dress code', html: `
-    <div class="eyebrow" style="margin-bottom:22px">Tenue</div>
+    <div class="eyebrow" style="margin-bottom:22px">${E('Tenue', 'Attire')}</div>
     ${DressCode.html()}` });
 
   /* --- FAQ --- */
   if (on(SI.faq)) { const Q = (SI.faq.questions || []).filter(x => x.q && x.r);
-    sections.push({ id: 'questions', menu: 'Questions', html: `
-    ${head('Bon à savoir', SI.faq.titre || T('Vos questions', 'Tes questions'))}
+    sections.push({ id: 'questions', menu: E('Questions', 'FAQ'), html: `
+    ${head(E('Bon à savoir', 'Good to know'), SI.faq.titre || T('Vos questions', 'Tes questions', 'Your questions'))}
     ${Q.length ? `<div class="faq">${Q.map(x => `<details><summary>${esc(x.q)}</summary><p>${esc(x.r)}</p></details>`).join('')}</div>` : soon()}` }); }
 
   /* --- Liste de mariage : cadeaux et participations (config.js → site.liste) --- */
@@ -566,8 +572,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* ouverture : false → les invités ne voient que « bientôt en ligne » ; &tout → aperçu pour vous (préparation) */
   const LISTE_INVITES = (a => a === undefined || a === true ? true : /^\d{4}-\d{2}-\d{2}$/.test(String(a)) ? Date.now() >= new Date(a + 'T00:00:00+02:00') : false)(LI.ouverture);
   const CAD = LISTE_INVITES || TOUT ? CAD_ : [];
-  if (on(SI.liste)) sections.push({ id: 'liste', menu: 'Liste', html: `
-    ${head('Cadeaux', LI.titre || B.titre || 'Liste de mariage')}
+  if (on(SI.liste)) sections.push({ id: 'liste', menu: E('Liste', 'Registry'), html: `
+    ${head(E('Cadeaux', 'Gifts'), LI.titre || B.titre || E('Liste de mariage', 'Wedding registry'))}
     ${CAD.length ? `
     ${LISTE_INVITES ? '' : `<p class="apercu-liste">Aperçu de préparation : les invités ne voient pas encore cette liste (<code>ouverture: false</code> dans config.js).${params.has('demo') ? ' Rien n’est envoyé.' : ' <b>Mode réel</b> : les participations arrivent dans le Sheet, pensez à les annuler.'}</p>`}
     <p class="accroche" style="max-width:34ch;margin:0 auto 12px">${esc(LI.accroche || B.accroche || '')}</p>
@@ -584,27 +590,27 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     ${payHtml(false)}` : `
     <div class="paper carte fil" style="--tilt:.4deg"><span class="in-border"></span>${fili()}
       ${ico('gift')}<p class="accroche">${esc(LI.accroche || B.accroche || '')}</p>
-      ${B.lien && B.lien !== 'carnet' ? `<a class="btn" href="${esc(B.lien)}" target="_blank" rel="noopener">Découvrir la liste</a>` : `<p style="margin:16px 0 0">${soon('bientôt en ligne')}</p>`}
+      ${B.lien && B.lien !== 'carnet' ? `<a class="btn" href="${esc(B.lien)}" target="_blank" rel="noopener">${E('Découvrir la liste', 'See the registry')}</a>` : `<p style="margin:16px 0 0">${soon(E('bientôt en ligne', 'online soon'))}</p>`}
     </div>`}` });
   /* bloc « comment nous faire parvenir votre participation » */
   function payHtml(inPanel, g) {
     const P = Object.assign({}, LI.paiement || {}, PAY), prep = !LISTE_INVITES;   /* en préparation : on montre aussi les moyens pas encore remplis */
     const copy = (v, txt, ok) => `<button class="copy" type="button" data-copy="${esc(v)}" data-ok="${esc(ok)}">${txt}</button>`;
-    const vide = t => PAY_ETAT === 'chargement' ? '<small>Chargement…</small>'
-      : PAY_ETAT === 'erreur' ? `<small>Coordonnées momentanément indisponibles : ${T('rechargez', 'recharge')} la page dans un instant.</small>`
+    const vide = t => PAY_ETAT === 'chargement' ? `<small>${E('Chargement…', 'Loading…')}</small>`
+      : PAY_ETAT === 'erreur' ? `<small>${T('Coordonnées momentanément indisponibles : rechargez la page dans un instant.', 'Coordonnées momentanément indisponibles : recharge la page dans un instant.', 'Details temporarily unavailable: please reload the page in a moment.')}</small>`
       : prep ? `<small>${soon('à compléter')} ${t}</small>` : '';
     const montrer = k => P[k] || prep || PAY_ETAT !== 'ok';
     const opts = [];
-    if (P.urne || prep) opts.push(['Le jour J, dans l’urne', P.urne ? `<p>${esc(P.urne)}</p>` : `<small>${soon('à compléter')} paiement.urne dans config.js</small>`]);
-    if (montrer('iban')) opts.push(['Par virement', P.iban ? `${P.titulaire ? `<p>${esc(P.titulaire)}</p>` : ''}
-        <div class="val"><span>IBAN</span><b>${esc(P.iban)}</b>${copy(String(P.iban).replace(/\s+/g, ''), 'Copier l’IBAN', 'IBAN copié')}</div>
+    if (P.urne || prep) opts.push([E('Le jour J, dans l’urne', 'On the day, in the gift box'), P.urne ? `<p>${esc(P.urne)}</p>` : `<small>${soon('à compléter')} paiement.urne dans config.js</small>`]);
+    if (montrer('iban')) opts.push([E('Par virement', 'By bank transfer'), P.iban ? `${P.titulaire ? `<p>${esc(P.titulaire)}</p>` : ''}
+        <div class="val"><span>IBAN</span><b>${esc(P.iban)}</b>${copy(String(P.iban).replace(/\s+/g, ''), E('Copier l’IBAN', 'Copy IBAN'), E('IBAN copié', 'IBAN copied'))}</div>
         ${P.bic ? `<div class="val"><span>BIC</span><b>${esc(P.bic)}</b></div>` : ''}
-        ${inPanel && g ? `<small>Libellé conseillé : « Mariage – ${esc(g.titre)} »</small>` : ''}` : vide('propriétés TITULAIRE, IBAN (et BIC) du script Apps Script')]);
-    if (montrer('wero')) opts.push(['Par Wero', P.wero ? `<p>Depuis l’appli de ${T('votre', 'ta')} banque ou l’appli Wero, rubrique « Envoyer ».</p>
-        <div class="val"><b>${esc(P.wero)}</b>${copy(String(P.wero).replace(/\s+/g, ''), /@/.test(P.wero) ? 'Copier l’adresse' : 'Copier le numéro', 'Copié')}</div>
-        ${P.weroNom ? `<small>au nom de ${esc(P.weroNom)}</small>` : ''}` : vide('propriétés WERO (et WERO_NOM) du script Apps Script')]);
+        ${inPanel && g ? `<small>${E('Libellé conseillé : « Mariage – ', 'Suggested reference: “Wedding – ')}${esc(g.titre)}${E(' »', '”')}</small>` : ''}` : vide('propriétés TITULAIRE, IBAN (et BIC) du script Apps Script')]);
+    if (montrer('wero')) opts.push([E('Par Wero', 'By Wero'), P.wero ? `<p>${T('Depuis l’appli de votre banque ou l’appli Wero, rubrique « Envoyer ».', 'Depuis l’appli de ta banque ou l’appli Wero, rubrique « Envoyer ».', 'From your banking app or the Wero app, under “Send”.')}</p>
+        <div class="val"><b>${esc(P.wero)}</b>${copy(String(P.wero).replace(/\s+/g, ''), /@/.test(P.wero) ? E('Copier l’adresse', 'Copy address') : E('Copier le numéro', 'Copy number'), E('Copié', 'Copied'))}</div>
+        ${P.weroNom ? `<small>${E('au nom de', 'in the name of')} ${esc(P.weroNom)}</small>` : ''}` : vide('propriétés WERO (et WERO_NOM) du script Apps Script')]);
     if (!opts.length) return '';
-    return `<div class="${inPanel ? 'pay-in' : 'paper alt pay carte'}"${inPanel ? (g ? ` data-g="${esc(g.id)}"` : '') : ' style="--tilt:-.3deg"'}>${inPanel ? '<h3>Pour nous la faire parvenir</h3>' : '<span class="in-border"></span><h3>Pour participer</h3>'}
+    return `<div class="${inPanel ? 'pay-in' : 'paper alt pay carte'}"${inPanel ? (g ? ` data-g="${esc(g.id)}"` : '') : ' style="--tilt:-.3deg"'}>${inPanel ? `<h3>${E('Pour nous la faire parvenir', 'How to send it to us')}</h3>` : `<span class="in-border"></span><h3>${E('Pour participer', 'How to contribute')}</h3>`}
       ${P.texte ? `<p>${esc(P.texte)}</p>` : ''}
       <div class="payx">${opts.map(([t, h], i) => `<div class="payo"><span class="n">${i + 1}</span><h4>${t}</h4>${h}</div>`).join('')}</div>
     </div>`;
@@ -613,26 +619,26 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* --- Témoins --- */
   /* témoins : seulement ceux qui ont donné leur accord (consentement daté dans config.js) */
   if (on(SI.temoins)) { const T = SI.temoins, P = (T.personnes || []).filter(p => p && p.nom && String(p.consentement || '').trim());
-    sections.push({ id: 'temoins', menu: 'Témoins', html: `
-    ${head('Surprises & discours', T.titre || 'Les témoins')}
+    sections.push({ id: 'temoins', menu: E('Témoins', 'Witnesses'), html: `
+    ${head(E('Surprises & discours', 'Surprises & speeches'), T.titre || E('Les témoins', 'Our witnesses'))}
     <p class="lead">${esc(T.texte || '')}</p>
     ${P.length ? `<div class="grid aligned">${P.map((p, i) => `<div class="paper temoin${i % 2 ? ' alt' : ''}" style="--tilt:${i % 2 ? .5 : -.5}deg"><span class="in-border"></span>
         <h3>${esc(p.nom)}</h3><div class="role">${esc(p.role || '')}</div>
         <div class="coords">${[p.tel, p.email].filter(Boolean).map(esc).join('<br>')}</div>
-        <div class="links">${p.tel ? `<a href="tel:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">Appeler</a><a href="sms:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">SMS</a>` : ''}${p.email ? `<a href="mailto:${esc(p.email)}">E-mail</a>` : ''}</div></div>`).join('')}</div>` : soon('contacts à venir')}` }); }
+        <div class="links">${p.tel ? `<a href="tel:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">${E('Appeler', 'Call')}</a><a href="sms:${esc(String(p.tel).replace(/[^\d+]/g, ''))}">SMS</a>` : ''}${p.email ? `<a href="mailto:${esc(p.email)}">E-mail</a>` : ''}</div></div>`).join('')}</div>` : soon(E('contacts à venir', 'contacts coming soon'))}` }); }
 
   /* --- Playlist --- */
   if (on(SI.playlist)) { const PL = SI.playlist;
     sections.push({ id: 'playlist', menu: 'Playlist', html: `
-    ${head('En piste', PL.titre || 'La playlist')}
+    ${head(E('En piste', 'On the dance floor'), PL.titre || E('La playlist', 'The playlist'))}
     <div class="paper carte alt" style="--tilt:-.3deg"><span class="in-border"></span>
       ${ico('bells')}<p class="lead" style="margin:4px auto 0">${esc(PL.texte || '')}</p>
-      ${PL.lien ? `<a class="btn" href="${esc(PL.lien)}" target="_blank" rel="noopener">Ouvrir la playlist</a>` : `
+      ${PL.lien ? `<a class="btn" href="${esc(PL.lien)}" target="_blank" rel="noopener">${E('Ouvrir la playlist', 'Open the playlist')}</a>` : `
       <form class="form" id="chansonForm" autocomplete="off">
-        <label>${T('Votre', 'Ta')} chanson<input type="text" name="chanson" maxlength="140" placeholder="Titre — artiste" required></label>
-        <label>${T('Votre', 'Ton')} prénom<input type="text" name="nom" maxlength="80" value="${esc(nom || (store.get('rsvp.' + code) || {}).nom || '')}"></label>
+        <label>${T('Votre chanson', 'Ta chanson', 'Your song')}<input type="text" name="chanson" maxlength="140" placeholder="${E('Titre — artiste', 'Title — artist')}" required></label>
+        <label>${T('Votre prénom', 'Ton prénom', 'Your name')}<input type="text" name="nom" maxlength="80" value="${esc(nom || (store.get('rsvp.' + code) || {}).nom || '')}"></label>
         <input class="hp" name="website" tabindex="-1" aria-hidden="true">
-        <button class="btn cta" type="submit">Proposer</button>
+        <button class="btn cta" type="submit">${E('Proposer', 'Suggest')}</button>
         <p class="msg" id="chansonMsg" aria-live="polite"></p>
       </form>`}
     </div>` }); }
@@ -640,26 +646,26 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* --- Photos --- */
   if (on(SI.photos)) { const PH = SI.photos;
     sections.push({ id: 'photos', menu: 'Photos', html: `
-    ${head('Souvenirs', PH.titre || T('Vos photos', 'Tes photos'))}
+    ${head(E('Souvenirs', 'Memories'), PH.titre || T('Vos photos', 'Tes photos', 'Your photos'))}
     <div class="paper carte" style="--tilt:.3deg"><span class="in-border"></span>
       <p class="lead" style="margin:0 auto">${esc(PH.texte || '')}</p>
       <form class="form" id="photoForm">
-        <label>${T('Votre', 'Ton')} prénom<input type="text" name="nom" maxlength="80" value="${esc(store.get('photoNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="Pour savoir qui remercier"></label>
-        <label class="consent"><input type="checkbox" id="phOk" ${store.get('photoOk') ? 'checked' : ''}> Les personnes reconnaissables sur mes photos sont d’accord pour qu’elles vous soient envoyées (pas de photo de quelqu’un qui ne le souhaite pas, ni d’enfant sans l’accord de ses parents).</label>
+        <label>${T('Votre prénom', 'Ton prénom', 'Your name')}<input type="text" name="nom" maxlength="80" value="${esc(store.get('photoNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="${E('Pour savoir qui remercier', 'So we know whom to thank')}"></label>
+        <label class="consent"><input type="checkbox" id="phOk" ${store.get('photoOk') ? 'checked' : ''}> ${E('Les personnes reconnaissables sur mes photos sont d’accord pour qu’elles vous soient envoyées (pas de photo de quelqu’un qui ne le souhaite pas, ni d’enfant sans l’accord de ses parents).', 'Anyone recognisable in my photos is happy for them to be sent to you (no photos of anyone who doesn’t want it, and no children without their parents’ consent).')}</label>
         <label class="drop" id="drop"><input type="file" id="photoInput" accept="image/*,video/*" multiple>
-          <b>Choisir des photos</b><span>ou les glisser ici · vidéos jusqu’à ${esc(PH.videoMaxMo || 40)} Mo</span></label>
+          <b>${E('Choisir des photos', 'Choose photos')}</b><span>${E('ou les glisser ici · vidéos jusqu’à', 'or drag them here · videos up to')} ${esc(PH.videoMaxMo || 40)} ${E('Mo', 'MB')}</span></label>
         <div class="bar" hidden><i></i></div>
         <ul class="files" id="photoList"></ul>
         <p class="msg" id="photoMsg" aria-live="polite"></p>
       </form>
-      ${PH.album ? `<a class="btn ghost" href="${esc(PH.album)}" target="_blank" rel="noopener">Voir toutes les photos</a>` : ''}
+      ${PH.album ? `<a class="btn ghost" href="${esc(PH.album)}" target="_blank" rel="noopener">${E('Voir toutes les photos', 'See all the photos')}</a>` : ''}
     </div>` }); }
 
   /* --- Merci --- */
-  if (on(SI.merci)) sections.push({ id: 'merci', menu: 'Merci', html: `
-    ${head('Après la fête', SI.merci.titre || 'Merci')}
+  if (on(SI.merci)) sections.push({ id: 'merci', menu: E('Merci', 'Thank you'), html: `
+    ${head(E('Après la fête', 'After the party'), SI.merci.titre || E('Merci', 'Thank you'))}
     <div class="paper carte alt fil"><span class="in-border"></span>${fili()}
-      <p class="accroche">${esc(SI.merci.texte || 'Merci d’avoir fait de ce week-end un souvenir inoubliable.')}</p>
+      <p class="accroche">${esc(SI.merci.texte || E('Merci d’avoir fait de ce week-end un souvenir inoubliable.', 'Thank you for making this weekend an unforgettable memory.'))}</p>
       <div class="chut" style="margin-top:10px">${esc(C.prenoms[0])} &amp; ${esc(C.prenoms[1])}</div></div>` });
 
   /* =====================================================================
@@ -667,19 +673,19 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
      ===================================================================== */
   const [a, b] = C.prenoms;
   const haut = SI.haut || 'chateau';
-  const heroArt = haut === 'photo' && C.photoHero ? `<figure class="hero-art photo"><img src="${esc(C.photoHero)}" alt="${esc(a)} et ${esc(b)}"></figure>`
+  const heroArt = haut === 'photo' && C.photoHero ? `<figure class="hero-art photo"><img src="${esc(C.photoHero)}" alt="${esc(a)} ${E('et', 'and')} ${esc(b)}"></figure>`
     : haut === 'monogramme' && C.monogrammeImage ? `<div class="hero-art mono"><img src="${esc(C.monogrammeImage)}" alt=""></div>`
     : `<div class="hero-art"><img src="photos/lieux/chateau.webp" alt="${esc(C.lieux.chateau.nom)}"></div>`;
   const coin = (C.ornements || {}).coin;
   const R = store.get('rsvp.' + code);
   const statut = R ? `<div class="paper statut alt"><span class="in-border"></span>
-      <div class="big">${R.presence === 'Oui' ? T('Vous serez des nôtres', 'Tu seras des nôtres') : T('Vous allez nous manquer', 'Tu vas nous manquer')}</div>
-      <p>Réponse envoyée${R.date ? ' le ' + new Date(R.date).toLocaleDateString('fr-FR') : ''}${R.nom ? ' par ' + esc(R.nom) : ''}.</p>
-      <a class="btn ghost" href="${esc(lienFP)}">Modifier ma réponse</a></div>`
+      <div class="big">${R.presence === 'Oui' ? T('Vous serez des nôtres', 'Tu seras des nôtres', 'You’ll be joining us') : T('Vous allez nous manquer', 'Tu vas nous manquer', 'We’ll miss you')}</div>
+      <p>${E('Réponse envoyée', 'Reply sent')}${R.date ? E(' le ', ' on ') + new Date(R.date).toLocaleDateString(Langue.locale) : ''}${R.nom ? E(' par ', ' by ') + esc(R.nom) : ''}.</p>
+      <a class="btn ghost" href="${esc(lienFP)}">${E('Modifier ma réponse', 'Change my reply')}</a></div>`
     : perso ? `<div class="paper statut alt"><span class="in-border"></span>
-      <div class="big">${T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?')}</div>
-      ${C.repondreAvant ? `<p>Réponse souhaitée avant le ${esc(C.repondreAvant)}.</p>` : ''}
-      <a class="btn cta" href="${esc(lienFP)}">Répondre au faire-part</a></div>` : '';
+      <div class="big">${T('Serez-vous des nôtres ?', 'Seras-tu des nôtres ?', 'Will you join us?')}</div>
+      ${C.repondreAvant ? `<p>${E('Réponse souhaitée avant le', 'Kindly reply by')} ${esc(C.repondreAvant)}.</p>` : ''}
+      <a class="btn cta" href="${esc(lienFP)}">${E('Répondre au faire-part', 'Reply to the invitation')}</a></div>` : '';
 
   $('#annonce').innerHTML = SI.annonce ? `<div class="annonce">${esc(SI.annonce)}</div>` : '';
   $('#app').innerHTML = `
@@ -689,31 +695,31 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       ${fili()}
       ${coin && coin !== 'aucune' ? `<span class="coin"><img src="${esc(coin)}" alt=""></span>` : ''}
       <div class="seal">${seal('haut')}</div>
-      <div class="eyebrow">${esc(SI.titre || 'Le carnet du mariage')}</div>
+      <div class="eyebrow">${esc(SI.titre || E('Le carnet du mariage', 'The wedding guide'))}</div>
       ${heroArt}
       <h1 class="names">${esc(a)} <span class="amp">&amp;</span> ${esc(b)}</h1>
       <p class="dates">${esc(F.dates)}</p>
       ${perso ? `<p class="formule">${esc(F.nom)}</p>` : ''}
     </div>
     ${SI.intro ? `<p class="intro">${esc(SI.intro)}</p>` : ''}
-    ${perso ? '' : '<p class="generic">Vous avez reçu un faire-part ? Ouvrez ce carnet depuis son lien : vous y verrez votre programme complet.</p>'}
-    <div class="cd" id="cd" role="timer" aria-label="Compte à rebours">
-      <div><b id="cdJ">–</b><span>jours</span></div><div><b id="cdH">–</b><span>heures</span></div><div><b id="cdM">–</b><span>minutes</span></div>
+    ${perso ? '' : `<p class="generic">${E('Vous avez reçu un faire-part ? Ouvrez ce carnet depuis son lien : vous y verrez votre programme complet.', 'Received an invitation? Open this guide from its link to see your full programme.')}</p>`}
+    <div class="cd" id="cd" role="timer" aria-label="${E('Compte à rebours', 'Countdown')}">
+      <div><b id="cdJ">–</b><span>${E('jours', 'days')}</span></div><div><b id="cdH">–</b><span>${E('heures', 'hours')}</span></div><div><b id="cdM">–</b><span>minutes</span></div>
     </div>
-    <div class="cd-lbl" id="cdLbl">avant le grand jour</div>
+    <div class="cd-lbl" id="cdLbl">${E('avant le grand jour', 'until the big day')}</div>
     ${statut}
   </header>
 
-  ${SI.menu !== false && sections.length > 2 ? `<nav class="toc" aria-label="Sommaire"><ul>${sections.map(s => `<li><a href="#${s.id}">${esc(s.menu)}</a></li>`).join('')}</ul></nav>` : ''}
+  ${SI.menu !== false && sections.length > 2 ? `<nav class="toc" aria-label="${E('Sommaire', 'Contents')}"><ul>${sections.map(s => `<li><a href="#${s.id}">${esc(s.menu)}</a></li>`).join('')}</ul></nav>` : ''}
 
   ${sections.map(s => `${rule()}<section id="${s.id}" class="reveal">${s.html}</section>`).join('')}
 
   <footer>
     ${rule()}
     <div class="seal" style="margin-top:34px">${seal('bas')}</div>
-    <div class="eyebrow">Avec toute notre impatience</div>
+    <div class="eyebrow">${E('Avec toute notre impatience', 'Counting the days')}</div>
     <div class="sig">${esc(a)} &amp; ${esc(b)}</div>
-    <div class="links">${perso ? `<a href="${esc(lienFP)}">Revoir le faire-part</a>` : ''}${SI.contact ? `<a href="mailto:${esc(SI.contact)}">Nous écrire</a>` : ''}</div>
+    <div class="links">${perso ? `<a href="${esc(lienFP)}">${E('Revoir le faire-part', 'View the invitation again')}</a>` : ''}${SI.contact ? `<a href="mailto:${esc(SI.contact)}">${E('Nous écrire', 'Write to us')}</a>` : ''}</div>
     <div style="margin-top:18px">${window.Donnees ? Donnees.lien() : ''}</div>
   </footer>`;
 
@@ -725,7 +731,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     const tick = () => {
       const t = Math.max(0, Math.floor((T - Date.now()) / 1000));
       $('#cdJ').textContent = Math.floor(t / 86400); $('#cdH').textContent = String(Math.floor(t % 86400 / 3600)).padStart(2, '0'); $('#cdM').textContent = String(Math.floor(t % 3600 / 60)).padStart(2, '0');
-      if (!t) { $('#cd').hidden = true; $('#cdLbl').textContent = Date.now() - T < 3 * 864e5 ? 'C’est le grand jour !' : ''; }
+      if (!t) { $('#cd').hidden = true; $('#cdLbl').textContent = Date.now() - T < 3 * 864e5 ? E('C’est le grand jour !', 'The big day is here!') : ''; }
     };
     tick(); setInterval(tick, 20000);
   })();
@@ -748,23 +754,23 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     const mine = () => store.get('cv') || {};
     let demoList = [];
     const show = list => {
-      cvBox.innerHTML = list.length ? list.map(x => `<div class="cv"><div class="cv-top"><span class="tag ${x.type === 'cherche' ? 'cherche' : ''}">${x.type === 'cherche' ? 'Cherche' : 'Propose'} ${esc(x.places)} place${+x.places > 1 ? 's' : ''}</span><b>${esc(x.nom)}</b></div>
-        <div class="meta2">Départ : ${esc(x.depart)} · ${esc(x.jour)}</div>${x.message ? `<div class="meta2">${esc(x.message)}</div>` : ''}
-        <div class="contact">${esc(x.contact)}</div>${mine()[x.id] ? `<button class="retirer" type="button" data-id="${esc(x.id)}">Retirer mon annonce</button>` : ''}</div>`).join('')
-        : `<p class="note" style="text-align:center">Pas encore d’annonce : ${T('lancez-vous', 'lance-toi')} !</p>`;
+      cvBox.innerHTML = list.length ? list.map(x => `<div class="cv"><div class="cv-top"><span class="tag ${x.type === 'cherche' ? 'cherche' : ''}">${x.type === 'cherche' ? E('Cherche', 'Looking for') : E('Propose', 'Offering')} ${esc(x.places)} ${E('place', 'seat')}${+x.places > 1 ? 's' : ''}</span><b>${esc(x.nom)}</b></div>
+        <div class="meta2">${E('Départ :', 'From:')} ${esc(x.depart)} · ${esc(JOURS[x.jour] || x.jour)}</div>${x.message ? `<div class="meta2">${esc(x.message)}</div>` : ''}
+        <div class="contact">${esc(x.contact)}</div>${mine()[x.id] ? `<button class="retirer" type="button" data-id="${esc(x.id)}">${E('Retirer mon annonce', 'Remove my note')}</button>` : ''}</div>`).join('')
+        : `<p class="note" style="text-align:center">${T('Pas encore d’annonce : lancez-vous !', 'Pas encore d’annonce : lance-toi !', 'No notes yet: be the first!')}</p>`;
     };
     const load = async () => {
       if (DEMO_) return show(demoList);
       try { const r = await (await fetch(URL_ + '?action=covoiturage')).json(); show(r.annonces || []); }
-      catch (e) { cvBox.innerHTML = `<p class="note" style="text-align:center">Les annonces n’ont pas pu être chargées. ${T('Réessayez', 'Réessaie')} un peu plus tard.</p>`; }
+      catch (e) { cvBox.innerHTML = `<p class="note" style="text-align:center">${T('Les annonces n’ont pas pu être chargées. Réessayez un peu plus tard.', 'Les annonces n’ont pas pu être chargées. Réessaie un peu plus tard.', 'The notes couldn’t be loaded. Please try again a little later.')}</p>`; }
     };
     load();
     const form = $('#cvForm'), msg = $('#cvMsg');
     $('#cvAdd').addEventListener('click', () => { form.hidden = !form.hidden; if (!form.hidden) $('#cvDepart').focus(); });
     form.addEventListener('submit', async e => {
       e.preventDefault(); if (form.website.value) return;
-      if (!form.ok.checked) { msg.textContent = T('Cochez', 'Coche') + ' la case pour accepter que l’annonce soit visible.'; return; }
-      const btn = form.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Publication…';
+      if (!form.ok.checked) { msg.textContent = T('Cochez la case pour accepter que l’annonce soit visible.', 'Coche la case pour accepter que l’annonce soit visible.', 'Please tick the box to agree to your note being visible.'); return; }
+      const btn = form.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = E('Publication…', 'Posting…');
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), cle = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
       const a = { action: 'covoiturage', id, cle, code, type: form.type.value, nom: form.nom.value.trim(), depart: form.depart.value.trim(), jour: form.jour.value, places: form.places.value, contact: form.contact.value.trim(), message: form.message.value.trim() };
       try {
@@ -772,8 +778,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         if (!r.ok) throw 0;
         const m = mine(); m[id] = cle; store.set('cv', m);
         form.hidden = true; form.depart.value = ''; form.message.value = '';
-        msg.textContent = 'Annonce publiée' + (DEMO_ ? ' (aperçu : rien n’a été envoyé)' : '') + '.'; load();
-      } catch (x) { msg.textContent = 'La publication n’a pas abouti, ' + T('réessayez', 'réessaie') + ' un peu plus tard.'; }
+        msg.textContent = E('Annonce publiée', 'Note posted') + (DEMO_ ? E(' (aperçu : rien n’a été envoyé)', ' (preview: nothing was sent)') : '') + '.'; load();
+      } catch (x) { msg.textContent = T('La publication n’a pas abouti, réessayez un peu plus tard.', 'La publication n’a pas abouti, réessaie un peu plus tard.', 'Your note couldn’t be posted, please try again a little later.'); }
       btn.disabled = false;
     });
     cvBox.addEventListener('click', async e => {
@@ -781,8 +787,8 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       const id = b.dataset.id, m = mine(); b.disabled = true;
       try {
         if (DEMO_) demoList = demoList.filter(x => x.id !== id); else { const r = await post({ action: 'covoiturage-retirer', id, cle: m[id] }); if (!r.ok) throw 0; }
-        delete m[id]; store.set('cv', m); msg.textContent = 'Annonce retirée.'; load();
-      } catch (x) { b.disabled = false; msg.textContent = 'Le retrait n’a pas abouti, réessayez.'; }
+        delete m[id]; store.set('cv', m); msg.textContent = E('Annonce retirée.', 'Note removed.'); load();
+      } catch (x) { b.disabled = false; msg.textContent = T('Le retrait n’a pas abouti, réessayez.', 'Le retrait n’a pas abouti, réessaie.', 'Couldn’t remove it, please try again.'); }
     });
   }
 
@@ -804,7 +810,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   /* ---------- liste de mariage : avancement, participations, annulation ---------- */
   if ($('#cadeaux')) (function () {
     const URL_ = (SI.photos && SI.photos.url) || BACKEND, DEMO_ = !URL_ || params.has('demo');
-    const eur = n => (Math.round(n * 100) / 100).toLocaleString('fr-FR') + ' €';
+    const eur = n => Langue.en ? '€' + (Math.round(n * 100) / 100).toLocaleString('en-GB') : (Math.round(n * 100) / 100).toLocaleString('fr-FR') + ' €';
     const mine = () => store.get('liste') || {};      /* { idLigne: { cle, cadeau } } : ce que ce téléphone a offert */
     let etat = {}, demoRows = [];
     const demoEtat = () => { const e = {}; demoRows.forEach(r => { const x = e[r.cadeau] = e[r.cadeau] || { total: 0, nb: 0, offert: false }; x.total += +r.montant || 0; x.nb++; if (r.type === 'cadeau') x.offert = true; }); return e; };
@@ -814,16 +820,16 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         const e = etat[g.id] || { total: 0, nb: 0, offert: false }, box = $(`[data-etat="${g.id}"]`), act = $(`[data-act="${g.id}"]`);
         const myRows = Object.keys(M).filter(k => M[k].cadeau === g.id);
         if (g.type === 'cadeau') {
-          box.innerHTML = `${g.prix ? `<b>≈ ${eur(+g.prix)}</b>` : ''}${e.offert ? `<div class="offert">${myRows.length ? T('Vous l’offrez, merci !', 'Tu l’offres, merci !') : 'Déjà offert, merci !'}</div>` : ''}`;
-          act.innerHTML = (e.offert ? '' : `<button class="btn cta" type="button" data-give="${esc(g.id)}">Je m’en occupe</button>`)
-            + (g.lien ? ext(g.lien, 'Voir l’article') : '')
-            + (myRows.length ? `<span class="mine"><button type="button" data-undo="${esc(myRows[0])}">Annuler, finalement je ne l’offre pas</button></span>` : '');
+          box.innerHTML = `${g.prix ? `<b>≈ ${eur(+g.prix)}</b>` : ''}${e.offert ? `<div class="offert">${myRows.length ? T('Vous l’offrez, merci !', 'Tu l’offres, merci !', 'You’re giving it, thank you!') : E('Déjà offert, merci !', 'Already given, thank you!')}</div>` : ''}`;
+          act.innerHTML = (e.offert ? '' : `<button class="btn cta" type="button" data-give="${esc(g.id)}">${E('Je m’en occupe', 'I’ll take care of it')}</button>`)
+            + (g.lien ? ext(g.lien, E('Voir l’article', 'View item')) : '')
+            + (myRows.length ? `<span class="mine"><button type="button" data-undo="${esc(myRows[0])}">${E('Annuler, finalement je ne l’offre pas', 'Cancel, I won’t be giving it after all')}</button></span>` : '');
         } else {
           const obj = +g.objectif || 0, pc = obj ? Math.min(100, e.total / obj * 100) : 0;
-          box.innerHTML = obj ? `<div class="jauge" role="progressbar" aria-valuemin="0" aria-valuemax="${obj}" aria-valuenow="${Math.round(e.total)}"><i style="width:${pc}%"></i></div><b>${eur(e.total)}</b> sur ${eur(obj)}${e.total >= obj ? '<div class="offert">Objectif atteint, merci !</div>' : ''}`
-            : (e.nb ? `${e.nb} participation${e.nb > 1 ? 's' : ''}, merci !` : '');
-          act.innerHTML = `<button class="btn cta" type="button" data-give="${esc(g.id)}">Participer</button>`
-            + (myRows.length ? `<span class="mine">Merci pour ${T('votre', 'ta')} participation · <button type="button" data-undo="${esc(myRows[myRows.length - 1])}">l’annuler</button></span>` : '');
+          box.innerHTML = obj ? `<div class="jauge" role="progressbar" aria-valuemin="0" aria-valuemax="${obj}" aria-valuenow="${Math.round(e.total)}"><i style="width:${pc}%"></i></div><b>${eur(e.total)}</b> ${E('sur', 'of')} ${eur(obj)}${e.total >= obj ? `<div class="offert">${E('Objectif atteint, merci !', 'Goal reached, thank you!')}</div>` : ''}`
+            : (e.nb ? `${e.nb} ${E('participation', 'contribution')}${e.nb > 1 ? 's' : ''}${E(', merci !', ', thank you!')}` : '');
+          act.innerHTML = `<button class="btn cta" type="button" data-give="${esc(g.id)}">${E('Participer', 'Contribute')}</button>`
+            + (myRows.length ? `<span class="mine">${T('Merci pour votre participation', 'Merci pour ta participation', 'Thank you for your contribution')} · <button type="button" data-undo="${esc(myRows[myRows.length - 1])}">${E('l’annuler', 'cancel it')}</button></span>` : '');
         }
       });
     }
@@ -837,15 +843,15 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     function panel(g) {
       const part = g.type !== 'cadeau', bg = document.createElement('div');
       bg.className = 'lp-bg';
-      bg.innerHTML = `<div class="paper lp" role="dialog" aria-modal="true" aria-labelledby="lpT"><span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
-        <div class="eyebrow">${part ? 'Participer' : 'Offrir'}</div><p class="lp-t" id="lpT">${esc(g.titre)}</p>
+      bg.innerHTML = `<div class="paper lp" role="dialog" aria-modal="true" aria-labelledby="lpT"><span class="in-border"></span><button class="close" type="button" aria-label="${E('Fermer', 'Close')}">×</button>
+        <div class="eyebrow">${part ? E('Participer', 'Contribute') : E('Offrir', 'Give')}</div><p class="lp-t" id="lpT">${esc(g.titre)}</p>
         <form class="form" id="lpForm" autocomplete="on">
-          <label>${T('Vos prénoms', 'Ton prénom')} <span class="opt">(facultatif)</span><input type="text" id="lpNom" name="nom" maxlength="80" value="${esc(store.get('listeNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="${T('Claire & Paul', 'Claire')}"></label>
-          <p class="note" style="margin:-6px 0 0">${T('Laissez', 'Laisse')} vide pour participer anonymement : nous ne saurons pas de qui elle vient.</p>
-          ${part ? `<label>Montant (€)<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="Le montant de ${T('votre', 'ton')} choix"></label>` : `<p class="note" style="margin:0">La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est ${T('vous', 'toi')}.</p>`}
-          <label>Un petit mot (facultatif)<input type="text" id="lpMot" name="message" maxlength="200"></label>
+          <label>${T('Vos prénoms', 'Ton prénom', 'Your name(s)')} <span class="opt">${E('(facultatif)', '(optional)')}</span><input type="text" id="lpNom" name="nom" maxlength="80" value="${esc(store.get('listeNom') || nom || (store.get('rsvp.' + code) || {}).nom || '')}" placeholder="${T('Claire & Paul', 'Claire', 'Claire & Paul')}"></label>
+          <p class="note" style="margin:-6px 0 0">${T('Laissez vide pour participer anonymement : nous ne saurons pas de qui elle vient.', 'Laisse vide pour participer anonymement : nous ne saurons pas de qui elle vient.', 'Leave blank to contribute anonymously: we won’t know who it’s from.')}</p>
+          ${part ? `<label>${E('Montant (€)', 'Amount (€)')}<input type="number" id="lpMontant" name="montant" min="1" step="1" inputmode="numeric" required placeholder="${T('Le montant de votre choix', 'Le montant de ton choix', 'Any amount you like')}"></label>` : `<p class="note" style="margin:0">${T('La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est vous.', 'La carte passera à « Déjà offert » pour les autres invités. Seuls nous saurons que c’est toi.', 'Other guests will see this card as “Already given”. Only we will know it’s from you.')}</p>`}
+          <label>${E('Un petit mot (facultatif)', 'A little note (optional)')}<input type="text" id="lpMot" name="message" maxlength="200"></label>
           <input class="hp" name="website" tabindex="-1" aria-hidden="true">
-          <button class="btn cta" type="submit">${part ? 'Je participe' : 'Je m’en occupe'}</button>
+          <button class="btn cta" type="submit">${part ? E('Je participe', 'Contribute') : E('Je m’en occupe', 'I’ll take care of it')}</button>
           <p class="msg" id="lpMsg" aria-live="polite"></p>
         </form></div>`;
       document.body.appendChild(bg);
@@ -858,28 +864,28 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
       f.addEventListener('submit', async e => {
         e.preventDefault(); if (f.website.value) return;
         const montant = part ? Math.round(+f.montant.value || 0) : (+g.prix || 0);
-        if (part && montant < 1) { msg.textContent = T('Indiquez', 'Indique') + ' un montant.'; f.montant.focus(); return; }
-        const btn = f.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = 'Envoi…';
+        if (part && montant < 1) { msg.textContent = T('Indiquez un montant.', 'Indique un montant.', 'Please enter an amount.'); f.montant.focus(); return; }
+        const btn = f.querySelector('[type=submit]'); btn.disabled = true; msg.textContent = E('Envoi…', 'Sending…');
         const id = 'l_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), cle = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
         const anon = !f.nom.value.trim();
-        const row = { action: 'liste', id, cle, code: anon ? '' : code, cadeau: g.id, titre: g.titre, type: part ? 'participation' : 'cadeau', objectif: +g.objectif || '', nom: f.nom.value.trim(), montant, message: f.message.value.trim() };
+        const row = { action: 'liste', id, cle, code: anon ? '' : code, cadeau: g.id, titre: (((FRC.site || {}).liste || {}).cadeaux || []).filter(x => x && x.id === g.id).map(x => x.titre)[0] || g.titre, type: part ? 'participation' : 'cadeau', objectif: +g.objectif || '', nom: f.nom.value.trim(), montant, message: f.message.value.trim() };
         try {
           let r;
           if (DEMO_) { if (!part && demoEtat()[g.id] && demoEtat()[g.id].offert) r = { ok: false, error: 'deja' }; else { demoRows.push(row); r = { ok: true }; } }
           else r = await post(row);
           if (!r.ok) throw new Error(r.error || '');
           const m = mine(); m[id] = { cle, cadeau: g.id }; store.set('liste', m); store.set('listeNom', row.nom);
-          bg.querySelector('.lp').innerHTML = `<span class="in-border"></span><button class="close" type="button" aria-label="Fermer">×</button>
-            <div class="merci-l">Merci${row.nom ? ' ' + esc(row.nom) : ''} !</div>
-            <p class="lead" style="margin:0 auto">${part ? `${T('Votre', 'Ta')} participation de <b>${eur(montant)}</b> à « ${esc(g.titre)} » est notée.` : `C’est noté : ${T('vous nous offrez', 'tu nous offres')} « ${esc(g.titre)} ».`}${DEMO_ ? ' (aperçu : rien n’a été envoyé)' : ''}</p>
-            ${part ? '' : `<p class="note" style="margin:10px 0 0">${T('Vous pouvez', 'Tu peux')} nous l’apporter le jour J, ou nous en faire parvenir le montant :</p>`}
+          bg.querySelector('.lp').innerHTML = `<span class="in-border"></span><button class="close" type="button" aria-label="${E('Fermer', 'Close')}">×</button>
+            <div class="merci-l">${E('Merci', 'Thank you')}${row.nom ? ' ' + esc(row.nom) : ''}${E(' !', '!')}</div>
+            <p class="lead" style="margin:0 auto">${part ? (Langue.en ? `Your contribution of <b>${eur(montant)}</b> to “${esc(g.titre)}” has been noted.` : `${T('Votre', 'Ta')} participation de <b>${eur(montant)}</b> à « ${esc(g.titre)} » est notée.`) : (Langue.en ? `All noted: you’re giving us “${esc(g.titre)}”.` : `C’est noté : ${T('vous nous offrez', 'tu nous offres')} « ${esc(g.titre)} ».`)}${DEMO_ ? E(' (aperçu : rien n’a été envoyé)', ' (preview: nothing was sent)') : ''}</p>
+            ${part ? '' : `<p class="note" style="margin:10px 0 0">${T('Vous pouvez nous l’apporter le jour J, ou nous en faire parvenir le montant :', 'Tu peux nous l’apporter le jour J, ou nous en faire parvenir le montant :', 'You can bring it on the day, or send us the amount:')}</p>`}
             ${payHtml(true, g)}
-            <button class="btn" type="button" data-close>Fermer</button>`;
+            <button class="btn" type="button" data-close>${E('Fermer', 'Close')}</button>`;
           bg.querySelector('[data-close]').addEventListener('click', close);
           load();
         } catch (x) {
           btn.disabled = false;
-          msg.textContent = x.message === 'deja' ? 'Quelqu’un vient juste de le réserver ! ' + T('Choisissez', 'Choisis') + ' une autre idée.' : 'L’envoi n’a pas abouti, ' + T('réessayez', 'réessaie') + ' un peu plus tard.';
+          msg.textContent = x.message === 'deja' ? T('Quelqu’un vient juste de le réserver ! Choisissez une autre idée.', 'Quelqu’un vient juste de le réserver ! Choisis une autre idée.', 'Someone has just taken this one! Please choose another idea.') : T('L’envoi n’a pas abouti, réessayez un peu plus tard.', 'L’envoi n’a pas abouti, réessaie un peu plus tard.', 'Sending failed, please try again a little later.');
           if (x.message === 'deja') load();
         }
       });
@@ -895,7 +901,7 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
         } catch (x) { u.disabled = false; }
       }
       const c = e.target.closest('[data-copy]');
-      if (c) { try { await navigator.clipboard.writeText(c.dataset.copy); c.textContent = c.dataset.ok || 'Copié'; } catch (x) { const b = c.parentNode.querySelector('b'); if (b) getSelection().selectAllChildren(b); } }
+      if (c) { try { await navigator.clipboard.writeText(c.dataset.copy); c.textContent = c.dataset.ok || E('Copié', 'Copied'); } catch (x) { const b = c.parentNode.querySelector('b'); if (b) getSelection().selectAllChildren(b); } }
     });
   })();
   /* liens #liste, #covoiturage… : la page est construite par le script, on y va une fois prête */
@@ -906,12 +912,12 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
   if (cf) cf.addEventListener('submit', async e => {
     e.preventDefault(); if (cf.website.value) return;
     const msg = $('#chansonMsg'), btn = cf.querySelector('button');
-    btn.disabled = true; msg.textContent = 'Envoi…';
+    btn.disabled = true; msg.textContent = E('Envoi…', 'Sending…');
     try {
       const r = await post({ action: 'chanson', chanson: cf.chanson.value.trim(), nom: cf.nom.value.trim(), code });
       if (!r.ok) throw 0;
-      msg.textContent = 'Merci ! On la garde précieusement' + (r.demo ? ' (aperçu : rien n’a été envoyé)' : '') + '.'; cf.chanson.value = '';
-    } catch (x) { msg.textContent = 'L’envoi n’a pas abouti, ' + T('réessayez', 'réessaie') + ' un peu plus tard.'; }
+      msg.textContent = E('Merci ! On la garde précieusement', 'Thank you! We’ll keep it safe') + (r.demo ? E(' (aperçu : rien n’a été envoyé)', ' (preview: nothing was sent)') : '') + '.'; cf.chanson.value = '';
+    } catch (x) { msg.textContent = T('L’envoi n’a pas abouti, réessayez un peu plus tard.', 'L’envoi n’a pas abouti, réessaie un peu plus tard.', 'Sending failed, please try again a little later.'); }
     btn.disabled = false;
   });
 
@@ -935,28 +941,29 @@ footer .links { margin-top: 18px; flex-wrap: wrap; }
     let busy = false;
     async function send(files) {
       if (busy || !files.length) return;
-      if (!$('#phOk').checked) { msg.textContent = 'Cochez d’abord la case sur l’accord des personnes photographiées.'; input.value = ''; return; }
+      if (!$('#phOk').checked) { msg.textContent = T('Cochez d’abord la case sur l’accord des personnes photographiées.', 'Coche d’abord la case sur l’accord des personnes photographiées.', 'Please first tick the box confirming the people in the photos agree.'); input.value = ''; return; }
       store.set('photoOk', true); busy = true;
       const qui = pf.nom.value.trim(); store.set('photoNom', qui);
       files = [...files]; let ok = 0, done = 0;
-      list.innerHTML = files.map((f, i) => `<li id="pf${i}"><span>${esc(f.name)}</span><span>en attente</span></li>`).join('');
+      list.innerHTML = files.map((f, i) => `<li id="pf${i}"><span>${esc(f.name)}</span><span>${E('en attente', 'waiting')}</span></li>`).join('');
       bar.hidden = false; bar.firstElementChild.style.width = '4%'; msg.textContent = '';
       for (let i = 0; i < files.length; i++) {
         const f = files[i], st = $('#pf' + i).lastElementChild;
         try {
-          if (/^video\//.test(f.type) && f.size > VMAX) throw new Error('vidéo trop lourde');
-          if (!/^(image|video)\//.test(f.type)) throw new Error('format non pris en charge');
-          st.textContent = 'préparation…';
+          if (/^video\//.test(f.type) && f.size > VMAX) throw new Error(E('vidéo trop lourde', 'video too large'));
+          if (!/^(image|video)\//.test(f.type)) throw new Error(E('format non pris en charge', 'format not supported'));
+          st.textContent = E('préparation…', 'preparing…');
           const blob = await shrink(f);
-          st.textContent = 'envoi…';
+          st.textContent = E('envoi…', 'sending…');
           const nomFichier = blob === f ? f.name : f.name.replace(/\.\w+$/, '') + '.jpg';
           const r = await post({ action: 'photo', nom: qui, code, fichier: nomFichier, type: blob.type || f.type, data: await b64(blob) });
-          if (!r.ok) throw new Error(r.error || 'refusé');
-          st.textContent = '✓ reçue'; st.className = 'ok'; ok++;
-        } catch (e) { st.textContent = '✗ ' + (e && e.message && e.message.length < 40 ? e.message : 'échec'); st.className = 'ko'; }
+          if (!r.ok) throw new Error(r.error || E('refusé', 'rejected'));
+          st.textContent = E('✓ reçue', '✓ received'); st.className = 'ok'; ok++;
+        } catch (e) { st.textContent = '✗ ' + (e && e.message && e.message.length < 40 ? e.message : E('échec', 'failed')); st.className = 'ko'; }
         done++; bar.firstElementChild.style.width = Math.round(done / files.length * 100) + '%';
       }
-      msg.textContent = ok === files.length ? `Merci ! ${ok > 1 ? ok + ' photos bien arrivées' : 'Photo bien arrivée'}.` : `${ok} sur ${files.length} envoyée${ok > 1 ? 's' : ''} : réessayez celles en échec (le Wi-Fi peut aider).`;
+      msg.textContent = Langue.en ? (ok === files.length ? `Thank you! ${ok > 1 ? ok + ' photos received' : 'Photo received'}.` : `${ok} of ${files.length} sent: please retry the failed ones (Wi-Fi may help).`)
+        : ok === files.length ? `Merci ! ${ok > 1 ? ok + ' photos bien arrivées' : 'Photo bien arrivée'}.` : `${ok} sur ${files.length} envoyée${ok > 1 ? 's' : ''} : ${T('réessayez', 'réessaie')} celles en échec (le Wi-Fi peut aider).`;
       input.value = ''; busy = false;
     }
     input.addEventListener('change', () => send(input.files));
