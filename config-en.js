@@ -16,7 +16,7 @@ window.CONFIG_EN = {
   lieuxNote: 'Good to know: allow about 1 h 15 by car between Suresnes and the Château de la Fontaine, and 8 minutes between the church in Égreville and the château.',
 
   textes: {
-    sousTitre: 'One “I do”, for a lifetime.',
+    sousTitre: '',
     date: 'Mark your calendar',
     programme: 'The weekend',
     escales: 'Until our next adventure',
