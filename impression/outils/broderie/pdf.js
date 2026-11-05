@@ -1,0 +1,1 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage();await p.goto('file:///tmp/claude-0/alpha/planche.html');await p.pdf({path:'/mnt/user-data/outputs/alphabet-broderie.pdf',preferCSSPageSize:true,printBackground:true});await b.close()})();
