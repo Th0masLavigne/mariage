@@ -5,13 +5,16 @@
 <link rel="stylesheet" href="polices.css">
 <!-- dessin des points à relier (généré, ne pas modifier à la main) -->
 <script src="journal-dessin.js"></script>
+<!-- générateur de QR code (même fichier que le faire-part papier) -->
+<script src="qrcode.js"></script>
 <script>
 /* =====================================================================
    JOURNAL DE TABLE — TOUT CE QUI SE MODIFIE EST ICI
    ---------------------------------------------------------------------
    1. Modifiez les textes ci-dessous, enregistrez.
    2. Rechargez la page dans Chrome (Cmd + R) pour voir le résultat.
-   3. Bouton « Exporter en PDF » en haut (A4, recto-verso, marges : aucune).
+   3. Bouton « Exporter en PDF » en haut (taille : celle du format choisi
+      ci-dessous, marges : aucune, « Graphiques d’arrière-plan » cochés).
    Rappels :
    • apostrophe typographique ’ dans les textes (ou \' ).
    • un texte entre crochets [ … ] est un emplacement à remplir :
@@ -21,7 +24,13 @@
    ===================================================================== */
 window.JOURNAL = {
 
-  /* --- EN-TÊTE (les deux pages) ------------------------------------- */
+  /* --- FORMAT D'IMPRESSION ------------------------------------------
+     'tabloid' : 260 × 370 mm (format PayPerNews « Tabloïd »)
+     'a4'      : 210 × 297 mm (impression maison)
+     La mise en page est la même : tout est simplement agrandi.         */
+  format: 'tabloid',
+
+  /* --- EN-TÊTE (toutes les pages) ------------------------------------ */
   nom: 'La Gazette des Mariés',
   devise: 'Le seul quotidien où tout le monde finit par dire oui',
   edition: 'Édition spéciale · N° 1',
@@ -47,7 +56,7 @@ window.JOURNAL = {
 
   /* Encadrés de la colonne de droite (autant que vous voulez) */
   encadres: [
-    { titre: '[Le programme de la soirée]', texte: '[20 h 30 — Dîner]\n[22 h — Ouverture du bal]\n[… — …]' },
+    { titre: 'Au sommaire', texte: 'Page 2 — Le programme\nPage 3 — Le menu\nPages 4 à 7 — Les jeux\nPage 8 — Le mot de la fin' },
     { titre: 'Météo', texte: '[Ciel dégagé sur le parc, averses de confettis en fin de soirée.]' },
     { titre: 'Petites annonces', texte: '[Cherche partenaire de rock, niveau débutant accepté.]\n[Perdu : une chaussure de la mariée. Récompense.]' }
   ],
@@ -59,9 +68,62 @@ window.JOURNAL = {
   ],
 
   /* Bandeau en bas de la page 1 */
-  bandeau: 'En pages 2 à 4 : mots fléchés, points à relier, notre histoire et le labyrinthe — à faire ensemble !',
+  bandeau: 'En pages 4 à 7 : mots fléchés, points à relier, labyrinthe et notre histoire — à faire ensemble !',
 
-  /* --- PAGE 2 : LES MOTS FLÉCHÉS ------------------------------------ */
+  /* --- PAGE 2 : LE PROGRAMME ----------------------------------------
+     Seuls les moments partagés par TOUS les invités du dîner sont listés
+     (la mairie et la soirée du vendredi n’étaient pas pour tout le monde).
+     icone : rings | moon | bells | glasses | plate | croissant | gift | window
+     largeur : largeur de l’illustration en mm                           */
+  programme: {
+    surtitre: 'Le programme',
+    titre: 'Deux adresses, un grand jour',
+    chapo: 'Du « oui » de l’église au dernier croissant du brunch, tout ce qu’il faut savoir pour ne rien manquer.',
+    lieux: [
+      { nom: 'Église Saint-Martin d’Égreville', adresse: 'Égreville (77620), à deux pas du château',
+        image: '../photos/lieux/eglise.webp', largeur: 58,
+        moments: [ { jour: 'Samedi 7 août', heure: '14h00', titre: 'Cérémonie religieuse', icone: 'bells' } ] },
+      { nom: 'Château de la Fontaine', adresse: '41 Bois le Roi, 45210 Griselles',
+        image: '../photos/lieux/chateau.webp', largeur: 92,
+        moments: [ { jour: 'Samedi 7 août',   heure: '16h00', titre: 'Vin d’honneur',           icone: 'glasses' },
+                   {                          heure: '20h30', titre: 'Dîner & soirée dansante', icone: 'plate' },
+                   { jour: 'Dimanche 8 août', heure: '10h30', titre: 'Brunch',                  icone: 'croissant' } ] }
+    ],
+    trajet: '8 minutes',                            // texte le long de la route
+    voiture: '../photos/4l-profil.png',             // '' pour masquer la 4L
+
+    /* frise du bas : le détail de la soirée */
+    soiree: {
+      titre: 'Ce soir, minute par minute',
+      etapes: [
+        { heure: '20h30',   texte: 'À table !' },
+        { heure: '[22h00]', texte: '[Ouverture du bal]' },
+        { heure: '[23h00]', texte: '[Le gâteau des mariés]' },
+        { heure: '[…]',     texte: '[Piste de danse jusqu’au bout de la nuit]' },
+        { heure: '10h30',   texte: 'Brunch au château (dimanche)' }
+      ]
+    }
+  },
+
+  /* --- PAGE 3 : LE MENU --------------------------------------------- */
+  menu: {
+    surtitre: 'Gastronomie',
+    titre: 'Au menu ce soir',
+    chapo: '[Notre critique gastronomique a tout goûté en avant-première. Son verdict : on en reprendrait.]',
+    plats: [
+      { categorie: 'Mises en bouche', nom: '[Nom des mises en bouche]', description: '[Courte description]' },
+      { categorie: 'Entrée',          nom: '[Nom de l’entrée]',         description: '[Courte description]' },
+      { categorie: 'Plat',            nom: '[Nom du plat]',             description: '[Courte description]' },
+      { categorie: 'Fromages',        nom: '[Plateau de fromages]',     description: '' },
+      { categorie: 'Dessert',         nom: '[Nom du dessert]',          description: '[Courte description]' }
+    ],
+    encadres: [
+      { titre: 'La cave', texte: '[Champagne : …]\n[Vin blanc : …]\n[Vin rouge : …]' },
+      { titre: 'Menus particuliers', texte: '[Végétarien, sans gluten, enfants : votre assiette a été préparée spécialement. Signalez-vous au service.]' }
+    ]
+  },
+
+  /* --- PAGE 4 : LES MOTS FLÉCHÉS ------------------------------------ */
   jeux: {
     titre: 'Les mots fléchés des mariés',
     consigne: 'Interdit de sortir son téléphone : interrogez vos voisins de table ! Les lettres des cases numérotées forment le mot mystère.',
@@ -112,7 +174,7 @@ window.JOURNAL = {
     piedDePage: '[Solution auprès des mariés… contre un pas de danse.]'
   },
 
-  /* --- PAGE 3 : POINTS À RELIER ------------------------------------- */
+  /* --- PAGE 5 : POINTS À RELIER ------------------------------------- */
   points: {
     titre: 'Les points à relier',
     consigne: 'Reliez les points dans l’ordre des numéros. Une étoile ★ marque le début d’un nouveau trait : levez le crayon et repartez de là.',
@@ -120,38 +182,66 @@ window.JOURNAL = {
     /* le dessin lui-même est dans journal-dessin.js (généré à partir d’une photo) */
   },
 
-  /* --- PAGE 4 : NOTRE HISTOIRE (sous le labyrinthe) ------------------- */
-  histoire: {
-    titre: 'Notre histoire… dans le désordre',
-    consigne: 'Retrouvez l’ordre de nos aventures : numérotez-les de 1 à 13.',
-    graine: 2,                    // change l'ordre de mélange
-    /* écrivez les étapes DANS LE BON ORDRE : la page les mélange toute seule */
-    etapes: [
-      'Tonton et Tata jouent les entremetteurs',
-      'Premier week-end à deux, entre Giverny et La Roche-Guyon',
-      'Première escapade, direction Bruges',
-      'Rencontre avec Mamie à Saint-Raphaël',
-      'Une saison de festivals : Solidays et Rock en Seine',
-      'Premier Noël à trois (Una était déjà de la partie !)',
-      'Vacances au ski à l’Alpe d’Huez',
-      'Thomas devient Docteur², Tiphaine devient médecin',
-      'Le grand voyage au Vietnam',
-      'Retour sur les pistes, au Lioran',
-      'Découverte de Vienne et de Prague',
-      'Week-end en famille à Arzon (Tiphaine a failli découvrir les plans !)',
-      'Voyage dans les Cyclades… et nous voilà fiancés !'
-    ]
-  },
-
-  /* --- PAGE 4 : LE LABYRINTHE (au-dessus de « Notre histoire ») ------- */
+  /* --- PAGE 6 : LE LABYRINTHE (page entière) ------------------------- */
   labyrinthe: {
     titre: 'Le labyrinthe',
     consigne: 'Aidez Thomas et son BMX à retrouver Tiphaine au cœur du labyrinthe… sans jamais traverser un mur !',
     depart: 'Thomas',
     arrivee: 'Tiphaine',
-    largeur: 30,                  // nombre de couloirs en largeur (plus = plus difficile)
+    largeur: 34,                  // nombre de couloirs en largeur (plus = plus difficile)
     graine: 1,                    // change le tracé
-    piedDePage: '[Petit mot de fin : merci d’être là, et bonne soirée !]'
+    piedDePage: ''
+  },
+
+  /* --- PAGE 7 : NOTRE HISTOIRE (en photos) --------------------------- */
+  histoire: {
+    titre: 'Notre histoire… dans le désordre',
+    consigne: 'Retrouvez l’ordre de nos aventures : numérotez-les de 1 à 13.',
+    graine: 2,                    // change l'ordre de mélange
+    /* écrivez les étapes DANS LE BON ORDRE : la page les mélange toute seule.
+       photo : facultative ('' → petit cadre orné à la place)
+       cadrage : partie de la photo à garder ('50% 30%' = centre, plutôt le haut) */
+    etapes: [
+      { texte: 'Tonton et Tata jouent les entremetteurs',                   photo: '' },
+      { texte: 'Premier week-end à deux, entre Giverny et La Roche-Guyon', photo: '' },
+      { texte: 'Première escapade, direction Bruges',                       photo: '../photos/bruges.jpg', cadrage: '50% 60%' },
+      { texte: 'Rencontre avec Mamie à Saint-Raphaël',                      photo: '../photos/st_raph.jpeg' },
+      { texte: 'Une saison de festivals : Solidays et Rock en Seine',       photo: '../photos/solidays.jpeg' },
+      { texte: 'Premier Noël à trois (Una était déjà de la partie !)',      photo: '' },
+      { texte: 'Vacances au ski à l’Alpe d’Huez',                           photo: '../photos/alpe_dhuez.jpeg', cadrage: '50% 30%' },
+      { texte: 'Thomas devient Docteur², Tiphaine devient médecin',         photo: '../photos/diplomes.jpeg' },
+      { texte: 'Le grand voyage au Vietnam',                                photo: '../photos/halong.jpg', cadrage: '50% 45%' },
+      { texte: 'Retour sur les pistes, au Lioran',                          photo: '../photos/lioran.jpeg', cadrage: '50% 40%' },
+      { texte: 'Découverte de Vienne et de Prague',                         photo: '../photos/prague.jpg', cadrage: '50% 55%' },
+      { texte: 'Week-end en famille à Arzon (Tiphaine a failli découvrir les plans !)', photo: '../photos/arzon.jpeg', cadrage: '50% 55%' },
+      { texte: 'Voyage dans les Cyclades… et nous voilà fiancés !',         photo: '../photos/cyclades.jpg', cadrage: '50% 30%' }
+    ],
+    piedDePage: '[Solutions de tous les jeux auprès des mariés… contre un pas de danse.]'
+  },
+
+  /* --- PAGE 8 : LE MOT DE LA FIN ------------------------------------- */
+  fin: {
+    surtitre: 'Le mot de la fin',
+    titre: 'Merci !',
+    photo: '../photos/milos.jpeg',   // '' → cadre « photo »
+    cadragePhoto: '50% 45%',
+    legende: '[Légende de la photo]',
+    texte: [
+      '[Premier paragraphe : merci d’être venus, parfois de loin.]',
+      '[Deuxième paragraphe : un mot pour les familles, les témoins, tous ceux qui ont aidé.]'
+    ],
+    signature: 'Tiphaine & Thomas',
+    encadres: [
+      { titre: 'Demain matin', texte: 'Brunch au château à partir de **10h30**.\n[Café serré conseillé.]' },
+      { titre: 'Vos photos', texte: '[Partagez vos photos de la soirée : lien ou QR code de l’album.]' }
+    ],
+    /* QR code vers le carnet du mariage — ⚠ scannez-le avec votre téléphone avant d’imprimer.
+       lien '' → pas de QR code */
+    carnet: {
+      titre: 'Le carnet du mariage',
+      texte: 'Accès, hébergement, liste de mariage… tout est là.',
+      lien: 'https://th0maslavigne.github.io/mariage/site.html?f=noce-4m'
+    }
   }
 };
 </script>
@@ -164,7 +254,6 @@ window.JOURNAL = {
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:#d9d6cf}
 body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-@page{size:A4;margin:0}
 
 /* barre d'outils (écran seulement) */
 .outils{position:sticky;top:0;z-index:10;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
@@ -175,11 +264,12 @@ body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exa
 .alerte{background:#fde8e6;color:#8a1f12;padding:8px 16px;font:14px system-ui,sans-serif;border-bottom:1px solid #f0b4ab}
 .alerte:empty{display:none}
 
-.page{width:210mm;height:297mm;margin:10mm auto;background:var(--papier);padding:11mm 12mm;
-  box-shadow:0 2px 14px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.feuille{margin:10mm auto;background:var(--papier);box-shadow:0 2px 14px rgba(0,0,0,.18);overflow:hidden}
+.page{width:210mm;height:297mm;background:var(--papier);padding:11mm 12mm;transform-origin:0 0;
+  display:flex;flex-direction:column;overflow:hidden;position:relative}
 @media print{
   html{background:#fff} .outils,.alerte{display:none}
-  .page{margin:0;box-shadow:none;page-break-after:always;break-after:page}
+  .feuille{margin:0;box-shadow:none;page-break-after:always;break-after:page}
   .ph{background:none!important;outline:none!important}
 }
 .ph{background:#fff4d6;outline:1px dashed var(--or);outline-offset:1px}
@@ -220,8 +310,10 @@ body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exa
 .jeux-titre{font-family:var(--f-display);font-weight:700;font-size:10mm;text-align:center;margin-top:4mm}
 .consigne{text-align:center;font-style:italic;font-size:4.1mm;line-height:1.3;max-width:165mm;margin:1mm auto 4mm}
 .zone-grille{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
-.grille{display:grid;border:.5mm solid var(--encre);background:var(--encre);gap:.25mm}
+.grille{display:grid;border:.4mm solid var(--encre);border-right-width:.15mm;border-bottom-width:.15mm}
 .case{width:var(--c);height:var(--c);background:#fff;position:relative;overflow:hidden}
+/* filets de la grille : dessinés par chaque case (net même une fois agrandi) */
+.case::before{content:"";position:absolute;inset:0 -.01mm -.01mm 0;border-right:.25mm solid var(--encre);border-bottom:.25mm solid var(--encre);z-index:1;pointer-events:none}
 .case.vide{background:repeating-linear-gradient(45deg,#f3eee3 0 .6mm,#e6dcc6 .6mm .9mm)}
 .case.def{background:var(--pale);display:flex;flex-direction:column}
 .def .d{flex:1;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;
@@ -257,13 +349,59 @@ body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exa
 .zone-points .trace{fill:none;stroke:var(--bleu);stroke-width:2.2;stroke-linejoin:round;visibility:hidden}
 .solution .zone-points .trace{visibility:visible}
 .question{text-align:center;font-family:var(--f-hand);font-size:7mm;color:var(--or);margin-bottom:2mm}
-/* notre histoire */
-.sous-titre{font-family:var(--f-display);font-weight:700;font-size:7.5mm;text-align:center;border-top:.6mm solid var(--encre);padding-top:3mm}
-.etapes{display:grid;grid-template-columns:1fr 1fr;gap:2mm 6mm;margin-top:1mm}
-.etape{display:flex;align-items:center;gap:3mm;font-size:3.9mm;line-height:1.2;min-height:9mm}
-.etape .rond{flex:none;width:8.5mm;height:8.5mm;border:.4mm solid var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-family:var(--f-display);font-weight:600;font-size:4.2mm;color:var(--bleu)}
-.etape .rond span{visibility:hidden} .solution .etape .rond span{visibility:visible}
+/* notre histoire (page 7) */
+.h-grille{flex:1;min-height:0;display:flex;flex-wrap:wrap;justify-content:center;align-content:space-evenly;gap:4mm 5mm}
+.h-carte{width:calc((100% - 15mm) / 4);height:calc((100% - 12mm) / 4);display:flex;flex-direction:column;position:relative}
+.h-photo{flex:1;min-height:0;background:var(--pale) center/cover no-repeat;border:.2mm solid var(--encre);display:flex;align-items:center;justify-content:center}
+.h-photo.vide{background:repeating-linear-gradient(45deg,#faf7f0 0 .8mm,#f1ebdd .8mm 1.2mm);border-color:var(--or)}
+.h-photo.vide img{width:40%;opacity:.55}
+.h-carte p{font-size:3.7mm;line-height:1.2;text-align:center;padding:2.2mm 1mm 0;min-height:12.5mm}
+.rond{flex:none;width:8.5mm;height:8.5mm;border:.4mm solid var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-display);font-weight:600;font-size:4.2mm;color:var(--bleu);background:#fff}
+.h-carte .rond{position:absolute;right:-2mm;top:-2mm;width:9.5mm;height:9.5mm}
+.rond span{visibility:hidden} .solution .rond span{visibility:visible}
+.sous-titre{font-family:var(--f-display);font-weight:700;font-size:6.5mm;text-align:center;border-top:.6mm solid var(--encre);padding-top:3mm;margin-top:3mm}
+/* programme (page 2) */
+.gros-titre.petit{font-size:10.5mm}
+.lieux{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}
+.lieu-r{display:flex;align-items:center;gap:8mm}
+.lieu-r.droite{flex-direction:row-reverse;text-align:right}
+.lieu-r .ill{flex:none;height:auto}
+.lieu-t h3{font-family:var(--f-display);font-weight:500;font-size:7.2mm;line-height:1.1;color:var(--bleu)}
+.lieu-t .adr{font-size:3.7mm;color:#6f7186;margin-top:.8mm}
+.lieu-t ul{list-style:none;margin-top:2mm}
+.lieu-t li{display:flex;align-items:center;gap:3mm;margin-top:2.2mm}
+.lieu-r.droite li{flex-direction:row-reverse}
+.lieu-t li img{width:9mm;height:9mm;object-fit:contain;flex:none}
+.lieu-t .jour{display:block;font-family:var(--f-display);text-transform:uppercase;letter-spacing:.16em;font-size:2.9mm;color:var(--or)}
+.lieu-t .quoi{font-family:var(--f-display);font-style:italic;font-size:5mm}
+.lieu-t .quoi b{font-style:normal;font-weight:600;color:var(--or);font-size:4.4mm}
+.route{display:block;width:100%}
+.frise{display:grid;position:relative;margin:3mm 0 2mm;text-align:center}
+.frise::before{content:"";position:absolute;left:8%;right:8%;top:9.2mm;border-top:.4mm dashed var(--or)}
+.frise div{display:flex;flex-direction:column;align-items:center;padding:0 1.5mm}
+.frise b{font-family:var(--f-display);font-weight:600;color:var(--or);font-size:4.6mm;height:7mm}
+.frise i{width:3.6mm;height:3.6mm;border-radius:50%;background:var(--or);border:.8mm solid #fff;box-sizing:content-box;position:relative;z-index:1}
+.frise span{font-size:4.3mm;line-height:1.25;margin-top:2mm}
+/* menu (page 3) */
+.zone-menu{flex:1;min-height:0;display:flex;justify-content:center;padding:1mm 0 5mm}
+.carte-menu{width:132mm;border:.35mm solid var(--or);outline:.2mm solid var(--or);outline-offset:1.4mm;padding:7mm 10mm 8mm;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;text-align:center}
+.assiette{width:15mm}
+.plat .cat{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.22em;font-size:3.1mm;color:var(--or)}
+.plat .nom{font-family:var(--f-display);font-style:italic;font-size:6.6mm;line-height:1.15;margin-top:1.2mm}
+.plat .desc{font-style:italic;font-size:4mm;line-height:1.3;color:#5b6177;margin-top:.8mm}
+.orn{display:flex;align-items:center;gap:2.5mm;color:var(--or);font-size:2.6mm}
+.orn span{width:14mm;border-top:.25mm solid var(--or)}
+.bas-encadres{display:grid;gap:6mm}
+/* le mot de la fin (page 8) */
+.merci{font-family:var(--f-hand);font-weight:400;font-size:22mm;line-height:1;text-align:center;color:var(--or);margin:1mm 0 3mm}
+.photo.grande{height:108mm;flex:none}
+.fin-texte{margin-top:4mm}
+.signature{font-family:var(--f-hand);font-size:9mm;text-align:right;color:var(--encre);margin:1mm 4mm 0 0}
+#p8 .bas-encadres{margin-top:auto}
+.encadre.carnet{display:flex;gap:3mm;align-items:flex-start;justify-content:space-between}
+.cul-de-lampe{width:13mm;align-self:center;margin-top:5mm;opacity:.9}
 /* labyrinthe */
 .zone-laby{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin:1mm 0 4mm}
 .zone-laby svg{width:100%;height:100%}
@@ -282,10 +420,14 @@ body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exa
 </div>
 <div class="alerte" id="alerte"></div>
 
-<section class="page" id="p1"></section>
-<section class="page" id="p2"></section>
-<section class="page" id="p3"></section>
-<section class="page" id="p4"></section>
+<div class="feuille"><section class="page" id="p1"></section></div>
+<div class="feuille"><section class="page" id="p2"></section></div>
+<div class="feuille"><section class="page" id="p3"></section></div>
+<div class="feuille"><section class="page" id="p4"></section></div>
+<div class="feuille"><section class="page" id="p5"></section></div>
+<div class="feuille"><section class="page" id="p6"></section></div>
+<div class="feuille"><section class="page" id="p7"></section></div>
+<div class="feuille"><section class="page" id="p8"></section></div>
 
 <script>
 /* =====================================================================
@@ -298,6 +440,16 @@ const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 const fmt = s => esc(s || '').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>')
                              .replace(/\[([^\]]*)\]/g,'<span class="ph">[$1]</span>');
 const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z]/g,'');
+
+/* ---------- format : A4 ou tabloïd (tout est agrandi d'un bloc) ---------- */
+const TABLOID = J.format === 'tabloid', ZOOM = TABLOID ? 260 / 210 : 1;
+/* chaque page est dessinée au format A4 puis agrandie (transform : le tracé reste vectoriel et net) */
+document.head.insertAdjacentHTML('beforeend', `<style>@page{size:${TABLOID ? '260mm 370mm' : 'A4'};margin:0}
+  .feuille{width:${TABLOID ? 260 : 210}mm;height:${TABLOID ? 370 : 297}mm}
+  .page{transform:scale(${ZOOM});height:${TABLOID ? 370 / ZOOM : 297}mm}</style>`);
+
+/* en-tête des pages intérieures */
+const miniTete = (n, rubrique = 'Jeux') => `<div class="mini-tete"><b>${fmt(J.nom)}</b><span>${fmt(J.date)} · Page ${n} · ${rubrique}</span></div>`;
 
 /* ---------- page 1 ---------- */
 function entete(){
@@ -423,7 +575,7 @@ function choisirMystere(G, mot, graine){
   return { cases: pris, manque };
 }
 
-/* ---------- page 2 ---------- */
+/* ---------- page 4 : mots fléchés ---------- */
 let graine = Number(new URLSearchParams(location.search).get('graine')) || JX.graine || 1;
 
 function page2(){
@@ -472,7 +624,7 @@ function page2(){
   const liste = JX.definitions === 'liste'
     ? `<div class="liste-defs">${[...numeros].sort((a,b)=>a[1]-b[1]).map(([i,num])=>`<div><b>${num}.</b> ${fmt(mots[i].def)}</div>`).join('')}</div>` : '';
 
-  $('#p2').innerHTML = `<div class="mini-tete"><b>${fmt(J.nom)}</b><span>${fmt(J.date)} · Page 2 · Jeux</span></div>
+  $('#p4').innerHTML = `${miniTete(4)}
     <h2 class="jeux-titre">${fmt(JX.titre)}</h2>
     ${JX.consigne?`<p class="consigne">${fmt(JX.consigne)}</p>`:''}
     <div class="zone-grille"><div class="grille" style="--c:${cell}mm;grid-template-columns:repeat(${nc},var(--c))">${cases}</div></div>
@@ -493,8 +645,6 @@ function ajusterTextes(){
     while (px > 4 && (d.scrollHeight > d.clientHeight + .5 || d.scrollWidth > d.clientWidth + .5)){ px -= .25; d.style.fontSize = px + 'px'; }
   });
 }
-/* ---------- pages 3 et 4 : en-tête commun ---------- */
-const miniTete = n => `<div class="mini-tete"><b>${fmt(J.nom)}</b><span>${fmt(J.date)} · Page ${n} · Jeux</span></div>`;
 
 /* ---------- page 3 : points à relier ---------- */
 function svgPoints(){
@@ -547,25 +697,15 @@ function melanger(liste, graine){
   }
   return best;
 }
-function page3(){
+function pagePoints(){
   const P = J.points;
-  $('#p3').innerHTML = miniTete(3) + `
+  $('#p5').innerHTML = miniTete(5) + `
     <h2 class="jeux-titre">${fmt(P.titre)}</h2>
     ${P.consigne?`<p class="consigne">${fmt(P.consigne)}</p>`:''}
     <div class="zone-points">${svgPoints()}</div>
     ${P.question?`<div class="question">${fmt(P.question)}</div>`:''}`;
 }
-function blocHistoire(){
-  const H = J.histoire, ordre = melanger(H.etapes, H.graine || 1);
-  const moitie = Math.ceil(ordre.length / 2), cases = [];
-  for (let r = 0; r < moitie; r++) for (const col of [0, 1]){ const k = col * moitie + r; cases.push(k < ordre.length ? ordre[k] : null); }
-  return `<h2 class="sous-titre">${fmt(H.titre)}</h2>
-    ${H.consigne?`<p class="consigne" style="margin-bottom:2mm">${fmt(H.consigne)}</p>`:''}
-    <div class="etapes">${cases.map(i => i === null ? '<div></div>' :
-      `<div class="etape"><div class="rond"><span>${i+1}</span></div><div>${fmt(H.etapes[i])}</div></div>`).join('')}</div>`;
-}
-
-/* ---------- page 4 : labyrinthe en cœur ---------- */
+/* ---------- page 6 : labyrinthe en cœur ---------- */
 function labyrinthe(L){
   const N = L.largeur || 30, s = 2.32 / N, M = Math.ceil(2.32 / s), rnd = alea((L.graine || 1) * 977 + 3);
   const dans = (i, j) => { const x = -1.16 + (j + .5) * s, y = 1.27 - (i + .5) * s, a = x*x + y*y - 1; return a*a*a - x*x*y*y*y <= 0; };
@@ -628,20 +768,107 @@ function labyrinthe(L){
     <g font-family="Bodoni Moda, serif" font-size="1.05" fill="var(--encre)">${lab}
       <text x="${gj+.5}" y="${gi-.3}" text-anchor="middle" font-size=".8" fill="var(--or)" stroke="#fff" stroke-width=".35" paint-order="stroke">${fmt(L.arrivee)}</text></g></svg>`;
 }
-function page4(){
+function pageLabyrinthe(){
   const L = J.labyrinthe;
-  $('#p4').innerHTML = miniTete(4) + `
+  $('#p6').innerHTML = miniTete(6) + `
     <h2 class="jeux-titre">${fmt(L.titre)}</h2>
     ${L.consigne?`<p class="consigne">${fmt(L.consigne)}</p>`:''}
     <div class="zone-laby">${labyrinthe(L)}</div>
-    ${blocHistoire()}
     ${L.piedDePage?`<div class="pied">${fmt(L.piedDePage)}</div>`:''}`;
+}
+
+/* ---------- page 7 : notre histoire en photos ---------- */
+function pageHistoire(){
+  const H = J.histoire, et = H.etapes.map(e => typeof e === 'string' ? { texte: e } : e);
+  const ordre = melanger(et, H.graine || 1);
+  const cartes = ordre.map(i => { const e = et[i];
+    const img = e.photo ? `<div class="h-photo" style="background-image:url('${e.photo}');background-position:${e.cadrage || '50% 50%'}"></div>`
+                        : `<div class="h-photo vide">${J.monogramme ? `<img src="${J.monogramme}" alt="">` : ''}</div>`;
+    return `<div class="h-carte">${img}<div class="rond"><span>${i + 1}</span></div><p>${fmt(e.texte)}</p></div>`; }).join('');
+  $('#p7').innerHTML = miniTete(7) + `
+    <h2 class="jeux-titre">${fmt(H.titre)}</h2>
+    ${H.consigne?`<p class="consigne">${fmt(H.consigne)}</p>`:''}
+    <div class="h-grille">${cartes}</div>
+    ${H.piedDePage?`<div class="pied">${fmt(H.piedDePage)}</div>`:''}`;
+}
+
+/* ---------- page 2 : le programme ---------- */
+function pageProgramme(){
+  const P = J.programme, W = 186;                       // largeur utile de la page (mm)
+  const lieux = P.lieux.map((L, k) => {
+    const droite = k % 2 === 1; let jour = '';
+    const items = L.moments.map(m => { const j = m.jour && m.jour !== jour ? `<span class="jour">${fmt(m.jour)}</span>` : ''; if (m.jour) jour = m.jour;
+      return `<li><img src="../photos/icones/${m.icone}.webp" alt=""><span>${j}<span class="quoi"><b>${fmt(m.heure)}</b> ${fmt(m.titre)}</span></span></li>`; }).join('');
+    return `<div class="lieu-r${droite ? ' droite' : ''}"><img class="ill" src="${L.image}" style="width:${L.largeur || 50}mm" alt="">
+      <div class="lieu-t"><h3>${fmt(L.nom)}</h3><div class="adr">${fmt(L.adresse)}</div><ul>${items}</ul></div></div>`;
+  });
+  /* route en pointillés entre deux illustrations (gauche → droite puis droite → gauche…) */
+  const route = k => {
+    const a = P.lieux[k], b = P.lieux[k + 1], H = 24, versDroite = k % 2 === 0;
+    const x0 = versDroite ? (a.largeur || 50) / 2 : W - (a.largeur || 50) / 2;
+    const x3 = versDroite ? W - (b.largeur || 50) / 2 : (b.largeur || 50) / 2, xm = (x0 + x3) / 2;
+    const cw = 30, ch = cw * 497 / 1135;
+    const auto = P.voiture ? `<image href="${versDroite ? P.voiture : P.voiture.replace('.png', '-d.png')}" x="${xm - cw / 2}" y="${H / 2 - ch * .85}" width="${cw}" height="${ch}"/>` : '';
+    const tx = P.voiture ? xm + (versDroite ? -cw / 2 - 3 : cw / 2 + 3) : xm;
+    return `<svg class="route" viewBox="0 0 ${W} ${H}" style="height:${H}mm">
+      <path d="M${x0} 1 C ${x0} ${H * .8}, ${x3} ${H * .2}, ${x3} ${H - 1}" fill="none" stroke="var(--or)" stroke-width=".55" stroke-dasharray="1.4 1.3" stroke-linecap="round"/>
+      <circle cx="${x0}" cy="1" r=".9" fill="var(--or)"/><circle cx="${x3}" cy="${H - 1}" r=".9" fill="var(--or)"/>${auto}
+      ${P.trajet ? `<text x="${tx}" y="${H / 2 + 4.5}" text-anchor="${versDroite ? 'end' : 'start'}" font-family="EB Garamond, serif" font-style="italic" font-size="3.4" fill="var(--encre)">${esc(P.trajet)}</text>` : ''}</svg>`;
+  };
+  const S = P.soiree;
+  $('#p2').innerHTML = miniTete(2, 'Programme') + `
+    ${P.surtitre?`<div class="surtitre">${fmt(P.surtitre)}</div>`:''}
+    <h2 class="gros-titre petit">${fmt(P.titre)}</h2>
+    ${P.chapo?`<p class="chapo">${fmt(P.chapo)}</p>`:''}
+    <div class="lieux">${lieux.map((l, k) => l + (k < lieux.length - 1 ? route(k) : '')).join('')}</div>
+    ${S && S.etapes && S.etapes.length ? `<h3 class="sous-titre">${fmt(S.titre)}</h3>
+    <div class="frise" style="grid-template-columns:repeat(${S.etapes.length},1fr)">${S.etapes.map(e =>
+      `<div><b>${fmt(e.heure)}</b><i></i><span>${fmt(e.texte)}</span></div>`).join('')}</div>` : ''}`;
+}
+
+/* ---------- page 3 : le menu ---------- */
+function pageMenu(){
+  const M = J.menu;
+  const orn = '<div class="orn"><span></span>◆<span></span></div>';
+  $('#p3').innerHTML = miniTete(3, 'Gastronomie') + `
+    ${M.surtitre?`<div class="surtitre">${fmt(M.surtitre)}</div>`:''}
+    <h2 class="gros-titre petit">${fmt(M.titre)}</h2>
+    ${M.chapo?`<p class="chapo">${fmt(M.chapo)}</p>`:''}
+    <div class="zone-menu"><div class="carte-menu">
+      <img class="assiette" src="../photos/icones/plate.webp" alt="">
+      ${M.plats.map(p => `<div class="plat"><div class="cat">${fmt(p.categorie)}</div><div class="nom">${fmt(p.nom)}</div>${p.description?`<div class="desc">${fmt(p.description)}</div>`:''}</div>`).join(orn)}
+    </div></div>
+    ${(M.encadres||[]).length?`<div class="bas-encadres" style="grid-template-columns:repeat(${M.encadres.length},1fr)">${M.encadres.map(e=>`<div class="encadre"><h3>${fmt(e.titre)}</h3><p>${fmt(e.texte)}</p></div>`).join('')}</div>`:''}`;
+}
+
+/* ---------- page 8 : le mot de la fin ---------- */
+function qrSVG(texte, cote){
+  if (typeof qrcode === 'undefined') return '';
+  const q = qrcode(0, 'M'); q.addData(texte); q.make();
+  const n = q.getModuleCount(); let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  return `<svg viewBox="-1 -1 ${n + 2} ${n + 2}" style="width:${cote}mm;height:${cote}mm;flex:none" shape-rendering="crispEdges"><rect x="-1" y="-1" width="${n + 2}" height="${n + 2}" fill="#fff"/><path d="${d}" fill="var(--encre)"/></svg>`;
+}
+function pageFin(){
+  const F = J.fin, C = F.carnet || {};
+  const photo = F.photo ? `<div class="photo grande" style="background-image:url('${F.photo}');background-position:${F.cadragePhoto||'50% 50%'}"></div>`
+                        : `<div class="photo grande">Photo</div>`;
+  const blocs = (F.encadres||[]).map(e=>`<div class="encadre"><h3>${fmt(e.titre)}</h3><p>${fmt(e.texte)}</p></div>`);
+  if (C.lien) blocs.push(`<div class="encadre carnet"><div><h3>${fmt(C.titre)}</h3><p>${fmt(C.texte)}</p></div>${qrSVG(C.lien, 22)}</div>`);
+  $('#p8').innerHTML = miniTete(8, 'Le mot de la fin') + `
+    ${F.surtitre?`<div class="surtitre">${fmt(F.surtitre)}</div>`:''}
+    <h2 class="merci">${fmt(F.titre)}</h2>
+    ${photo}${F.legende?`<div class="legende">${fmt(F.legende)}</div>`:''}
+    <div class="colonnes fin-texte">${(F.texte||[]).map(p=>`<p>${fmt(p)}</p>`).join('')}</div>
+    ${F.signature?`<div class="signature">${fmt(F.signature)}</div>`:''}
+    <div class="bas-encadres" style="grid-template-columns:repeat(${blocs.length},1fr)">${blocs.join('')}</div>
+    ${J.monogramme?`<img class="cul-de-lampe" src="${J.monogramme}" alt="">`:''}`;
 }
 
 function basculerSolution(){ document.body.classList.toggle('solution'); }
 function autreGrille(s){ graine = Math.max(1, graine + s); page2(); }
 
-page1();
-(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { page2(); page3(); page4(); });
+page1(); pageProgramme(); pageMenu(); pageHistoire(); pageFin();
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { page2(); pagePoints(); pageLabyrinthe(); });
 </script>
 </body></html>
