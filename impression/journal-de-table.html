@@ -15,6 +15,13 @@
    2. Rechargez la page dans Chrome (Cmd + R) pour voir le résultat.
    3. Bouton « Exporter en PDF » en haut (taille : celle du format choisi
       ci-dessous, marges : aucune, « Graphiques d’arrière-plan » cochés).
+      Menu « Pages » en haut :
+      • « Lecture » : une page après l'autre — pour envoyer à lire ET pour
+        PayPerNews (l'imprimeur fait lui-même l'imposition).
+      • « Livret à plier » : les pages côte à côte dans l'ordre d'impression
+        (8|1, 2|7, 6|3, 4|5) — pour un test maison : imprimer recto verso,
+        « retourner sur le bord court », mettre à l'échelle du papier (A3 ou A4
+        paysage), empiler les feuilles et plier au milieu.
    Rappels :
    • apostrophe typographique ’ dans les textes (ou \' ).
    • un texte entre crochets [ … ] est un emplacement à remplir :
@@ -133,7 +140,7 @@ window.JOURNAL = {
   /* --- PAGE 4 : LES MOTS FLÉCHÉS ------------------------------------ */
   jeux: {
     titre: 'Les mots fléchés des mariés',
-    consigne: 'Interdit de sortir son téléphone : interrogez vos voisins de table ! Les lettres des cases numérotées forment le mot mystère.',
+    consigne: 'Interdit de sortir son téléphone : interrogez vos voisins de table ! Les cases numérotées forment le mot mystère.',
 
     /* Les définitions : 'grille' → écrites dans les cases (vrais mots fléchés)
                          'liste'  → un numéro dans la case, les définitions sous la grille */
@@ -164,7 +171,7 @@ window.JOURNAL = {
       { reponse: 'Grey’s Anatomy',  definition: 'Série de Tiphaine' },
       { reponse: 'ENS',             definition: 'École de Thomas' },
       { reponse: 'Trois',           definition: 'Niveau de plongée de Thomas' },
-      { reponse: 'Bronze',          definition: 'Dernière étoile de Tiphaine ⛷️' },
+      { reponse: 'Bronze',          definition: 'Dernière étoile de ski de Tiphaine' },
       { reponse: 'Fraisier',        definition: 'Gâteau d’anniversaire de Thomas' },
       { reponse: 'Simpsons',        definition: 'Dessin animé de Thomas' },
       { reponse: 'Guitare',         definition: 'Instrument de Thomas' },
@@ -227,7 +234,7 @@ window.JOURNAL = {
                  Prenez les deux visages, cheveux compris : la page centre cette zone dans
                  le carré ; si elle est trop haute, elle garde le haut (pas de tête coupée). */
     etapes: [
-      { texte: 'Tonton et Tata jouent les entremetteurs',                   photo: '../photos/entremetteurs.jpg',        cadrage: '36 15 86 80' },
+      { texte: 'Tonton et Tata jouent les entremetteurs *(photo non contractuelle)*', photo: '../photos/pont-neuf.jpg', cadrage: '4 29 92 100' },
       { texte: 'Premier week-end à deux, entre Giverny et La Roche-Guyon', photo: '../photos/roche-guyon.jpg',          cadrage: '36 18 62 55' },
       { texte: 'Première escapade, direction Bruges',                       photo: '../photos/bruges.jpg',               cadrage: '22 40 90 92' },
       { texte: 'Premier anniversaire ensemble',                             photo: '../photos/premier-anniversaire.jpg', cadrage: '8 20 87 85' },
@@ -309,6 +316,16 @@ body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exa
   .ph{background:none!important;outline:none!important}
 }
 .ph{background:#fff4d6;outline:1px dashed var(--or);outline-offset:1px}
+/* mode « livret à plier » : deux pages par planche, ordre d'imposition */
+.planche{display:flex;margin:16mm auto 10mm;width:max-content;position:relative;box-shadow:0 2px 14px rgba(0,0,0,.18)}
+.planche .feuille{margin:0;box-shadow:none}
+.planche::before{content:attr(data-titre);position:absolute;bottom:100%;left:0;padding-bottom:2mm;font:13px system-ui,sans-serif;color:#555}
+.planche::after{content:"";position:absolute;top:0;bottom:0;left:50%;border-left:.3mm dashed rgba(0,0,0,.35);z-index:6;pointer-events:none}
+@media print{
+  .planche{margin:0;box-shadow:none;break-after:page;page-break-after:always}
+  .planche::before,.planche::after{display:none}
+  .planche .feuille{break-after:auto;page-break-after:auto}
+}
 
 /* ---------- en-tête ---------- */
 .filet-haut{display:flex;justify-content:space-between;align-items:center;font-size:3.4mm;letter-spacing:.06em;
@@ -346,11 +363,11 @@ body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exa
 .jeux-titre{font-family:var(--f-display);font-weight:700;font-size:10mm;text-align:center;margin-top:4mm}
 .consigne{text-align:center;font-style:italic;font-size:4.1mm;line-height:1.3;max-width:165mm;margin:1mm auto 4mm}
 .zone-grille{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
-.grille{display:grid;border:.4mm solid var(--encre);border-right-width:.15mm;border-bottom-width:.15mm}
+/* filets = fond encre visible dans les interstices (gap) : jamais rognés, quel que soit l'agrandissement */
+.grille{display:grid;gap:.25mm;background:var(--encre);border:.4mm solid var(--encre)}
 .case{width:var(--c);height:var(--c);background:#fff;position:relative;overflow:hidden}
-/* filets de la grille : dessinés par chaque case (net même une fois agrandi) */
-.case::before{content:"";position:absolute;inset:0 -.01mm -.01mm 0;border-right:.25mm solid var(--encre);border-bottom:.25mm solid var(--encre);z-index:1;pointer-events:none}
-.case.vide{background:repeating-linear-gradient(45deg,#f3eee3 0 .6mm,#e6dcc6 .6mm .9mm)}
+/* fond uni : les hachures (dégradés répétés) rendaient le PDF très lent à afficher dans Chrome */
+.case.vide{background:#ece5d5}
 .case.def{background:var(--pale);display:flex;flex-direction:column}
 .def .d{flex:1;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;
   font-family:var(--f-body);font-weight:500;line-height:1.02;padding:.35mm .9mm;hyphens:auto;overflow-wrap:anywhere;overflow:hidden}
@@ -389,7 +406,7 @@ body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exa
 .h-grille{flex:1;min-height:0;display:flex;flex-wrap:wrap;justify-content:center;align-content:space-evenly;gap:4mm 5mm}
 .h-carte{width:calc((100% - 15mm) / 4);height:calc((100% - 12mm) / 4);display:flex;flex-direction:column;position:relative}
 .h-photo{flex:1;min-height:0;background:var(--pale) center/cover no-repeat;border:.2mm solid var(--encre);display:flex;align-items:center;justify-content:center}
-.h-photo.vide{background:repeating-linear-gradient(45deg,#faf7f0 0 .8mm,#f1ebdd .8mm 1.2mm);border-color:var(--or)}
+.h-photo.vide{background:#f6f1e6;border-color:var(--or)}
 .h-photo.vide img{width:40%;opacity:.55}
 .h-carte p{font-size:3.7mm;line-height:1.2;text-align:center;padding:2.2mm 1mm 0;min-height:12.5mm}
 .rond{flex:none;width:8.5mm;height:8.5mm;border:.4mm solid var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -468,6 +485,8 @@ body{font-family:var(--f-body);color:var(--encre);-webkit-print-color-adjust:exa
   <button onclick="autreGrille(1)">Autre grille →</button>
   <label>Format <select id="choixFormat" onchange="changerFormat(this.value)">
     <option value="tabloid">Tabloïd 260 × 370</option><option value="broadsheet">Broadsheet 332 × 475</option><option value="a4">A4 210 × 297</option></select></label>
+  <label>Pages <select id="choixMise" onchange="changerMise(this.value)">
+    <option value="lecture">Lecture (une après l’autre)</option><option value="livret">Livret à plier (imposition)</option></select></label>
   <span class="info" id="info"></span>
 </div>
 <div class="alerte" id="alerte"></div>
@@ -499,11 +518,30 @@ const FORMATS = { tabloid: [260, 370], broadsheet: [332, 475], a4: [210, 297] };
 const FORMAT = FORMATS[new URLSearchParams(location.search).get('format')] ? new URLSearchParams(location.search).get('format')
              : FORMATS[J.format] ? J.format : 'tabloid';
 const [FL, FH] = FORMATS[FORMAT], ZOOM = FL / 210, MARGE_TECH = 10;
-document.head.insertAdjacentHTML('beforeend', `<style>@page{size:${FL}mm ${FH}mm;margin:0}
+const LIVRET = new URLSearchParams(location.search).get('pages') === 'livret';
+document.head.insertAdjacentHTML('beforeend', `<style>@page{size:${LIVRET ? 2 * FL : FL}mm ${FH}mm;margin:0}
   .feuille{width:${FL}mm;height:${FH}mm}
   .page{transform:scale(${ZOOM});height:${FH / ZOOM}mm}
   .feuille::after{inset:${MARGE_TECH}mm}</style>`);
 function changerFormat(f){ const u = new URL(location.href); u.searchParams.set('format', f); location.href = u.href; }
+function changerMise(m){ const u = new URL(location.href); u.searchParams.set('pages', m); location.href = u.href; }
+/* livret à plier : planches de 2 pages, recto/verso, feuilles emboîtées (8|1, 2|7, 6|3, 4|5 pour 8 pages) */
+function imposer(){
+  $('#choixMise').value = LIVRET ? 'livret' : 'lecture';
+  if (!LIVRET) return;
+  const f = [...document.querySelectorAll('.feuille')], n = f.length;
+  if (n % 4) return;
+  const ancre = document.createComment('livret'); f[0].before(ancre);
+  for (let s = 0; s < n / 4; s++) {
+    [[n - 2 * s, 1 + 2 * s, 'recto'], [2 + 2 * s, n - 1 - 2 * s, 'verso']].forEach(([g, d, face]) => {
+      const pl = document.createElement('div');
+      pl.className = 'planche';
+      pl.dataset.titre = `Feuille ${s + 1} · ${face} — pages ${g} | ${d}`;
+      pl.append(f[g - 1], f[d - 1]);
+      ancre.before(pl);
+    });
+  }
+}
 /* vérifications PayPerNews : pages multiple de 4, marge technique, images ≥ 200 dpi */
 function verifierFormat(){
   const msgs = [], feuilles = document.querySelectorAll('.feuille');
@@ -984,6 +1022,6 @@ function basculerSolution(){ document.body.classList.toggle('solution'); }
 function autreGrille(s){ graine = Math.max(1, graine + s); page2(); }
 
 page1(); pageProgramme(); pageMenu(); pageHistoire(); pageFin();
-(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { page2(); pagePoints(); pageLabyrinthe(); cadrerPhotos(); verifierFormat(); });
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { page2(); pagePoints(); pageLabyrinthe(); cadrerPhotos(); verifierFormat(); imposer(); });
 </script>
 </body></html>
